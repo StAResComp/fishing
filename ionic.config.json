@@ -1,0 +1,7 @@
+{
+  "name": "fishing",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}
