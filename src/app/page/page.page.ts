@@ -5,8 +5,7 @@ import { SettingsService } from '../settings.service';
 
 @Component({
   selector: 'app-page',
-  templateUrl: './page.page.html',
-  styleUrls: ['./page.page.scss'],
+  templateUrl: './page.page.html'
 })
 export class Page implements OnInit {
   public page: string;
