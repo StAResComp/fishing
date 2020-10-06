@@ -16,9 +16,14 @@
 
   <div id="container">
     <strong class="capitalize">{{ page }}</strong>
-    <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-      <div>
-        <p>{{ getDbContents() | async }}</p>
-      </div>
+    <div *ngIf="page.toLowerCase() == 'settings'">
+      <form *ngIf="!orderSent" #form="ngForm" novalidate (ngSubmit)="saveSettings()">
+        <div *ngFor="let key of keys" class="form-group">
+          <label>{{ getDisplayKey(key) }}</label>
+          <input class="form-control" style="color: black" name="{{ key }}" [value]="settings.get(key)" (change)="settings.set(key, $event.target.value)" />
+        </div>
+        <button class="btn btn-primary m-1" type="submit">Save Settings</button>
+      </form>
+    </div>
   </div>
 </ion-content>

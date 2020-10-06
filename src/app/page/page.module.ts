@@ -7,6 +7,8 @@ import { IonicModule } from '@ionic/angular';
 import { PageRoutingModule } from './page-routing.module';
 
 import { Page } from './page.page';
+import { DbService } from '../db.service';
+import { SettingsService } from '../settings.service';
 
 @NgModule({
   imports: [
@@ -15,6 +17,7 @@ import { Page } from './page.page';
     IonicModule,
     PageRoutingModule
   ],
+  providers: [DbService, SettingsService],
   declarations: [Page]
 })
 export class PageModule {}

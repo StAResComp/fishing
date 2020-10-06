@@ -1,0 +1,17 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "Fishing App",
+  "codeRepository": "https://github.com/StAResComp/fishing",
+  "programmingLanguage": "TypeScript",
+  "license": "MIT",
+  "description": "MIT",
+  "creator": [
+    {
+      "@type": "Person",
+      "givenName": "Patrick",
+      "familyName": "McCann",
+      "id": "https://orcid.org/0000-0002-9324-2775"
+    }
+  ]
+}

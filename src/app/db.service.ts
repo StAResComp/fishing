@@ -3,9 +3,7 @@ import { Platform } from '@ionic/angular';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite/ngx';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class DbService {
 
   private storage: SQLiteObject;
@@ -27,7 +25,7 @@ export class DbService {
   }
 
   getContents() {
-    this.storage.executeSql(
+    this.storage?.executeSql(
       'SELECT * FROM test_table;',
       []
     ).then(
@@ -48,22 +46,17 @@ export class DbService {
   }
 
   setupDatabase() {
-    this.storage.executeSql(
+    const queries = [
       'CREATE TABLE IF NOT EXISTS test_table (id int NOT NULL, description varchar NOT NULL);',
-      []
-    ).catch(
-      e => {
-        console.log('Error executing SQL: ' + JSON.stringify(e))
-      }
-    );
-    this.storage.executeSql(
-      'INSERT INTO test_table VALUES (1, "First test value");',
-      []
-    ).catch(
-      e => {
-        console.log('Error executing SQL: ' + JSON.stringify(e))
-      }
-    );
+      'INSERT INTO test_table VALUES (1, "First test value");'
+    ];
+    queries.forEach((query) => this.executeNoReturnQuery(query));
+  }
+
+  private executeNoReturnQuery(query: string, params: Array<string> = []) {
+    this.storage.executeSql(query, params).catch(
+      e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+    )
   }
 }
 

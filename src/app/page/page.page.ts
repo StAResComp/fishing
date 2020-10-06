@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DbService } from '../db.service';
+import { SettingsService } from '../settings.service';
 
 @Component({
   selector: 'app-page',
@@ -9,17 +10,49 @@ import { DbService } from '../db.service';
 })
 export class Page implements OnInit {
   public page: string;
+  public settings = new Map<string, string>();
+  private keys: Array<string>;
 
-  constructor(private activatedRoute: ActivatedRoute, private db: DbService) {}
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private db: DbService,
+    private settingsService: SettingsService
+  ) {
+    this.keys = this.settingsService.getKeys();
+    this.loadSettings();
+  }
 
   ngOnInit() {
     this.page = this.activatedRoute.snapshot.paramMap.get('id');
   }
 
-  getDbContents() {
-    this.db.getContents();
-    return this.db.getMessage();
+  private loadSettings() {
+    this.settings.clear()
+    this.keys.forEach(async(key) => {
+      const val = await this.settingsService.get(key);
+      this.settings.set(key, val);
+    });
   }
 
+  private saveSettings() {
+    this.settings.forEach(
+      (value, key) => {
+        this.settingsService.set(key, value);
+      }
+    );
+  }
 
+  private getDisplayKey(key :string) {
+    if (key.toUpperCase() == 'PLN') {
+      return key.toUpperCase();
+    }
+    else {
+      return key.replace(/_/g, ' ').replace(
+        /\w\S*/g,
+        function (txt) {
+          return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        }
+      );
+    }
+  }
 }
