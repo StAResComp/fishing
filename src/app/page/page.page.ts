@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DbService } from '../db.service';
 import { SettingsService } from '../settings.service';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-page',
@@ -15,7 +16,8 @@ export class Page implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private db: DbService,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private authService: AuthService
   ) {
     this.keys = this.settingsService.getKeys();
     this.loadSettings();
@@ -53,5 +55,9 @@ export class Page implements OnInit {
         }
       );
     }
+  }
+
+  public login() {
+    this.authService.authenticate();
   }
 }

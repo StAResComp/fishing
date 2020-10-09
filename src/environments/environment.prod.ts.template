@@ -1,0 +1,8 @@
+export const environment = {
+  production: true,
+  authUrl: "",
+  tokenUrl: "",
+  client_id: "",
+  client_secret: "",
+  redirect_uri: "uk.ac.standrews.fishing://callback"
+};

@@ -24,5 +24,8 @@
         <button class="btn btn-primary m-1" type="submit">Save Settings</button>
       </form>
     </div>
+    <div *ngIf="page.toLowerCase() == 'home'">
+      <button (click)="login()" class="btn btn-primary m-1">Login</button>
+    </div>
   </div>
 </ion-content>

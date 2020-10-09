@@ -3,7 +3,12 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  authUrl: "",
+  tokenUrl: "",
+  client_id: "",
+  client_secret: "",
+  redirect_uri: "uk.ac.standrews.fishing://callback"
 };
 
 /*
