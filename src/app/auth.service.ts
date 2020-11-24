@@ -144,12 +144,14 @@ export class AuthService {
     return postBody;
   }
 
+  private static getPostHeaders
+
   /**
    * Makes a request for a token and stores the returned details
    * @param grantType The kind of request being made
    * @param authCode The authorisation code for an authorisation request
    */
-  private obtainToken(
+  private authorise(
     grantType: string = AuthService.grant_type_refresh,
     authCode?: string
   ) {
@@ -198,7 +200,7 @@ export class AuthService {
           if ((event.url).indexOf(AuthService.redirect_uri) === 0) {
             // Do the OAuth authorization
             const code = event.url.substring(event.url.lastIndexOf('=') + 1);
-            self.obtainToken(AuthService.grant_type_authorize, code);
+            self.authorise(AuthService.grant_type_authorize, code);
             browserRef.removeEventListener("exit", (event) => {});
             browserRef.close();
           }
@@ -215,7 +217,7 @@ export class AuthService {
    */
   public async refreshTokenIfNecessary() {
     const expiryStr = await this.get(AuthService.access_token_expiry_key);
-    if ((Number(expiryStr) - AuthService.timeInSecs()) < 10) {
+    if ((Number(expiryStr) - AuthService.timeInSecs()) < 60) {
       this.refreshToken();
     }
   }
@@ -224,6 +226,17 @@ export class AuthService {
    * Refreshes token
    */
   public refreshToken() {
-    this.obtainToken(AuthService.grant_type_refresh);
+    this.authorise(AuthService.grant_type_refresh);
+  }
+
+  /**
+   * Returns a Promise of an authorization HTTP header to be included in
+   * requests requiring authentication.
+   * @return Promise<string> A Promise of the authorization header
+   */
+  public async getAuthHeader() : Promise<string>{
+    await this.refreshTokenIfNecessary();
+    const authCode = await this.get(AuthService.access_token_key);
+    return `Authorization: Bearer ${authCode}`;
   }
 }
