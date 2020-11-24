@@ -20,6 +20,7 @@
     "@angular/platform-browser": "~10.0.0",
     "@angular/platform-browser-dynamic": "~10.0.0",
     "@angular/router": "~10.0.0",
+    "@ionic-native/background-geolocation": "^5.28.0",
     "@ionic-native/core": "^5.0.0",
     "@ionic-native/in-app-browser": "^5.28.0",
     "@ionic-native/splash-screen": "^5.0.0",
@@ -28,6 +29,7 @@
     "@ionic/angular": "^5.0.0",
     "@ionic/lab": "^3.2.9",
     "@ionic/storage": "^2.3.1",
+    "@mauron85/cordova-plugin-background-geolocation": "^3.1.0",
     "bootstrap": "^4.5.2",
     "cordova-android": "^8.1.0",
     "cordova-browser": "6.0.0",
@@ -78,7 +80,19 @@
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-inappbrowser": {}
+      "cordova-plugin-inappbrowser": {},
+      "cordova-plugin-background-geolocation": {
+        "GOOGLE_PLAY_SERVICES_VERSION": "11+",
+        "ANDROID_SUPPORT_LIBRARY_VERSION": "26+",
+        "ICON": "@mipmap/icon",
+        "SMALL_ICON": "@mipmap/icon",
+        "ACCOUNT_NAME": "@string/app_name",
+        "ACCOUNT_LABEL": "@string/app_name",
+        "ACCOUNT_TYPE": "$PACKAGE_NAME.account",
+        "CONTENT_AUTHORITY": "$PACKAGE_NAME",
+        "ALWAYS_USAGE_DESCRIPTION": "This app always requires location tracking",
+        "MOTION_USAGE_DESCRIPTION": "This app requires motion detection"
+      }
     },
     "platforms": [
       "browser",
