@@ -26,6 +26,13 @@
     </div>
     <div *ngIf="page.toLowerCase() == 'home'">
       <button (click)="login()" class="btn btn-primary m-1">Login</button>
+      <button (click)="refresh()" class="btn btn-primary m-1">Refresh Token</button>
+      <button (click)="checkTokens()" class="btn btn-primary m-1">Check stored tokens</button>
+      <ul>
+        <li>Access token: {{ accessToken }}</li>
+        <li>Access token expiry: {{ accessTokenExpiry }} seconds</li>
+        <li>Refresh token: {{ refreshToken }}</li>
+      </ul>
     </div>
   </div>
 </ion-content>

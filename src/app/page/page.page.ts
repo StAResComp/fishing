@@ -13,6 +13,10 @@ export class Page implements OnInit {
   public settings = new Map<string, string>();
   private keys: Array<string>;
 
+  public accessToken: string = "";
+  public accessTokenExpiry: Number = 0;
+  public refreshToken: string = "";
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private db: DbService,
@@ -59,5 +63,21 @@ export class Page implements OnInit {
 
   public login() {
     this.authService.authenticate();
+  }
+
+  public refresh() {
+    this.authService.refreshToken();
+  }
+
+  public checkTokens() {
+    this.authService.get(AuthService.access_token_key).then(
+      value => this.accessToken = value
+    );
+    this.authService.get(AuthService.access_token_expiry_key).then(
+      value => this.accessTokenExpiry = +value - (new Date().getTime() / 1000)
+    );
+    this.authService.get(AuthService.refresh_token_key).then(
+      value => this.refreshToken = value
+    );
   }
 }

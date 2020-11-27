@@ -17,6 +17,7 @@ type PostBody = {
   redirect_uri: string
   grant_type: string
   code?: string
+  refresh_token?: string
 };
 
 /**
@@ -27,9 +28,9 @@ type PostBody = {
 export class AuthService {
 
   // Keys of values to be stored
-  private static readonly access_token_key = 'access_token';
-  private static readonly access_token_expiry_key = 'access_token_expiry';
-  private static readonly refresh_token_key = 'refresh_token';
+  public static readonly access_token_key = 'access_token';
+  public static readonly access_token_expiry_key = 'access_token_expiry';
+  public static readonly refresh_token_key = 'refresh_token';
   private static readonly allowedKeys: Array<string> = [
     AuthService.access_token_key,
     AuthService.access_token_expiry_key,
@@ -125,10 +126,10 @@ export class AuthService {
    * @return PostBody The post body
    * @throws Error If grant type is authorization_code but no code supplied
    */
-  private static getTokenPostBody(
+  private async getTokenPostBody(
     grantType: string = AuthService.grant_type_refresh,
     authCode?: string
-  ) : PostBody {
+  ) : Promise<PostBody> {
     if (grantType == AuthService.grant_type_authorize && authCode == null) {
       throw new Error('Code needed for authorization_code request');
     }
@@ -141,10 +142,12 @@ export class AuthService {
     if (authCode != null) {
       postBody['code'] = authCode;
     }
+    if (grantType == AuthService.grant_type_refresh) {
+      postBody['refresh_token'] =
+        await this.get(AuthService.refresh_token_key);
+    }
     return postBody;
   }
-
-  private static getPostHeaders
 
   /**
    * Makes a request for a token and stores the returned details
@@ -164,23 +167,29 @@ export class AuthService {
       scope?: string
       refresh_token: string
     }
-    this.http.post<TokenResponse>(
-      AuthService.tokenUrl,
-      AuthService.getTokenPostBody(grantType, authCode),
-      { headers: headers }
-    ).subscribe(data => {
-        this.set(AuthService.access_token_key, data.access_token);
-        this.set(
-          AuthService.access_token_expiry_key,
-          (AuthService.timeInSecs() + data.expires_in).toString()
-        );
-        this.set(AuthService.refresh_token_key, data.refresh_token);
-      }, error => {
-        console.log('Token request error');
-        console.log(error);
-        alert("Authentication error");
-      }
-    );
+    this.getTokenPostBody(grantType, authCode).then( postBody => {
+      // Have set server to accept JSON requests for access tokens; however,
+      // it seems refresh requests must be made with URL parameters
+      const urlParams = new URLSearchParams(postBody);
+      const urlWithParams = `${AuthService.tokenUrl}?${urlParams}`;
+      this.http.post<TokenResponse>(
+        (grantType == AuthService.grant_type_refresh ?
+          urlWithParams : AuthService.tokenUrl),
+        (grantType == AuthService.grant_type_refresh ? null : postBody),
+        { headers: headers }
+      ).subscribe(data => {
+          this.set(AuthService.access_token_key, data.access_token);
+          this.set(
+            AuthService.access_token_expiry_key,
+            (AuthService.timeInSecs() + data.expires_in).toString()
+          );
+          this.set(AuthService.refresh_token_key, data.refresh_token);
+        }, error => {
+          console.log('Token request error');
+          console.log(error);
+        }
+      );
+    });
   }
 
   /**
