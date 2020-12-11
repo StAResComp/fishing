@@ -17,6 +17,16 @@ export class AppComponent implements OnInit {
       icon: 'boat'
     },
     {
+      title: 'FISH1 Entries',
+      url: '/page/F1EntriesList',
+      icon: 'clipboard'
+    },
+    {
+      title: 'Wildlife',
+      url: '/page/Wildlife',
+      icon: 'glasses'
+    },
+    {
       title: 'Settings',
       url: '/page/Settings',
       icon: 'settings'

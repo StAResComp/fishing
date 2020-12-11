@@ -1,9 +1,12 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
+  <ion-toolbar [ngSwitch]="page.toLowerCase()">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>{{ page }}</ion-title>
+    <ion-title *ngSwitchCase="'f1entrieslist'">FISH1 Entries</ion-title>
+    <ion-title *ngSwitchCase="'settings'">Settings</ion-title>
+    <ion-title *ngSwitchCase="'wildlife'">Wildlife</ion-title>
+    <ion-title *ngSwitchDefault>{{ page.toLowerCase() }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -15,6 +18,7 @@
   </ion-header>
 
   <div id="container" class="container">
+
     <div *ngIf="page.toLowerCase() == 'settings'">
       <form *ngIf="!orderSent" #form="ngForm" novalidate (ngSubmit)="saveSettings()">
         <div *ngFor="let key of keys" class="form-group">
@@ -25,14 +29,55 @@
       </form>
     </div>
     <div *ngIf="page.toLowerCase() == 'home'">
-      <button (click)="login()" class="btn btn-primary m-1">Login</button>
-      <button (click)="refresh()" class="btn btn-primary m-1">Refresh Token</button>
-      <button (click)="checkTokens()" class="btn btn-primary m-1">Check stored tokens</button>
-      <ul>
-        <li>Access token: {{ accessToken }}</li>
-        <li>Access token expiry: {{ accessTokenExpiry }} seconds</li>
-        <li>Refresh token: {{ refreshToken }}</li>
-      </ul>
+      <ion-card>
+        <form #form="ngForm" novalidate (ngSubmit)="recordCatch()">
+          <ion-list>
+            <ion-item>
+              <ion-label>Species:</ion-label>
+              <ion-select>
+                <ion-select-option *ngFor="let species of getSpecies()" value="species.id">{{ species.name }}</ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label>No. caught:</ion-label>
+              <ion-input type="number"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label>No. retained:</ion-label>
+              <ion-input type="number"></ion-input>
+            </ion-item>
+          </ion-list>
+          <ion-button expand="block">Record Catch</ion-button>
+        </form>
+      </ion-card>
+      <ion-card *ngFor="let catch of getCatches()">
+        <ion-card-content>
+          {{ catch.date }} {{ catch.time }} <br />
+          {{ catch.species }}: Retained {{ catch.retained }} of {{ catch.caught }}
+        </ion-card-content>
+      </ion-card>
+      <!--<button (click)="login()" class="btn btn-primary m-1">Login</button>-->
+      <!--<button (click)="refresh()" class="btn btn-primary m-1">Refresh Token</button>-->
+      <!--<button (click)="checkTokens()" class="btn btn-primary m-1">Check stored tokens</button>-->
+      <!--<ul>-->
+      <!--<li>Access token: {{ accessToken }}</li>-->
+      <!--<li>Access token expiry: {{ accessTokenExpiry }} seconds</li>-->
+      <!--<li>Refresh token: {{ refreshToken }}</li>-->
+      <!--</ul>-->
     </div>
+
+
+    <div *ngIf="page.toLowerCase() == 'f1-entry-list'">
+    </div>
+
+    <div *ngIf="page.toLowerCase() == 'f1-entry-detail'">
+    </div>
+
+    <div *ngIf="page.toLowerCase() == 'f1-form-gen'">
+    </div>
+
+    <div *ngIf="page.toLowerCase() == 'wildlife'">
+    </div>
+
   </div>
 </ion-content>

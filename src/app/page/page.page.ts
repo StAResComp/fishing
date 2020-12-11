@@ -80,4 +80,33 @@ export class Page implements OnInit {
       value => this.refreshToken = value
     );
   }
+
+  public recordCatch() {}
+
+  public recordEntry() {}
+
+  public generateForm() {}
+
+  public recordWildlife() {}
+
+  public getSpecies() {
+    return [
+      { id: 'CRE', name: 'Brown Crab' },
+      { id: 'LBE', name: 'Lobster' },
+      { id: 'NEP', name: 'Nephrops' },
+      { id: 'CRS', name: 'Velvet Crab' },
+      { id: 'SQC', name: 'Squid' }
+    ];
+  }
+
+  public getCatches() {
+    return [
+      { date: '11 Dec 2020', time: '14:42', species: 'Brown Crab', caught: 12, retained: 8 },
+      { date: '11 Dec 2020', time: '14:41', species: 'Velvet Crab', caught: 6, retained: 6 },
+      { date: '11 Dec 2020', time: '14:41', species: 'Lobster', caught: 2, retained: 0 },
+      { date: '10 Dec 2020', time: '14:42', species: 'Brown Crab', caught: 12, retained: 8 },
+      { date: '10 Dec 2020', time: '14:41', species: 'Velvet Crab', caught: 6, retained: 6 },
+      { date: '10 Dec 2020', time: '14:41', species: 'Lobster', caught: 2, retained: 0 }
+    ];
+  }
 }
