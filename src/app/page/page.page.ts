@@ -109,4 +109,17 @@ export class Page implements OnInit {
       { date: '10 Dec 2020', time: '14:41', species: 'Lobster', caught: 2, retained: 0 }
     ];
   }
+
+  public getF1Entries() {
+    return [
+      { date: '11 Dec', species: 'Brown Crab' },
+      { date: '11 Dec', species: 'Velvet Crab' },
+      { date: '10 Dec', species: 'Brown Crab' },
+      { date: '10 Dec', species: 'Velvet Crab' },
+      { date: '09 Dec', species: 'Brown Crab' },
+      { date: '09 Dec', species: 'Velvet Crab' },
+      { date: '08 Dec', species: 'Brown Crab' },
+      { date: '08 Dec', species: 'Velvet Crab' }
+    ];
+  }
 }

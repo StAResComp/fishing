@@ -4,9 +4,7 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title *ngSwitchCase="'f1entrieslist'">FISH1 Entries</ion-title>
-    <ion-title *ngSwitchCase="'settings'">Settings</ion-title>
-    <ion-title *ngSwitchCase="'wildlife'">Wildlife</ion-title>
-    <ion-title *ngSwitchDefault>{{ page.toLowerCase() }}</ion-title>
+    <ion-title *ngSwitchDefault>{{ page }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -28,6 +26,7 @@
         <button class="btn btn-primary m-1" type="submit">Save Settings</button>
       </form>
     </div>
+
     <div *ngIf="page.toLowerCase() == 'home'">
       <ion-card>
         <form #form="ngForm" novalidate (ngSubmit)="recordCatch()">
@@ -66,8 +65,27 @@
       <!--</ul>-->
     </div>
 
-
-    <div *ngIf="page.toLowerCase() == 'f1-entry-list'">
+    <div *ngIf="page.toLowerCase() == 'f1entrieslist'">
+      <ion-card>
+        <ion-button (click)="recordEntry()" expand="block">Create New Entry</ion-button>
+        <ion-button (click)="generateForm()" expand="block">Generate Form</ion-button>
+      </ion-card>
+      <ion-card *ngFor="let entry of getF1Entries()">
+        <ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col>
+                <div>
+                  {{ entry.date }} <br /> {{ entry.species }}
+                </div>
+              </ion-col>
+              <ion-col class="ion-text-end">
+                <ion-button (click)="recordEntry()" size="small">Details</ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
     </div>
 
     <div *ngIf="page.toLowerCase() == 'f1-entry-detail'">
