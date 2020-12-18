@@ -24,3 +24,16 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+ion-grid.vertical-padding-only {
+  ion-row {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+}
+
+ion-col {
+  ion-input, ion-textarea, ion-select {
+    border: solid 1px;
+  }
+}

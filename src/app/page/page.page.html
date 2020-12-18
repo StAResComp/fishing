@@ -4,24 +4,32 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title *ngSwitchCase="'f1entrieslist'">FISH1 Entries</ion-title>
+    <ion-title *ngSwitchCase="'f1entrydetails'">F1 Entry Details</ion-title>
     <ion-title *ngSwitchDefault>{{ page }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">{{ page }}</ion-title>
+    <ion-toolbar [ngSwitch]="page.toLowerCase()">
+      <ion-title size="large" *ngSwitchCase="'f1entrieslist'">FISH1 Entries</ion-title>
+      <ion-title size="large" *ngSwitchCase="'f1entrydetails'">F1 Entry Details</ion-title>
+      <ion-title size="large" *ngSwitchDefault>{{ page }}</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <div id="container" class="container">
 
     <div *ngIf="page.toLowerCase() == 'settings'">
-      <form *ngIf="!orderSent" #form="ngForm" novalidate (ngSubmit)="saveSettings()">
+      <form #form="ngForm" novalidate (ngSubmit)="saveSettings()">
         <div *ngFor="let key of keys" class="form-group">
           <label for="{{ key }}">{{ getDisplayKey(key) }}: </label>
-          <input class="form-control" name="{{ key }}" [value]="settings.get(key)" (change)="settings.set(key, $event.target.value)" />
+          <ion-select placeholder="Select office..." *ngIf="key == 'fisheries_office'; else elseInput" [value]="settings.get(key)" (ionChange)="settings.set(key, $event.target.value)">
+            <ion-select-option *ngFor="let office of getFisheriesOffices()">{{ office.name }}</ion-select-option>
+          </ion-select>
+          <ng-template #elseInput>
+            <ion-input class="form-control" name="{{ key }}" [value]="settings.get(key)" (change)="settings.set(key, $event.target.value)" ></ion-input>
+          </ng-template>
         </div>
         <button class="btn btn-primary m-1" type="submit">Save Settings</button>
       </form>
@@ -34,7 +42,7 @@
             <ion-item>
               <ion-label>Species:</ion-label>
               <ion-select>
-                <ion-select-option *ngFor="let species of getSpecies()" value="species.id">{{ species.name }}</ion-select-option>
+                <ion-select-option *ngFor="let species of getSpecies()" [value]="species.id">{{ species.name }}</ion-select-option>
               </ion-select>
             </ion-item>
             <ion-item>
@@ -67,19 +75,19 @@
 
     <div *ngIf="page.toLowerCase() == 'f1entrieslist'">
       <ion-card>
-        <ion-button (click)="recordEntry()" expand="block">Create New Entry</ion-button>
+        <ion-button routerLink="../F1EntryDetails" routerDirection="forward" expand="block">Create New Entry</ion-button>
         <ion-button (click)="generateForm()" expand="block">Generate Form</ion-button>
       </ion-card>
       <ion-card *ngFor="let entry of getF1Entries()">
         <ion-card-content>
-          <ion-grid>
-            <ion-row>
-              <ion-col>
+          <ion-grid class="ion-no-padding">
+            <ion-row class="ion-justify-content-between">
+              <ion-col size="auto">
                 <div>
                   {{ entry.date }} <br /> {{ entry.species }}
                 </div>
               </ion-col>
-              <ion-col class="ion-text-end">
+              <ion-col size="auto" class="ion-text-end">
                 <ion-button (click)="recordEntry()" size="small">Details</ion-button>
               </ion-col>
             </ion-row>
@@ -88,7 +96,116 @@
       </ion-card>
     </div>
 
-    <div *ngIf="page.toLowerCase() == 'f1-entry-detail'">
+    <div *ngIf="page.toLowerCase() == 'f1entrydetails'">
+      <form #form="ngForm" novalidate (ngSubmit)="recordEntry()">
+        <ion-grid class="ion-no-padding vertical-padding-only">
+          <ion-row class="ion-align-items-center">
+            <ion-col><ion-label>Fishing Activity Date:</ion-label></ion-col>
+          </ion-row>
+          <ion-row class="ion-justify-content-between ion-align-items-center">
+            <ion-col size="auto">
+              <ion-button size="small">Yesterday</ion-button>
+            </ion-col>
+            <ion-col size="auto">
+              <ion-button size="small">Today</ion-button>
+            </ion-col>
+            <ion-col size="auto">
+              <ion-button size="small">Pick...</ion-button>
+            </ion-col>
+          </ion-row>
+          <ion-row class="ion-align-items-center">
+            <ion-col>
+              <ion-label>Location:</ion-label>
+            </ion-col>
+            <ion-col size="auto">
+              <ion-button size="small">Pick on Map</ion-button>
+            </ion-col>
+          </ion-row>
+          <ion-row class="ion-align-items-center">
+            <ion-col><ion-label>Gear:</ion-label></ion-col>
+            <ion-col>
+              <ion-select>
+                <ion-select-option *ngFor="let gear of getGear()" [value]="gear.id">{{ gear.name }}</ion-select-option>
+              </ion-select>
+            </ion-col>
+          </ion-row>
+          <ion-row class="ion-align-items-center">
+            <ion-col><ion-label>Mesh Size:</ion-label></ion-col>
+            <ion-col>
+              <ion-select>
+                <ion-select-option *ngFor="let meshSizes of getMeshSizes()" [value]="meshSizes.id">{{ meshSizes.name }}</ion-select-option>
+              </ion-select>
+            </ion-col>
+          </ion-row>
+          <ion-row class="ion-align-items-center">
+            <ion-col><ion-label>Species:</ion-label></ion-col>
+            <ion-col>
+              <ion-select>
+                <ion-select-option *ngFor="let species of getSpecies()" [value]="species.id">{{ species.name }}</ion-select-option>
+              </ion-select>
+            </ion-col>
+          </ion-row>
+          <ion-row class="ion-align-items-center">
+            <ion-col><ion-label>State:</ion-label></ion-col>
+            <ion-col>
+              <ion-select>
+                <ion-select-option *ngFor="let state of getStates()" [value]="state.id">{{ state.name }}</ion-select-option>
+              </ion-select>
+            </ion-col>
+          </ion-row>
+          <ion-row class="ion-align-items-center">
+            <ion-col><ion-label>Presentation:</ion-label></ion-col>
+            <ion-col>
+              <ion-select>
+                <ion-select-option *ngFor="let presentation of getPresentations()" [value]="presentation.id">{{ presentation.name }}</ion-select-option>
+              </ion-select>
+            </ion-col>
+          </ion-row>
+          <ion-row class="ion-justify-content-between ion-align-items-center">
+            <ion-col size="auto">
+              <ion-label>DIS?</ion-label>
+            </ion-col>
+            <ion-col size="3">
+              <ion-checkbox></ion-checkbox>
+            </ion-col>
+            <ion-col size="auto">
+              <ion-label>BMS?</ion-label>
+            </ion-col>
+            <ion-col size="3">
+              <ion-checkbox></ion-checkbox>
+            </ion-col>
+          </ion-row>
+          <ion-row class="ion-align-items-center">
+            <ion-col><ion-label>No. Pots Hauled:</ion-label></ion-col>
+            <ion-col size="auto">
+              <ion-input type="number"></ion-input>
+            </ion-col>
+          </ion-row>
+          <ion-row class="ion-align-items-center">
+            <ion-col><ion-label>Landing or Discard Date:</ion-label></ion-col>
+          </ion-row>
+          <ion-row class="ion-justify-content-between ion-align-items-center">
+            <ion-col size="auto"><ion-button size="small">Same Day</ion-button></ion-col>
+            <ion-col size="auto"><ion-button size="small">Next Day</ion-button></ion-col>
+            <ion-col size="auto"><ion-button size="small">Pick...</ion-button></ion-col>
+          </ion-row>
+          <ion-row class="ion-align-items-center">
+            <ion-col>
+              <ion-label>Buyer, TransporterReg. or Landed to Keeps:</ion-label>
+            </ion-col>
+          </ion-row>
+          <ion-row class="ion-align-items-center">
+            <ion-col>
+              <ion-textarea></ion-textarea>
+            </ion-col>
+          </ion-row>
+          <ion-row class="ion-align-items-center">
+            <ion-col>
+              <ion-button expand="block">Save Entry</ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </form>
     </div>
 
     <div *ngIf="page.toLowerCase() == 'f1-form-gen'">

@@ -42,6 +42,7 @@ export class Page implements OnInit {
   private saveSettings() {
     this.settings.forEach(
       (value, key) => {
+        console.log(`Attempting to set ${key} to ${value}`);
         this.settingsService.set(key, value);
       }
     );
@@ -87,6 +88,10 @@ export class Page implements OnInit {
 
   public generateForm() {}
 
+  public getFisheriesOffices() {
+    return this.settingsService.getFisheriesOffices();
+  }
+
   public recordWildlife() {}
 
   public getSpecies() {
@@ -122,4 +127,36 @@ export class Page implements OnInit {
       { date: '08 Dec', species: 'Velvet Crab' }
     ];
   }
+
+  public getGear() {
+    return [
+      { id: "1", name: 'Pots/traps FPO' },
+      { id: "2", name: 'Handlines FPO' },
+      { id: "3", name: 'Single trawl' },
+      { id: "4", name: 'Deredge' }
+    ];
+  }
+
+  public getMeshSizes() {
+    return [
+      { id: "1", name: '80mm' },
+      { id: "2", name: '120mm' }
+    ];
+  }
+
+  public getStates() {
+    return [
+      { id: "1", name: 'Live' },
+      { id: "2", name: 'Fresh' },
+      { id: "3", name: 'Ungraded' }
+    ];
+  }
+
+  public getPresentations() {
+    return [
+      { id: "1", name: 'Whole' },
+      { id: "2", name: 'Head on, gutted' }
+    ];
+  }
+
 }
