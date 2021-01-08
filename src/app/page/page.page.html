@@ -41,20 +41,20 @@
           <ion-list>
             <ion-item>
               <ion-label>Species:</ion-label>
-              <ion-select>
-                <ion-select-option *ngFor="let species of getSpecies()" [value]="species.id">{{ species.name }}</ion-select-option>
+              <ion-select [value]="caught.species" (ionChange)="caught.species = $event.target.value">
+                <ion-select-option *ngFor="let species of getSpecies()">{{ species.name }}</ion-select-option>
               </ion-select>
             </ion-item>
             <ion-item>
               <ion-label>No. caught:</ion-label>
-              <ion-input type="number"></ion-input>
+              <ion-input type="number" [value]="caught.caught" (change)="caught.caught = +$event.target.value"></ion-input>
             </ion-item>
             <ion-item>
               <ion-label>No. retained:</ion-label>
-              <ion-input type="number"></ion-input>
+              <ion-input type="number" [value]="caught.retained" (change)="caught.retained = +$event.target.value"></ion-input>
             </ion-item>
           </ion-list>
-          <ion-button expand="block">Record Catch</ion-button>
+          <ion-button expand="block" type="submit">Record Catch</ion-button>
         </form>
       </ion-card>
       <ion-card *ngFor="let catch of getCatches()">

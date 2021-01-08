@@ -4,6 +4,29 @@ import { DbService } from '../db.service';
 import { SettingsService } from '../settings.service';
 import { AuthService } from '../auth.service';
 
+type Catch = {
+  date?: Date
+  species?: string
+  caught?: number
+  retained?: number
+};
+
+type Entry = {
+  activityDate?: Date
+  latitude?: number
+  longitude?: number
+  gear?: string
+  meshSize?: number
+  species?: string
+  state?: string
+  presentation?: string
+  DIS?: boolean
+  BMS?: boolean
+  numPotsHauled?: number
+  landingDiscardDate?: Date
+  buyerTransporterRegLandedToKeeps?: string
+};
+
 @Component({
   selector: 'app-page',
   templateUrl: './page.page.html'
@@ -16,6 +39,9 @@ export class Page implements OnInit {
   public accessToken: string = "";
   public accessTokenExpiry: Number = 0;
   public refreshToken: string = "";
+
+  public caught: Catch = {};
+  public entry: Entry = {};
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -42,7 +68,6 @@ export class Page implements OnInit {
   private saveSettings() {
     this.settings.forEach(
       (value, key) => {
-        console.log(`Attempting to set ${key} to ${value}`);
         this.settingsService.set(key, value);
       }
     );
@@ -82,7 +107,20 @@ export class Page implements OnInit {
     );
   }
 
-  public recordCatch() {}
+  private recordCatch() {
+    if (this.caught.species == null || this.caught.caught == null || this.caught.retained == null) {
+      //form incomplete...
+      console.log("Form incomplete");
+    }
+    else if (this.caught.caught < this.caught.retained) {
+      //data error
+      console.log("Data error");
+    }
+    else {
+      this.caught.date = new Date();
+      console.log(`Saving ${JSON.stringify(this.caught)}`);
+    }
+  }
 
   public recordEntry() {}
 
