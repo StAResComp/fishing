@@ -43,6 +43,8 @@ export class Page implements OnInit {
   public caught: Catch = {};
   public entry: Entry = {};
 
+  public today = (new Date()).toISOString();
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private db: DbService,
@@ -122,7 +124,27 @@ export class Page implements OnInit {
     }
   }
 
-  public recordEntry() {}
+  public recordEntry() {
+    console.log(`Saving ${JSON.stringify(this.entry)}`);
+  }
+
+  public getDate(offset: number = 0) {
+    const date = new Date();
+    date.setDate(date.getDate() + offset);
+    return date;
+  }
+
+  public setLandingDateFromActivityDate(offset: number = 0) {
+    const date = new Date();
+    if (this.entry.activityDate != null) {
+      date.setDate(this.entry.activityDate.getDate() + offset);
+      this.entry.landingDiscardDate = date;
+    }
+  }
+
+  public dateFromISO(isoDate: string) {
+    return new Date(isoDate);
+  }
 
   public generateForm() {}
 
