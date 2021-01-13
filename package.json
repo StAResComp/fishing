@@ -22,6 +22,7 @@
     "@angular/router": "~10.0.0",
     "@ionic-native/background-geolocation": "^5.28.0",
     "@ionic-native/core": "^5.0.0",
+    "@ionic-native/geolocation": "^5.30.0",
     "@ionic-native/in-app-browser": "^5.28.0",
     "@ionic-native/splash-screen": "^5.0.0",
     "@ionic-native/sqlite": "^5.28.0",
@@ -42,7 +43,7 @@
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.1000.0",
+    "@angular-devkit/build-angular": "^0.1100.6",
     "@angular/cli": "~10.0.5",
     "@angular/compiler": "~10.0.0",
     "@angular/compiler-cli": "~10.0.0",
@@ -92,7 +93,8 @@
         "CONTENT_AUTHORITY": "$PACKAGE_NAME",
         "ALWAYS_USAGE_DESCRIPTION": "This app always requires location tracking",
         "MOTION_USAGE_DESCRIPTION": "This app requires motion detection"
-      }
+      },
+      "cordova-plugin-geolocation": {}
     },
     "platforms": [
       "browser",

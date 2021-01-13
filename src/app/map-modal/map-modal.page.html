@@ -1,11 +1,22 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>MapModal</ion-title>
+    <ion-title>Select Location</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)='dismiss()'>Close</ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
-  <ion-button (click)='dismiss()'>Dismiss</ion-button>
+  <ion-list>
+    <ion-item>
+      <ion-label>Latitude</ion-label>
+      <ion-input type="number" [value]="latitude"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Longitude</ion-label>
+      <ion-input type="number" [value]="longitude"></ion-input>
+    </ion-item>
+  </ion-list>
 
 </ion-content>
