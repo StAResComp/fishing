@@ -30,7 +30,17 @@ export class MapModalPage implements OnInit{
     // using the injected ModalController this page
     // can "dismiss" itself and optionally pass back data
     this.modalController.dismiss({
-      'dismissed': true
+      'submitted': false
+    });
+  }
+
+  submitLocation() {
+    // using the injected ModalController this page
+    // can "dismiss" itself and optionally pass back data
+    this.modalController.dismiss({
+      'submitted': true,
+      'latitude': this.latitude,
+      'longitude': this.longitude
     });
   }
 

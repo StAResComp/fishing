@@ -162,6 +162,14 @@ export class Page implements OnInit {
       component: MapModalPage,
       cssClass: 'map-modal-class'
     });
+    modal.onWillDismiss().then((data) => {
+      console.log(data);
+      if (data.data['submitted']) {
+        this.entry.latitude = data.data['latitude'];
+        this.entry.longitude = data.data['longitude'];
+        console.log(this.entry);
+      }
+    });
     return await modal.present();
   }
 
