@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { ModalController } from '@ionic/angular';
 import { DbService } from '../db.service';
 import { SettingsService } from '../settings.service';
 import { AuthService } from '../auth.service';
+import { MapModalPage } from '../map-modal/map-modal.page';
 
 type Catch = {
   date?: Date
@@ -49,7 +51,8 @@ export class Page implements OnInit {
     private activatedRoute: ActivatedRoute,
     private db: DbService,
     private settingsService: SettingsService,
-    private authService: AuthService
+    private authService: AuthService,
+    public modalController: ModalController
   ) {
     this.keys = this.settingsService.getKeys();
     this.loadSettings();
@@ -153,6 +156,14 @@ export class Page implements OnInit {
   }
 
   public recordWildlife() {}
+
+  public async presentMapModal() {
+    const modal = await this.modalController.create({
+      component: MapModalPage,
+      cssClass: 'map-modal-class'
+    });
+    return await modal.present();
+  }
 
   public getSpecies() {
     return [
