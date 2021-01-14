@@ -23,6 +23,7 @@
     "@ionic-native/background-geolocation": "^5.28.0",
     "@ionic-native/core": "^5.0.0",
     "@ionic-native/geolocation": "^5.30.0",
+    "@ionic-native/google-maps": "^5.5.0",
     "@ionic-native/in-app-browser": "^5.28.0",
     "@ionic-native/splash-screen": "^5.0.0",
     "@ionic-native/sqlite": "^5.28.0",
@@ -35,6 +36,8 @@
     "cordova-android": "^8.1.0",
     "cordova-browser": "6.0.0",
     "cordova-ios": "5.1.1",
+    "cordova-plugin-googlemaps": "^2.7.1",
+    "cordova-plugin-googlemaps-sdk": "git+https://github.com/mapsplugin/cordova-plugin-googlemaps-sdk.git",
     "cordova-plugin-inappbrowser": "^4.0.0",
     "cordova-sqlite-storage": "^5.1.0",
     "rxjs": "~6.5.5",
@@ -43,7 +46,7 @@
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.1100.6",
+    "@angular-devkit/build-angular": "^0.1000.0",
     "@angular/cli": "~10.0.5",
     "@angular/compiler": "~10.0.0",
     "@angular/compiler-cli": "~10.0.0",
@@ -94,7 +97,11 @@
         "ALWAYS_USAGE_DESCRIPTION": "This app always requires location tracking",
         "MOTION_USAGE_DESCRIPTION": "This app requires motion detection"
       },
-      "cordova-plugin-geolocation": {}
+      "cordova-plugin-geolocation": {},
+      "cordova-plugin-googlemaps": {
+        "LOCATION_WHEN_IN_USE_DESCRIPTION": "This app wants to get your location while this app runs only.",
+        "LOCATION_ALWAYS_USAGE_DESCRIPTION": "This app wants to get your location always, even this app runs in background."
+      }
     },
     "platforms": [
       "browser",
