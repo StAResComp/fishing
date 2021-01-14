@@ -6,7 +6,9 @@ import {
 	GoogleMap,
 	GoogleMapsEvent,
 	GoogleMapOptions,
-  Environment
+  Environment,
+  Marker,
+  LatLng
 } from '@ionic-native/google-maps';
 
 @Component({
@@ -58,6 +60,19 @@ export class MapModalPage implements OnInit{
     };
 
     this.map = GoogleMaps.create('map_canvas', mapOptions);
+
+    this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe((params: any[]) => {
+      this.map.clear();
+      const coords: LatLng = params[0];
+      this.map.addMarker({
+        position: coords
+      }).then((marker: Marker) => {
+        this.latitude = marker.getPosition().lat;
+        this.longitude = marker.getPosition().lng;
+        console.log(this.latitude);
+        console.log(this.longitude);
+      });
+    });
 
   }
 

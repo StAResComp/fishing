@@ -2,25 +2,14 @@
   <ion-toolbar>
     <ion-title>Select Location</ion-title>
     <ion-buttons slot="primary">
-      <ion-button (click)='dismiss()'>Close</ion-button>
+      <ion-button (click)='dismiss()'>Cancel</ion-button>
+    </ion-buttons>
+    <ion-buttons slot="secondary">
+      <ion-button (click)='submitLocation()'>Save Location</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-item>
-      <ion-label>Latitude</ion-label>
-      <ion-input type="number" [value]="latitude"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-label>Longitude</ion-label>
-      <ion-input type="number" [value]="longitude"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-button (click)="submitLocation()">Submit</ion-button>
-    </ion-item>
-  </ion-list>
   <div id="map_canvas"></div>
-
 </ion-content>
