@@ -3,10 +3,35 @@ import { Platform } from '@ionic/angular';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite/ngx';
 import { BehaviorSubject, Observable } from 'rxjs';
 
+export type CompleteCatch = {
+  id?: number
+  date: Date
+  species: string
+  caught: number
+  retained: number
+};
+
+export type CompleteEntry = {
+  id?: number
+  activityDate: Date
+  latitude: number
+  longitude: number
+  gear: string
+  meshSize: number
+  species: string
+  state: string
+  presentation: string
+  DIS: boolean
+  BMS: boolean
+  numPotsHauled: number
+  landingDiscardDate: Date
+  buyerTransporterRegLandedToKeeps?: string
+};
+
 @Injectable()
 export class DbService {
 
-  private storage: SQLiteObject;
+  private db: SQLiteObject;
   message: BehaviorSubject<string> = new BehaviorSubject("Message not set");
 
   constructor(
@@ -18,27 +43,10 @@ export class DbService {
         name: 'fishing.db',
         location: 'default'
       }).then((db: SQLiteObject) => {
-        this.storage = db;
+        this.db = db;
         this.setupDatabase();
       });
     });
-  }
-
-  getContents() {
-    this.storage?.executeSql(
-      'SELECT * FROM test_table;',
-      []
-    ).then(
-      res => {
-        this.message.next(res.rows.item(0).description);
-        console.log(res.rows.item(0).description);
-      }
-    ).catch(
-      e => {
-        console.log('Error executing SQL: ' + JSON.stringify(e))
-        this.message.next("Error");
-      }
-    );
   }
 
   getMessage() {
@@ -47,16 +55,64 @@ export class DbService {
 
   setupDatabase() {
     const queries = [
-      'CREATE TABLE IF NOT EXISTS test_table (id int NOT NULL, description varchar NOT NULL);',
-      'INSERT INTO test_table VALUES (1, "First test value");'
+      'CREATE TABLE IF NOT EXISTS catches (id INTEGER PRIMARY KEY, species TEXT NOT NULL, date TEXT NOT NULL, caught REAL NOT NULL, retained REAL NOT NULL);',
+      'CREATE TABLE IF NOT EXISTS entries (id INTEGER PRIMARY KEY, activity_date TEXT NOT NULL, latitude REAL NOT NULL, longitude REAL NOT NULL, gear TEXT NOT NULL, mesh_size INTEGER NOT NULL, species TEXT NOT NULL, state TEXT NOT NULL, presentation TEXT NOT NULL, DIS INTEGER NOT NULL DEFAULT 0, BMS INTEGER NOT NULL DEFAULT 0, num_pots_hauled INTEGER NOT NULL, landing_discard_date TEXT NOT NULL, buyer_transporter_reg_landed_to_keeps TEXT);'
     ];
-    queries.forEach((query) => this.executeNoReturnQuery(query));
+    queries.forEach((query) => this.db?.executeSql(query, []).catch(
+      e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+    ));
   }
 
-  private executeNoReturnQuery(query: string, params: Array<string> = []) {
-    this.storage.executeSql(query, params).catch(
+  private executeNoReturnQuery(query: string, params: Array<any> = []) {
+    this.db.executeSql(query, params).catch(
       e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
     )
+  }
+
+  public selectCatches(): Array<CompleteCatch> {
+    const catches = [];
+    this.db?.executeSql(
+      'SELECT * FROM catches', []
+    ).then(
+      res => {
+        console.log(res);
+        for(let i = 0; i < res.rows.length; i ++) {
+          const row = res.rows.item(i);
+          const catchDate = new Date(row.date);
+          catches.push(
+            {
+              id: row.id,
+              date: catchDate,
+              species: row.species,
+              caught: row.caught,
+              retained: row.retained
+            }
+          );
+        }
+      }
+    );
+    return catches;
+  }
+
+  public insertOrUpdateCatch(caught: CompleteCatch) {
+    console.log('Inserting/Updating...');
+    if (!caught.id) {
+      this.db?.executeSql(
+        'INSERT INTO catches (date, species, caught, retained) VALUES (?, ?, ?, ?);',
+        [caught.date.toISOString(), caught.species, caught.caught, caught.retained]
+      ).then(
+        (res) => { alert(JSON.stringify(res)); }
+      ).catch(
+        e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+      );
+    }
+    else {
+      this.executeNoReturnQuery(
+        'UPDATE catches SET date = ?, species = ?, caught = ?, retained = ? WHERE id = ?;',
+        [caught.date.toISOString(), caught.species, caught.caught, caught.retained, caught.id]
+      );
+    }
+    this.selectCatches();
   }
 }
 

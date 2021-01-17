@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
-import { DbService } from '../db.service';
+import { DbService, CompleteCatch, CompleteEntry } from '../db.service';
 import { SettingsService } from '../settings.service';
 import { AuthService } from '../auth.service';
 import { MapModalPage } from '../map-modal/map-modal.page';
 
 type Catch = {
+  id?: number
   date?: Date
   species?: string
   caught?: number
@@ -14,6 +15,7 @@ type Catch = {
 };
 
 type Entry = {
+  id?: number
   activityDate?: Date
   latitude?: number
   longitude?: number
@@ -46,6 +48,14 @@ export class Page implements OnInit {
   public entry: Entry = {};
 
   public today = (new Date()).toISOString();
+
+  public speciesList = [
+    { id: 'CRE', name: 'Brown Crab' },
+    { id: 'LBE', name: 'Lobster' },
+    { id: 'NEP', name: 'Nephrops' },
+    { id: 'CRS', name: 'Velvet Crab' },
+    { id: 'SQC', name: 'Squid' }
+  ];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -124,11 +134,21 @@ export class Page implements OnInit {
     else {
       this.caught.date = new Date();
       console.log(`Saving ${JSON.stringify(this.caught)}`);
+      this.db.insertOrUpdateCatch(this.caught as CompleteCatch);
     }
   }
 
   public recordEntry() {
     console.log(`Saving ${JSON.stringify(this.entry)}`);
+  }
+
+  private checkIfEntryIsComplete(entry: Entry): entry is CompleteEntry {
+    for (const [k, v] of Object.entries(entry)) {
+      if (k != 'id' && v == null) {
+        return false;
+      }
+    }
+    return true
   }
 
   public getDate(offset: number = 0) {
@@ -173,25 +193,8 @@ export class Page implements OnInit {
     return await modal.present();
   }
 
-  public getSpecies() {
-    return [
-      { id: 'CRE', name: 'Brown Crab' },
-      { id: 'LBE', name: 'Lobster' },
-      { id: 'NEP', name: 'Nephrops' },
-      { id: 'CRS', name: 'Velvet Crab' },
-      { id: 'SQC', name: 'Squid' }
-    ];
-  }
-
   public getCatches() {
-    return [
-      { date: '11 Dec 2020', time: '14:42', species: 'Brown Crab', caught: 12, retained: 8 },
-      { date: '11 Dec 2020', time: '14:41', species: 'Velvet Crab', caught: 6, retained: 6 },
-      { date: '11 Dec 2020', time: '14:41', species: 'Lobster', caught: 2, retained: 0 },
-      { date: '10 Dec 2020', time: '14:42', species: 'Brown Crab', caught: 12, retained: 8 },
-      { date: '10 Dec 2020', time: '14:41', species: 'Velvet Crab', caught: 6, retained: 6 },
-      { date: '10 Dec 2020', time: '14:41', species: 'Lobster', caught: 2, retained: 0 }
-    ];
+    return this.db.selectCatches();
   }
 
   public getF1Entries() {
