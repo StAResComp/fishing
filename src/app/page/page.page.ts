@@ -45,9 +45,11 @@ export class Page implements OnInit {
   public refreshToken: string = "";
 
   public caught: Catch = {};
-  public entry: Entry = {};
-
   public catches: Array<Catch>;
+  public catchFormIncomplete = false;
+  public catchFormDataError = false;
+
+  public entry: Entry = {};
 
   public today = (new Date()).toISOString();
 
@@ -68,11 +70,14 @@ export class Page implements OnInit {
   ) {
     this.keys = this.settingsService.getKeys();
     this.loadSettings();
-    this.catches = this.db.selectCatches();
   }
 
   ngOnInit() {
     this.page = this.activatedRoute.snapshot.paramMap.get('id');
+  }
+
+  ionViewDidEnter() {
+    this.db.selectCatches().then(catches => this.catches = catches);
   }
 
   private loadSettings() {
@@ -126,19 +131,32 @@ export class Page implements OnInit {
   }
 
   private recordCatch() {
-    if (this.caught.species == null || this.caught.caught == null || this.caught.retained == null) {
+
+    if (this.caught.species == null ||
+      this.caught.caught == null ||
+      this.caught.caught == 0 ||
+      this.caught.retained == null) {
       //form incomplete...
-      console.log("Form incomplete");
-    }
-    else if (this.caught.caught < this.caught.retained) {
-      //data error
-      console.log("Data error");
+      this.catchFormIncomplete = true;
     }
     else {
+      this.catchFormIncomplete = false;
+    }
+
+    if (this.caught.caught < this.caught.retained) {
+      //data error
+      this.catchFormDataError = true;
+    }
+    else {
+      this.catchFormDataError = false;
+    }
+
+    if (!this.catchFormIncomplete && !this.catchFormDataError) {
       this.caught.date = new Date();
       console.log(`Saving ${JSON.stringify(this.caught)}`);
-      this.db.insertOrUpdateCatch(this.caught as CompleteCatch);
-      this.catches = this.db.selectCatches();
+      this.db.insertOrUpdateCatch(this.caught as CompleteCatch).then(
+        _ => this.db.selectCatches().then(catches => this.catches = catches)
+      );
     }
   }
 
@@ -198,9 +216,6 @@ export class Page implements OnInit {
   }
 
   public getCatches() {
-    if (this.catches == null) {
-      this.catches = this.db.selectCatches();
-    }
     return this.catches;
   }
 
@@ -247,5 +262,4 @@ export class Page implements OnInit {
       { id: "2", name: 'Head on, gutted' }
     ];
   }
-
 }

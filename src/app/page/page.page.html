@@ -74,6 +74,12 @@
                          (change)="caught.retained = +$event.target.value">
               </ion-input>
             </ion-item>
+            <ion-item *ngIf='catchFormIncomplete' color='warning'>
+              Please complete all fields.
+            </ion-item>
+            <ion-item *ngIf='catchFormDataError' color='warning'>
+              No. retained can not be greater than no. caught.
+            </ion-item>
           </ion-list>
         </ion-card>
         <ion-button expand="full" type="submit" mode="ios" shape="round">

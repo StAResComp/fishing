@@ -32,7 +32,6 @@ export type CompleteEntry = {
 export class DbService {
 
   private db: SQLiteObject;
-  message: BehaviorSubject<string> = new BehaviorSubject("Message not set");
 
   constructor(
     private platform: Platform,
@@ -49,31 +48,38 @@ export class DbService {
     });
   }
 
-  getMessage() {
-    return this.message.asObservable();
-  }
-
   setupDatabase() {
     const queries = [
-      'CREATE TABLE IF NOT EXISTS catches (id INTEGER PRIMARY KEY, species TEXT NOT NULL, date TEXT NOT NULL, caught REAL NOT NULL, retained REAL NOT NULL);',
-      'CREATE TABLE IF NOT EXISTS entries (id INTEGER PRIMARY KEY, activity_date TEXT NOT NULL, latitude REAL NOT NULL, longitude REAL NOT NULL, gear TEXT NOT NULL, mesh_size INTEGER NOT NULL, species TEXT NOT NULL, state TEXT NOT NULL, presentation TEXT NOT NULL, DIS INTEGER NOT NULL DEFAULT 0, BMS INTEGER NOT NULL DEFAULT 0, num_pots_hauled INTEGER NOT NULL, landing_discard_date TEXT NOT NULL, buyer_transporter_reg_landed_to_keeps TEXT);'
+      `CREATE TABLE IF NOT EXISTS catches (
+        id INTEGER PRIMARY KEY,
+        species TEXT NOT NULL,
+        date TEXT NOT NULL,
+        caught REAL NOT NULL,
+        retained REAL NOT NULL
+      );`,
+      `CREATE TABLE IF NOT EXISTS entries (
+        id INTEGER PRIMARY KEY,
+        activity_date TEXT NOT NULL,
+        latitude REAL NOT NULL,
+        longitude REAL NOT NULL,
+        gear TEXT NOT NULL,
+        mesh_size INTEGER NOT NULL,
+        species TEXT NOT NULL,
+        state TEXT NOT NULL,
+        presentation TEXT NOT NULL,
+        DIS INTEGER NOT NULL DEFAULT 0,
+        BMS INTEGER NOT NULL DEFAULT 0,
+        num_pots_hauled INTEGER NOT NULL,
+        landing_discard_date TEXT NOT NULL,
+        buyer_transporter_reg_landed_to_keeps TEXT
+      );`
     ];
     queries.forEach((query) => this.db?.executeSql(query, []).catch(
       e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
     ));
   }
 
-  private executeNoReturnQuery(query: string, params: Array<any> = []) {
-    this.db.executeSql(query, params).catch(
-      e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
-    )
-  }
-
-  public selectCatches(): Array<CompleteCatch> {
-    if (this.db == null) {
-      setTimeout(this.selectCatches, 50);
-      return;
-    }
+  public async selectCatches(): Promise<CompleteCatch[]> {
     const catches = [];
     this.db?.executeSql(
       'SELECT * FROM catches ORDER BY id DESC LIMIT 20', []
@@ -98,12 +104,20 @@ export class DbService {
     return catches;
   }
 
-  public insertOrUpdateCatch(caught: CompleteCatch) {
+  public async insertOrUpdateCatch(caught: CompleteCatch) {
     console.log('Inserting/Updating...');
     if (!caught.id) {
       this.db?.executeSql(
-        'INSERT INTO catches (date, species, caught, retained) VALUES (?, ?, ?, ?);',
-        [caught.date.toISOString(), caught.species, caught.caught, caught.retained]
+        `INSERT INTO catches
+          (date, species, caught, retained)
+        VALUES
+          (?, ?, ?, ?);`,
+        [
+          caught.date.toISOString(),
+          caught.species,
+          caught.caught,
+          caught.retained
+        ]
       ).then(
         (res) => { console.log(res); }
       ).catch(
@@ -111,12 +125,22 @@ export class DbService {
       );
     }
     else {
-      this.executeNoReturnQuery(
-        'UPDATE catches SET date = ?, species = ?, caught = ?, retained = ? WHERE id = ?;',
-        [caught.date.toISOString(), caught.species, caught.caught, caught.retained, caught.id]
+      this.db?.executeSql(
+        `UPDATE catches SET
+          date = ?
+          species = ?,
+          caught = ?,
+          retained = ?
+        WHERE id = ?;`,
+        [
+          caught.date.toISOString(),
+          caught.species,
+          caught.caught,
+          caught.retained,
+          caught.id
+        ]
       );
     }
-    this.selectCatches();
   }
 }
 
