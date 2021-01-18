@@ -47,6 +47,8 @@ export class Page implements OnInit {
   public caught: Catch = {};
   public entry: Entry = {};
 
+  public catches: Array<Catch>;
+
   public today = (new Date()).toISOString();
 
   public speciesList = [
@@ -66,6 +68,7 @@ export class Page implements OnInit {
   ) {
     this.keys = this.settingsService.getKeys();
     this.loadSettings();
+    this.catches = this.db.selectCatches();
   }
 
   ngOnInit() {
@@ -135,6 +138,7 @@ export class Page implements OnInit {
       this.caught.date = new Date();
       console.log(`Saving ${JSON.stringify(this.caught)}`);
       this.db.insertOrUpdateCatch(this.caught as CompleteCatch);
+      this.catches = this.db.selectCatches();
     }
   }
 
@@ -194,7 +198,10 @@ export class Page implements OnInit {
   }
 
   public getCatches() {
-    return this.db.selectCatches();
+    if (this.catches == null) {
+      this.catches = this.db.selectCatches();
+    }
+    return this.catches;
   }
 
   public getF1Entries() {

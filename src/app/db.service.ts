@@ -70,9 +70,13 @@ export class DbService {
   }
 
   public selectCatches(): Array<CompleteCatch> {
+    if (this.db == null) {
+      setTimeout(this.selectCatches, 50);
+      return;
+    }
     const catches = [];
     this.db?.executeSql(
-      'SELECT * FROM catches', []
+      'SELECT * FROM catches ORDER BY id DESC LIMIT 20', []
     ).then(
       res => {
         console.log(res);
@@ -101,7 +105,7 @@ export class DbService {
         'INSERT INTO catches (date, species, caught, retained) VALUES (?, ?, ?, ?);',
         [caught.date.toISOString(), caught.species, caught.caught, caught.retained]
       ).then(
-        (res) => { alert(JSON.stringify(res)); }
+        (res) => { console.log(res); }
       ).catch(
         e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
       );
