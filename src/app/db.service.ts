@@ -82,7 +82,7 @@ export class DbService {
   public async selectCatches(): Promise<CompleteCatch[]> {
     const catches = [];
     this.db?.executeSql(
-      'SELECT * FROM catches ORDER BY id DESC LIMIT 20', []
+      'SELECT * FROM catches ORDER BY id DESC LIMIT 50', []
     ).then(
       res => {
         console.log(res);
@@ -105,42 +105,114 @@ export class DbService {
   }
 
   public async insertOrUpdateCatch(caught: CompleteCatch) {
-    console.log('Inserting/Updating...');
-    if (!caught.id) {
-      this.db?.executeSql(
-        `INSERT INTO catches
-          (date, species, caught, retained)
-        VALUES
-          (?, ?, ?, ?);`,
-        [
-          caught.date.toISOString(),
-          caught.species,
-          caught.caught,
-          caught.retained
-        ]
-      ).then(
-        (res) => { console.log(res); }
-      ).catch(
-        e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
-      );
-    }
-    else {
-      this.db?.executeSql(
-        `UPDATE catches SET
+    let query = `INSERT INTO catches (date, species, caught, retained)
+      VALUES (?, ?, ?, ?);`;
+    const params =[
+      caught.date.toISOString(),
+      caught.species,
+      caught.caught,
+      caught.retained
+    ];
+    if (caught.id) {
+      query = `UPDATE catches SET
           date = ?
           species = ?,
           caught = ?,
           retained = ?
-        WHERE id = ?;`,
-        [
-          caught.date.toISOString(),
-          caught.species,
-          caught.caught,
-          caught.retained,
-          caught.id
-        ]
-      );
+        WHERE id = ?;`;
+      params.push(caught.id);
     }
+    this.db?.executeSql(
+      query, params
+    ).then(
+      (res) => { console.log(res); }
+    ).catch(
+      e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+    );
+  }
+
+  public async selectEntries(): Promise<CompleteEntry[]> {
+    const entries = [];
+    this.db?.executeSql(
+      'SELECT * FROM entries ORDER BY id DESC LIMIT 50', []
+    ).then(
+      res => {
+        console.log(res);
+        for(let i = 0; i < res.rows.length; i ++) {
+          const row = res.rows.item(i);
+          const activityDate = new Date(row.activity_date);
+          const landingDiscardDate = new Date(row.landing_discard_date);
+          entries.push(
+            {
+              id: row.id,
+              activityDate: activityDate,
+              latitude: row.latitude,
+              longitude: row.longitude,
+              gear: row.gear,
+              meshSize: row.mesh_size,
+              species: row.species,
+              state: row.state,
+              presentation: row.presentation,
+              DIS: !!row.DIS,
+              BMS: !!row.BMS,
+              numPotsHauled: row.num_pots_hauled,
+              landingDiscardDate: row.rendtained,
+              buyerTransporterRegLandedToKeeps: row.buyer_transporter_reg_landed_to_keeps
+            }
+          );
+        }
+      }
+    );
+    return entries;
+  }
+
+  public async insertOrUpdateEntry(entry: CompleteEntry) {
+    let query = `INSERT INTO entries
+        (activity_date, latitude, longitude, gear, mesh_size, species,
+        state, presentation, DIS, BMS, num_pots_hauled, landing_discard_date,
+        buyer_transporter_reg_landed_to_keeps)
+      VALUES
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
+    const params = [
+      entry.activityDate.toISOString(),
+      entry.latitude,
+      entry.longitude,
+      entry.gear,
+      entry.meshSize,
+      entry.species,
+      entry.state,
+      entry.presentation,
+      (entry.DIS ? 1 : 0),
+      (entry.BMS ? 1 : 0),
+      entry.numPotsHauled,
+      entry.landingDiscardDate,
+      entry.buyerTransporterRegLandedToKeeps
+    ];
+    if (entry.id) {
+      query = `UPDATE entries SET
+          activity_date = ?,
+          latitude = ?,
+          longitude = ?,
+          gear = ?,
+          mesh_size = ?,
+          species = ?,
+          state = ?,
+          presentation = ?,
+          DIS = ?,
+          BMS = ?,
+          num_pots_hauled = ?,
+          landing_discard_date = ?,
+          buyer_transporter_reg_landed_to_keeps
+        WHERE id = ?;`;
+      params.push(entry.id);
+    }
+    this.db?.executeSql(
+      query, params
+    ).then(
+      (res) => { console.log(res); }
+    ).catch(
+      e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+    );
   }
 }
 
