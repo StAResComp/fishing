@@ -131,7 +131,6 @@
     </div>
 
     <div *ngIf="page.toLowerCase() == 'f1entrydetails'">
-      <form #form="ngForm" novalidate (ngSubmit)="recordEntry()">
         <ion-grid class="ion-no-padding vertical-padding-only">
           <ion-row class="ion-align-items-center">
             <ion-col><ion-label>Fishing Activity Date:</ion-label></ion-col>
@@ -295,11 +294,10 @@
           </ion-row>
           <ion-row class="ion-align-items-center">
             <ion-col>
-              <ion-button expand="block" type="submit">Save Entry</ion-button>
+              <ion-button expand="block" (click)="recordEntry()">Save Entry</ion-button>
             </ion-col>
           </ion-row>
         </ion-grid>
-      </form>
     </div>
 
     <div *ngIf="page.toLowerCase() == 'f1-form-gen'">
