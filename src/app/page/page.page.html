@@ -4,7 +4,7 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title *ngSwitchCase="'f1entrieslist'">FISH1 Entries</ion-title>
-    <ion-title *ngSwitchCase="'f1entrydetails'">F1 Entry Details</ion-title>
+    <ion-title *ngSwitchCase="'f1entrydetails'">FISH1 Entry</ion-title>
     <ion-title *ngSwitchDefault>{{ page }}</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -16,7 +16,7 @@
         FISH1 Entries
       </ion-title>
       <ion-title size="large" *ngSwitchCase="'f1entrydetails'">
-        F1 Entry Details
+        FISH1 Entry
       </ion-title>
       <ion-title size="large" *ngSwitchDefault>{{ page }}</ion-title>
     </ion-toolbar>
@@ -134,32 +134,30 @@
         <ion-grid class="ion-no-padding vertical-padding-only">
           <ion-row class="ion-align-items-center">
             <ion-col><ion-label>Fishing Activity Date:</ion-label></ion-col>
+            <ion-col>
+              <ion-datetime #activityDatePicker
+                   displayFormat="DD MMM YYYY"
+                   [value]="(entry.activityDate != null ? entry.activityDate.toISOString() : null)"
+                   min="2021-01-01" [max]="today"
+                   (ionChange)="entry.activityDate = dateFromISO($event.target.value)">
+              </ion-datetime>
+            </ion-col>
           </ion-row>
           <ion-row class="ion-justify-content-between ion-align-items-center">
             <ion-col size="auto">
-              <ion-button size="small"
-                          (click)="entry.activityDate = getDate(-1)">
+              <ion-button (click)="entry.activityDate = getDate(-1)">
                 Yesterday
               </ion-button>
             </ion-col>
             <ion-col size="auto">
-              <ion-button size="small"
-                          (click)="entry.activityDate = getDate()">
+              <ion-button (click)="entry.activityDate = getDate()">
                 Today
               </ion-button>
             </ion-col>
-          </ion-row>
-          <ion-row class="ion-align-items-center">
-            <ion-col>
-              <ion-label>Select date:</ion-label>
-            </ion-col>
             <ion-col size="auto">
-              <ion-datetime displayFormat="DD MMM YYYY"
-                            [value]="(entry.activityDate != null ? entry.activityDate.toISOString() : null)"
-                            placeholder="Select..."
-                            min="2021-01-01" [max]="today"
-                            (ionChange)="entry.activityDate = dateFromISO($event.target.value)">
-              </ion-datetime>
+              <ion-button (click)="activityDatePicker.open()">
+                Select...
+              </ion-button>
             </ion-col>
           </ion-row>
           <ion-row class="ion-align-items-center">
@@ -167,7 +165,7 @@
               <ion-label>Location:</ion-label>
             </ion-col>
             <ion-col size="auto">
-              <ion-button size="small" (click)="presentMapModal()">
+              <ion-button (click)="presentMapModal()">
                 Pick on Map
               </ion-button>
             </ion-col>
@@ -252,32 +250,30 @@
           </ion-row>
           <ion-row class="ion-align-items-center">
             <ion-col><ion-label>Landing or Discard Date:</ion-label></ion-col>
+            <ion-col>
+              <ion-datetime #landingDiscardDatePicker
+                   displayFormat="DD MMM YYYY"
+                   [value]="(entry.landingDiscardDate != null ? entry.landingDiscardDate.toISOString() : null)"
+                   min="2021-01-01" [max]="today"
+                   (ionChange)="entry.landingDiscardDate = dateFromISO($event.target.value)">
+              </ion-datetime>
+            </ion-col>
           </ion-row>
           <ion-row class="ion-justify-content-between ion-align-items-center">
             <ion-col size="auto">
-              <ion-button size="small"
-                          (click)="setLandingDateFromActivityDate()">
+              <ion-button (click)="setLandingDateFromActivityDate()">
                 Same Day
               </ion-button>
             </ion-col>
             <ion-col size="auto">
-              <ion-button size="small"
-                          (click)="setLandingDateFromActivityDate(1)">
+              <ion-button (click)="setLandingDateFromActivityDate(1)">
                 Next Day
               </ion-button>
             </ion-col>
-          </ion-row>
-          <ion-row class="ion-align-items-center">
-            <ion-col>
-              <ion-label>Select date:</ion-label>
-            </ion-col>
             <ion-col size="auto">
-              <ion-datetime displayFormat="DD MMM YYYY"
-                            [value]="(entry.landingDiscardDate != null ? entry.landingDiscardDate.toISOString() : null)"
-                            placeholder="Select..."
-                            min="2021-01-01" [max]="today"
-                            (ionChange)="entry.landingDiscardDate = dateFromISO($event.target.value)">
-              </ion-datetime>
+              <ion-button (click)="landingDiscardDatePicker.open()">
+                Select...
+              </ion-button>
             </ion-col>
           </ion-row>
           <ion-row class="ion-align-items-center">
