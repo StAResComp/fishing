@@ -160,9 +160,12 @@
               </ion-button>
             </ion-col>
           </ion-row>
-          <ion-row class="ion-align-items-center">
-            <ion-col>
+          <ion-row class="ion-justify-content-between ion-align-items-center">
+            <ion-col size="auto">
               <ion-label>Location:</ion-label>
+            </ion-col>
+            <ion-col size="auto">
+              {{ entryLocationString }}
             </ion-col>
             <ion-col size="auto">
               <ion-button (click)="presentMapModal()">

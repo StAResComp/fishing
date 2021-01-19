@@ -50,6 +50,10 @@ export class Page implements OnInit {
   public catchFormDataError = false;
 
   public entry: Entry = {};
+  public entries: Array<Entry>;
+  public entryFormIncomplete = false;
+  public entryFormDataError = false;
+  public entryLocationString = '';
 
   public today = (new Date()).toISOString();
 
@@ -162,6 +166,33 @@ export class Page implements OnInit {
 
   public recordEntry() {
     console.log(`Saving ${JSON.stringify(this.entry)}`);
+
+    if (this.entry.activityDate == null ||
+        this.entry.latitude == null ||
+        this.entry.longitude == null ||
+        this.entry.gear == null ||
+        this.entry.meshSize == null ||
+        this.entry.species == null ||
+        this.entry.state == null ||
+        this.entry.presentation == null ||
+        this.entry.landingDiscardDate == null) {
+      this.entryFormIncomplete = true;
+    }
+    else {
+      this.entryFormIncomplete = false;
+    }
+
+    if (this.entry.landingDiscardDate < this.entry.activityDate) {
+      this.entryFormDataError = true;
+    }
+    else {
+      this.entryFormDataError = false;
+    }
+
+    if (!this.entryFormIncomplete && !this.entryFormDataError) {
+      this.db.insertOrUpdateEntry(this.entry as CompleteEntry);
+    }
+
   }
 
   private checkIfEntryIsComplete(entry: Entry): entry is CompleteEntry {
@@ -209,6 +240,7 @@ export class Page implements OnInit {
       if (data.data['submitted']) {
         this.entry.latitude = data.data['latitude'];
         this.entry.longitude = data.data['longitude'];
+        this.entryLocationString = `${this.entry.latitude.toFixed(2)},${this.entry.longitude.toFixed(2)}`;
         console.log(this.entry);
       }
     });

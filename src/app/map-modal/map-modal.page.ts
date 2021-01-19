@@ -1,15 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Platform, ModalController } from '@ionic/angular';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
-import {
-	GoogleMaps,
-	GoogleMap,
-	GoogleMapsEvent,
-	GoogleMapOptions,
-  Environment,
-  Marker,
-  LatLng
-} from '@ionic-native/google-maps';
+import * as Leaflet from 'leaflet';
 
 @Component({
   selector: 'app-map-modal',
@@ -20,8 +12,9 @@ export class MapModalPage implements OnInit{
 
   public latitude: number = 56.81692;
   public longitude: number = -4.18265;
+  private marker: Leaflet.Marker;
 
-  map: GoogleMap;
+  map: Leaflet.Map;
 
   constructor(
     public modalController: ModalController,
@@ -30,50 +23,35 @@ export class MapModalPage implements OnInit{
   ) { }
 
   async ngOnInit() {
-    await this.platform.ready();
-    await this.loadMap();
-    this.geolocation.getCurrentPosition().then((resp) => {
-      this.latitude = resp.coords.latitude;
-      this.longitude = resp.coords.longitude;
-      this.map.setCameraTarget({lat: this.latitude, lng: this.longitude});
-    }).catch((error) => {
-      console.log('Error getting location', error);
+    await this.platform.ready().then( _ => {
+      this.geolocation.getCurrentPosition().then((resp) => {
+        this.latitude = resp.coords.latitude;
+        this.longitude = resp.coords.longitude;
+        this.map = Leaflet.map('map_canvas').setView([this.latitude, this.longitude], 13);
+        this.map.on('click', e => {
+          this.latitude = e.latlng.lat;
+          this.longitude = e.latlng.lng;
+          if (this.marker) {
+            this.map.removeLayer(this.marker);
+          }
+          this.marker = Leaflet.marker([e.latlng.lat, e.latlng.lng]).addTo(this.map);
+        });
+        Leaflet.tileLayer(
+          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          }
+        ).addTo(this.map);
+      }).catch((error) => {
+        console.log('Error getting location', error);
+      });
     });
   }
 
-	loadMap() {
-
-    // This code is necessary for browser
-    Environment.setEnv({
-      'API_KEY_FOR_BROWSER_RELEASE': 'GOOGLE_MAPS_API_KEY',
-      'API_KEY_FOR_BROWSER_DEBUG': 'GOOGLE_MAPS_API_KEY'
-    });
-
-    const mapOptions: GoogleMapOptions = {
-      camera: {
-         target: {
-           lat: this.latitude,
-           lng: this.longitude
-         },
-         zoom: 12,
-       }
-    };
-
-    this.map = GoogleMaps.create('map_canvas', mapOptions);
-
-    this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe((params: any[]) => {
-      this.map.clear();
-      const coords: LatLng = params[0];
-      this.map.addMarker({
-        position: coords
-      }).then((marker: Marker) => {
-        this.latitude = marker.getPosition().lat;
-        this.longitude = marker.getPosition().lng;
-        console.log(this.latitude);
-        console.log(this.longitude);
-      });
-    });
-
+  onMapClick(e) {
+    this.latitude = e.latlng.lat;
+    this.longitude = e.latlng.lng;
+    let marker = Leaflet.marker([e.latlng.lat, e.latlng.lng]).addTo(this.map);
   }
 
   dismiss() {
