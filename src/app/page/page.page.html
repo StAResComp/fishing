@@ -84,7 +84,7 @@
           Record Catch
         </ion-button>
       </ion-card>
-      <ion-card *ngFor="let caught of getCatches()">
+      <ion-card *ngFor="let caught of catches">
         <ion-card-content>
           {{ caught.date.toLocaleDateString('en-gb') }} <br />
           {{ caught.species }}: Retained {{ caught.retained }} of {{ caught.caught }}
@@ -110,13 +110,14 @@
           Generate Form
         </ion-button>
       </ion-card>
-      <ion-card *ngFor="let entry of getF1Entries()">
+      <ion-card *ngFor="let entry of entries">
         <ion-card-content>
           <ion-grid class="ion-no-padding">
             <ion-row class="ion-justify-content-between">
               <ion-col size="auto">
                 <div>
-                  {{ entry.date }} <br /> {{ entry.species }}
+                  {{ entry.activityDate.toLocaleDateString('en-gb') }} <br />
+                  {{ entry.species }}
                 </div>
               </ion-col>
               <ion-col size="auto" class="ion-text-end">
@@ -234,13 +235,13 @@
               <ion-label>DIS?</ion-label>
             </ion-col>
             <ion-col size="3">
-              <ion-checkbox [checked]="entry.DIS"></ion-checkbox>
+              <ion-checkbox [(ngModel)]="entry.DIS"></ion-checkbox>
             </ion-col>
             <ion-col size="auto">
               <ion-label>BMS?</ion-label>
             </ion-col>
             <ion-col size="3">
-              <ion-checkbox [checked]="entry.BMS"></ion-checkbox>
+              <ion-checkbox [(ngModel)]="entry.BMS"></ion-checkbox>
             </ion-col>
           </ion-row>
           <ion-row class="ion-align-items-center">

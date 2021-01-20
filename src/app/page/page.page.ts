@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
-import { DbService, CompleteCatch, CompleteEntry } from '../db.service';
+import {
+  DbService,
+  CompleteCatch,
+  CompleteEntry,
+  EntrySummary
+} from '../db.service';
 import { SettingsService } from '../settings.service';
 import { AuthService } from '../auth.service';
 import { MapModalPage } from '../map-modal/map-modal.page';
@@ -49,8 +54,11 @@ export class Page implements OnInit {
   public catchFormIncomplete = false;
   public catchFormDataError = false;
 
-  public entry: Entry = {};
-  public entries: Array<Entry>;
+  public entry: Entry = {
+    DIS: false,
+    BMS: false
+  };
+  public entries: Array<EntrySummary>;
   public entryFormIncomplete = false;
   public entryFormDataError = false;
   public entryLocationString = '';
@@ -82,6 +90,9 @@ export class Page implements OnInit {
 
   ionViewDidEnter() {
     this.db.selectCatches().then(catches => this.catches = catches);
+    this.db.selectEntrySummaries().then(
+      entries => this.entries = entries
+    );
   }
 
   private loadSettings() {
@@ -165,7 +176,7 @@ export class Page implements OnInit {
   }
 
   public recordEntry() {
-    console.log(`Saving ${JSON.stringify(this.entry)}`);
+    alert(`Saving ${JSON.stringify(this.entry)}`);
 
     if (this.entry.activityDate == null ||
         this.entry.latitude == null ||
@@ -188,9 +199,11 @@ export class Page implements OnInit {
     else {
       this.entryFormDataError = false;
     }
+    alert(this.entryFormIncomplete);
+    alert(this.entryFormDataError);
 
     if (!this.entryFormIncomplete && !this.entryFormDataError) {
-      this.db.insertOrUpdateEntry(this.entry as CompleteEntry);
+      this.db.insertOrUpdateEntry(this.entry as CompleteEntry).then(res => alert(res));
     }
 
   }
@@ -245,23 +258,6 @@ export class Page implements OnInit {
       }
     });
     return await modal.present();
-  }
-
-  public getCatches() {
-    return this.catches;
-  }
-
-  public getF1Entries() {
-    return [
-      { date: '11 Dec', species: 'Brown Crab' },
-      { date: '11 Dec', species: 'Velvet Crab' },
-      { date: '10 Dec', species: 'Brown Crab' },
-      { date: '10 Dec', species: 'Velvet Crab' },
-      { date: '09 Dec', species: 'Brown Crab' },
-      { date: '09 Dec', species: 'Velvet Crab' },
-      { date: '08 Dec', species: 'Brown Crab' },
-      { date: '08 Dec', species: 'Velvet Crab' }
-    ];
   }
 
   public getGear() {

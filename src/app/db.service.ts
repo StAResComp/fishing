@@ -28,6 +28,12 @@ export type CompleteEntry = {
   buyerTransporterRegLandedToKeeps?: string
 };
 
+export type EntrySummary = {
+  id: number
+  activityDate: Date
+  species: string
+}
+
 @Injectable()
 export class DbService {
 
@@ -131,37 +137,57 @@ export class DbService {
     );
   }
 
-  public async selectEntries(): Promise<CompleteEntry[]> {
-    const entries = [];
+  public async selectEntry(id: number): Promise<CompleteEntry> {
+    const entry = {};
     this.db?.executeSql(
-      'SELECT * FROM entries ORDER BY id DESC LIMIT 50', []
+      'SELECT * FROM entries WHERE id = ?;', [id]
     ).then(
       res => {
         console.log(res);
+        const row = res.rows.item(0);
+        entry['id'] = row.id;
+        entry['activityDate'] = new Date(row.activity_date);
+        entry['latitude'] = row.latitude;
+        entry['longitude'] = row.longitude;
+        entry['gear'] = row.gear;
+        entry['meshSize'] = row.mesh_size;
+        entry['species'] = row.species;
+        entry['state'] = row.state;
+        entry['presentation'] = row.presentation;
+        entry['DIS'] = !!row.DIS;
+        entry['BMS'] = !!row.BMS;
+        entry['numPotsHauled'] = row.num_pots_hauled;
+        entry['landingDiscardDate'] = new Date(row.landing_discard_date);
+        entry['buyerTransporterRegLandedToKeeps'] = row.buyer_transporter_reg_landed_to_keeps;
+      }
+    );
+    return entry as CompleteEntry;
+  }
+
+  public async selectEntrySummaries(): Promise<EntrySummary[]> {
+    const entries = [];
+    this.db?.executeSql(
+      `SELECT id, activity_date, species
+       FROM entries
+       ORDER BY id DESC
+       LIMIT 50`,
+      []
+    ).then(
+      res => {
         for(let i = 0; i < res.rows.length; i ++) {
           const row = res.rows.item(i);
           const activityDate = new Date(row.activity_date);
-          const landingDiscardDate = new Date(row.landing_discard_date);
           entries.push(
             {
               id: row.id,
               activityDate: activityDate,
-              latitude: row.latitude,
-              longitude: row.longitude,
-              gear: row.gear,
-              meshSize: row.mesh_size,
               species: row.species,
-              state: row.state,
-              presentation: row.presentation,
-              DIS: !!row.DIS,
-              BMS: !!row.BMS,
-              numPotsHauled: row.num_pots_hauled,
-              landingDiscardDate: row.rendtained,
-              buyerTransporterRegLandedToKeeps: row.buyer_transporter_reg_landed_to_keeps
             }
           );
         }
       }
+    ).catch(
+      e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
     );
     return entries;
   }
@@ -172,7 +198,7 @@ export class DbService {
         state, presentation, DIS, BMS, num_pots_hauled, landing_discard_date,
         buyer_transporter_reg_landed_to_keeps)
       VALUES
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
     const params = [
       entry.activityDate.toISOString(),
       entry.latitude,
