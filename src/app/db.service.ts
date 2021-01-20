@@ -17,7 +17,7 @@ export type CompleteEntry = {
   latitude: number
   longitude: number
   gear: string
-  meshSize: number
+  meshSize?: string
   species: string
   state: string
   presentation: string
@@ -69,7 +69,7 @@ export class DbService {
         latitude REAL NOT NULL,
         longitude REAL NOT NULL,
         gear TEXT NOT NULL,
-        mesh_size INTEGER NOT NULL,
+        mesh_size TEXT,
         species TEXT NOT NULL,
         state TEXT NOT NULL,
         presentation TEXT NOT NULL,
@@ -91,7 +91,6 @@ export class DbService {
       'SELECT * FROM catches ORDER BY id DESC LIMIT 50', []
     ).then(
       res => {
-        console.log(res);
         for(let i = 0; i < res.rows.length; i ++) {
           const row = res.rows.item(i);
           const catchDate = new Date(row.date);
@@ -130,8 +129,6 @@ export class DbService {
     }
     this.db?.executeSql(
       query, params
-    ).then(
-      (res) => { console.log(res); }
     ).catch(
       e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
     );
@@ -143,7 +140,6 @@ export class DbService {
       'SELECT * FROM entries WHERE id = ?;', [id]
     ).then(
       res => {
-        console.log(res);
         const row = res.rows.item(0);
         entry['id'] = row.id;
         entry['activityDate'] = new Date(row.activity_date);
@@ -160,6 +156,8 @@ export class DbService {
         entry['landingDiscardDate'] = new Date(row.landing_discard_date);
         entry['buyerTransporterRegLandedToKeeps'] = row.buyer_transporter_reg_landed_to_keeps;
       }
+    ).catch(
+      e => alert(`Error executing SQL: ${JSON.stringify(e)}`)
     );
     return entry as CompleteEntry;
   }
@@ -228,7 +226,7 @@ export class DbService {
           BMS = ?,
           num_pots_hauled = ?,
           landing_discard_date = ?,
-          buyer_transporter_reg_landed_to_keeps
+          buyer_transporter_reg_landed_to_keeps = ?
         WHERE id = ?;`;
       params.push(entry.id);
     }

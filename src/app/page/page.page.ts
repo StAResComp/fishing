@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import {
   DbService,
@@ -25,7 +25,7 @@ type Entry = {
   latitude?: number
   longitude?: number
   gear?: string
-  meshSize?: number
+  meshSize?: string
   species?: string
   state?: string
   presentation?: string
@@ -75,6 +75,7 @@ export class Page implements OnInit {
 
   constructor(
     private activatedRoute: ActivatedRoute,
+    private router: Router,
     private db: DbService,
     private settingsService: SettingsService,
     private authService: AuthService,
@@ -90,9 +91,25 @@ export class Page implements OnInit {
 
   ionViewDidEnter() {
     this.db.selectCatches().then(catches => this.catches = catches);
-    this.db.selectEntrySummaries().then(
-      entries => this.entries = entries
-    );
+    if (this.page.toLowerCase() == 'f1entrieslist') {
+      this.db.selectEntrySummaries().then(
+        entries => this.entries = entries
+      );
+    }
+    else if (this.page.toLowerCase() == 'f1entrydetails') {
+      this.activatedRoute.queryParams.subscribe(params => {
+        if (params.entry_id) {
+          this.db.selectEntry(parseInt(params.entry_id)).then(
+            entry => {
+              this.entry = entry;
+            }
+          );
+        }
+        else {
+          this.entry = { DIS: false, BMS: false };
+        }
+      });
+    }
   }
 
   private loadSettings() {
@@ -168,21 +185,25 @@ export class Page implements OnInit {
 
     if (!this.catchFormIncomplete && !this.catchFormDataError) {
       this.caught.date = new Date();
-      console.log(`Saving ${JSON.stringify(this.caught)}`);
       this.db.insertOrUpdateCatch(this.caught as CompleteCatch).then(
         _ => this.db.selectCatches().then(catches => this.catches = catches)
       );
     }
   }
 
+  private getEntryLocationString() {
+    if (this.entry.latitude && this.entry.longitude) {
+      return `${this.entry.latitude.toFixed(2)},${this.entry.longitude.toFixed(2)}`;
+    }
+    return '';
+  }
+
   public recordEntry() {
-    alert(`Saving ${JSON.stringify(this.entry)}`);
 
     if (this.entry.activityDate == null ||
         this.entry.latitude == null ||
         this.entry.longitude == null ||
         this.entry.gear == null ||
-        this.entry.meshSize == null ||
         this.entry.species == null ||
         this.entry.state == null ||
         this.entry.presentation == null ||
@@ -199,11 +220,11 @@ export class Page implements OnInit {
     else {
       this.entryFormDataError = false;
     }
-    alert(this.entryFormIncomplete);
-    alert(this.entryFormDataError);
 
     if (!this.entryFormIncomplete && !this.entryFormDataError) {
-      this.db.insertOrUpdateEntry(this.entry as CompleteEntry).then(res => alert(res));
+      this.db.insertOrUpdateEntry(this.entry as CompleteEntry).then(
+        _ => this.router.navigate([`../F1EntriesList`], { relativeTo: this.activatedRoute })
+      );
     }
 
   }
@@ -249,12 +270,10 @@ export class Page implements OnInit {
       cssClass: 'map-modal-class'
     });
     modal.onWillDismiss().then((data) => {
-      console.log(data);
       if (data.data['submitted']) {
         this.entry.latitude = data.data['latitude'];
         this.entry.longitude = data.data['longitude'];
         this.entryLocationString = `${this.entry.latitude.toFixed(2)},${this.entry.longitude.toFixed(2)}`;
-        console.log(this.entry);
       }
     });
     return await modal.present();
