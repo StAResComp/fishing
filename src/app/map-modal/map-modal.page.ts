@@ -2,6 +2,9 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Platform, ModalController } from '@ionic/angular';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import * as Leaflet from 'leaflet';
+import "leaflet/dist/images/marker-shadow.png";
+import "leaflet/dist/images/marker-icon.png";
+import "leaflet/dist/images/marker-icon-2x.png";
 
 @Component({
   selector: 'app-map-modal',
