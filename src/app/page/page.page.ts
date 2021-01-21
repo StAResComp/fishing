@@ -64,6 +64,9 @@ export class Page implements OnInit {
   public entryFormDataError = false;
   public entryLocationString = '';
 
+  public f1Form = {};
+  public sundays = [];
+
   public today = (new Date()).toISOString();
 
   public speciesList = [
@@ -112,6 +115,43 @@ export class Page implements OnInit {
         }
       });
     }
+    else if (this.page.toLowerCase() == 'f1formgen') {
+      this.db.selectEarliestEntryDate().then(
+        date => this.sundays = this.getSundays(date)
+      );
+      this.f1Form = {
+        fisheriesOffice: this.settingsService.getFisheriesOffice(
+          this.settings.get('fisheries_office')
+        ),
+        PLN: this.settings.get('pln'),
+        vesselName: this.settings.get('vessel_name'),
+        portOfDeparture: this.settings.get('port_of_departure'),
+        portOfLanding: this.settings.get('port_of_landing'),
+        ownerMaster: this.settings.get('owner_master'),
+        address: this.settings.get('address'),
+        totalPotsFishing: this.settings.get('total_pots_fishing')
+      };
+      console.log(this.f1Form);
+    }
+  }
+
+  public getSundays(startDate: Date): Date[] {
+    const sundays = []
+    const today = new Date();
+    let sunday = new Date(
+      startDate.setDate(startDate.getDate() - startDate.getDay())
+    );
+    while (
+      sunday.getFullYear() < today.getFullYear() || (
+        sunday.getFullYear() == today.getFullYear() &&
+        sunday.getDate() <= today.getDate()
+      )
+    ){
+      console.log(sunday);
+      sundays.push(new Date(sunday));
+      sunday = new Date(sunday.setDate(sunday.getDate() + 7));
+    }
+    return sundays.reverse();
   }
 
   private loadSettings() {
@@ -262,6 +302,10 @@ export class Page implements OnInit {
 
   public getFisheriesOffices() {
     return this.settingsService.getFisheriesOffices();
+  }
+
+  public setf1FormWeekStarting(dateString: string) {
+    this.f1Form['weekStarting'] = new Date(dateString);
   }
 
   public recordWildlife() {}

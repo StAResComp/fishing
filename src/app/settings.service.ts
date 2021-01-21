@@ -40,6 +40,15 @@ export class SettingsService {
     }
   }
 
+  public getFisheriesOffice(officeName: string) {
+    for (const office of this.getFisheriesOffices()) {
+      if (office.name.trim() == officeName.trim()) {
+        return office;
+      }
+    }
+    return null;
+  }
+
   public getFisheriesOffices() {
     return [
       {

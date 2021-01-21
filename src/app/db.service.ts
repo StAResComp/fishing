@@ -190,6 +190,19 @@ export class DbService {
     return entries;
   }
 
+  public async selectEarliestEntryDate(): Promise<Date> {
+    let date = new Date();
+    this.db?.executeSql(
+      'SELECT MIN(activity_date) AS min_date FROM entries;',
+      []
+    ).then(
+      res => date = new Date(res.rows.item(0).min_date)
+    ).catch(
+      e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+    );
+    return date;
+  }
+
   public async insertOrUpdateEntry(entry: CompleteEntry) {
     let query = `INSERT INTO entries
         (activity_date, latitude, longitude, gear, mesh_size, species,

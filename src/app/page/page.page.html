@@ -6,6 +6,7 @@
     </ion-buttons>
     <ion-title *ngSwitchCase="'f1entrieslist'">FISH1 Entries</ion-title>
     <ion-title *ngSwitchCase="'f1entrydetails'">FISH1 Entry</ion-title>
+    <ion-title *ngSwitchCase="'f1formgen'">FISH1 Form Generation</ion-title>
     <ion-title *ngSwitchDefault>{{ page }}</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -18,6 +19,9 @@
       </ion-title>
       <ion-title size="large" *ngSwitchCase="'f1entrydetails'">
         FISH1 Entry
+      </ion-title>
+      <ion-title size="large" *ngSwitchCase="'f1formgen'">
+        FISH1 Form Generation
       </ion-title>
       <ion-title size="large" *ngSwitchDefault>{{ page }}</ion-title>
     </ion-toolbar>
@@ -107,7 +111,8 @@
                     expand="block">
           Create New Entry
         </ion-button>
-        <ion-button (click)="generateForm()" expand="block">
+        <ion-button routerLink="../F1FormGen" routerDirection="forward"
+                    expand="block">
           Generate Form
         </ion-button>
       </ion-card>
@@ -135,175 +140,264 @@
     </div>
 
     <div *ngIf="page.toLowerCase() == 'f1entrydetails'">
-        <ion-grid class="ion-no-padding vertical-padding-only">
-          <ion-row class="ion-align-items-center">
-            <ion-col><ion-label>Fishing Activity Date:</ion-label></ion-col>
-            <ion-col>
-              <ion-datetime #activityDatePicker
-                   displayFormat="DD MMM YYYY"
-                   [value]="(entry.activityDate != null ? entry.activityDate.toISOString() : null)"
-                   min="2021-01-01" [max]="today"
-                   (ionChange)="entry.activityDate = dateFromISO($event.target.value)">
-              </ion-datetime>
-            </ion-col>
-          </ion-row>
-          <ion-row class="ion-justify-content-between ion-align-items-center">
-            <ion-col size="auto">
-              <ion-button (click)="entry.activityDate = getDate(-1)">
-                Yesterday
-              </ion-button>
-            </ion-col>
-            <ion-col size="auto">
-              <ion-button (click)="entry.activityDate = getDate()">
-                Today
-              </ion-button>
-            </ion-col>
-            <ion-col size="auto">
-              <ion-button (click)="activityDatePicker.open()">
-                Select...
-              </ion-button>
-            </ion-col>
-          </ion-row>
-          <ion-row class="ion-justify-content-between ion-align-items-center">
-            <ion-col size="auto">
-              <ion-label>Location:</ion-label>
-            </ion-col>
-            <ion-col size="auto">
-              {{ getEntryLocationString() }}
-            </ion-col>
-            <ion-col size="auto">
-              <ion-button (click)="presentMapModal()">
-                Pick on Map
-              </ion-button>
-            </ion-col>
-          </ion-row>
-          <ion-row class="ion-align-items-center">
-            <ion-col><ion-label>Gear:</ion-label></ion-col>
-            <ion-col>
-              <ion-select [value]="entry.gear"
-                   (ionChange)="entry.gear = $event.target.value">
-                <ion-select-option *ngFor="let gear of getGear()">
-                  {{ gear.name }}
-                </ion-select-option>
-              </ion-select>
-            </ion-col>
-          </ion-row>
-          <ion-row class="ion-align-items-center">
-            <ion-col><ion-label>Mesh Size:</ion-label></ion-col>
-            <ion-col>
-              <ion-select [value]="entry.meshSize"
-                          (ionChange)="entry.meshSize = $event.target.value">
-                <ion-select-option *ngFor="let meshSizes of getMeshSizes()">
-                  {{ meshSizes.name }}
-                </ion-select-option>
-              </ion-select>
-            </ion-col>
-          </ion-row>
-          <ion-row class="ion-align-items-center">
-            <ion-col><ion-label>Species:</ion-label></ion-col>
-            <ion-col>
-              <ion-select [value]="entry.species"
-                   (ionChange)="entry.species = $event.target.value">
-                <ion-select-option *ngFor="let species of speciesList">
-                  {{ species.name }}
-                </ion-select-option>
-              </ion-select>
-            </ion-col>
-          </ion-row>
-          <ion-row class="ion-align-items-center">
-            <ion-col><ion-label>State:</ion-label></ion-col>
-            <ion-col>
-              <ion-select [value]="entry.state"
-                   (ionChange)="entry.state = $event.target.value">
-                <ion-select-option *ngFor="let state of getStates()">
-                  {{ state.name }}
-                </ion-select-option>
-              </ion-select>
-            </ion-col>
-          </ion-row>
-          <ion-row class="ion-align-items-center">
-            <ion-col><ion-label>Presentation:</ion-label></ion-col>
-            <ion-col>
-              <ion-select [value]="entry.presentation"
-                   (ionChange)="entry.presentation = $event.target.value">
-                <ion-select-option
-                   *ngFor="let presentation of getPresentations()">
-                  {{ presentation.name }}
-                </ion-select-option>
-              </ion-select>
-            </ion-col>
-          </ion-row>
-          <ion-row class="ion-justify-content-between ion-align-items-center">
-            <ion-col size="auto">
-              <ion-label>DIS?</ion-label>
-            </ion-col>
-            <ion-col size="3">
-              <ion-checkbox [(ngModel)]="entry.DIS"></ion-checkbox>
-            </ion-col>
-            <ion-col size="auto">
-              <ion-label>BMS?</ion-label>
-            </ion-col>
-            <ion-col size="3">
-              <ion-checkbox [(ngModel)]="entry.BMS"></ion-checkbox>
-            </ion-col>
-          </ion-row>
-          <ion-row class="ion-align-items-center">
-            <ion-col><ion-label>No. Pots Hauled:</ion-label></ion-col>
-            <ion-col size="auto">
-              <ion-input type="number" [value]="entry.numPotsHauled"
-                         (change)="entry.numPotsHauled = $event.target.value">
-              </ion-input>
-            </ion-col>
-          </ion-row>
-          <ion-row class="ion-align-items-center">
-            <ion-col><ion-label>Landing or Discard Date:</ion-label></ion-col>
-            <ion-col>
-              <ion-datetime #landingDiscardDatePicker
-                   displayFormat="DD MMM YYYY"
-                   [value]="(entry.landingDiscardDate != null ? entry.landingDiscardDate.toISOString() : null)"
-                   min="2021-01-01" [max]="today"
-                   (ionChange)="entry.landingDiscardDate = dateFromISO($event.target.value)">
-              </ion-datetime>
-            </ion-col>
-          </ion-row>
-          <ion-row class="ion-justify-content-between ion-align-items-center">
-            <ion-col size="auto">
-              <ion-button (click)="setLandingDateFromActivityDate()">
-                Same Day
-              </ion-button>
-            </ion-col>
-            <ion-col size="auto">
-              <ion-button (click)="setLandingDateFromActivityDate(1)">
-                Next Day
-              </ion-button>
-            </ion-col>
-            <ion-col size="auto">
-              <ion-button (click)="landingDiscardDatePicker.open()">
-                Select...
-              </ion-button>
-            </ion-col>
-          </ion-row>
-          <ion-row class="ion-align-items-center">
-            <ion-col>
-              <ion-label>Buyer, TransporterReg. or Landed to Keeps:</ion-label>
-            </ion-col>
-          </ion-row>
-          <ion-row class="ion-align-items-center">
-            <ion-col>
-              <ion-textarea [value]="entry.buyerTransporterRegLandedToKeeps"
-                   (change)="entry.buyerTransporterRegLandedToKeeps = $event.target.value">
-              </ion-textarea>
-            </ion-col>
-          </ion-row>
-          <ion-row class="ion-align-items-center">
-            <ion-col>
-              <ion-button expand="block" (click)="recordEntry()">Save Entry</ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
+      <ion-grid class="ion-no-padding vertical-padding-only">
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>Fishing Activity Date:</ion-label></ion-col>
+          <ion-col>
+            <ion-datetime #activityDatePicker
+                 displayFormat="DD MMM YYYY"
+                 [value]="(entry.activityDate != null ? entry.activityDate.toISOString() : null)"
+                 min="2021-01-01" [max]="today"
+                 (ionChange)="entry.activityDate = dateFromISO($event.target.value)">
+            </ion-datetime>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-justify-content-between ion-align-items-center">
+          <ion-col size="auto">
+            <ion-button (click)="entry.activityDate = getDate(-1)">
+              Yesterday
+            </ion-button>
+          </ion-col>
+          <ion-col size="auto">
+            <ion-button (click)="entry.activityDate = getDate()">
+              Today
+            </ion-button>
+          </ion-col>
+          <ion-col size="auto">
+            <ion-button (click)="activityDatePicker.open()">
+              Select...
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-justify-content-between ion-align-items-center">
+          <ion-col size="auto">
+            <ion-label>Location:</ion-label>
+          </ion-col>
+          <ion-col size="auto">
+            {{ getEntryLocationString() }}
+          </ion-col>
+          <ion-col size="auto">
+            <ion-button (click)="presentMapModal()">
+              Pick on Map
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>Gear:</ion-label></ion-col>
+          <ion-col>
+            <ion-select [value]="entry.gear"
+                 (ionChange)="entry.gear = $event.target.value">
+              <ion-select-option *ngFor="let gear of getGear()">
+                {{ gear.name }}
+              </ion-select-option>
+            </ion-select>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>Mesh Size:</ion-label></ion-col>
+          <ion-col>
+            <ion-select [value]="entry.meshSize"
+                        (ionChange)="entry.meshSize = $event.target.value">
+              <ion-select-option *ngFor="let meshSizes of getMeshSizes()">
+                {{ meshSizes.name }}
+              </ion-select-option>
+            </ion-select>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>Species:</ion-label></ion-col>
+          <ion-col>
+            <ion-select [value]="entry.species"
+                 (ionChange)="entry.species = $event.target.value">
+              <ion-select-option *ngFor="let species of speciesList">
+                {{ species.name }}
+              </ion-select-option>
+            </ion-select>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>State:</ion-label></ion-col>
+          <ion-col>
+            <ion-select [value]="entry.state"
+                 (ionChange)="entry.state = $event.target.value">
+              <ion-select-option *ngFor="let state of getStates()">
+                {{ state.name }}
+              </ion-select-option>
+            </ion-select>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>Presentation:</ion-label></ion-col>
+          <ion-col>
+            <ion-select [value]="entry.presentation"
+                 (ionChange)="entry.presentation = $event.target.value">
+              <ion-select-option
+                 *ngFor="let presentation of getPresentations()">
+                {{ presentation.name }}
+              </ion-select-option>
+            </ion-select>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-justify-content-between ion-align-items-center">
+          <ion-col size="auto">
+            <ion-label>DIS?</ion-label>
+          </ion-col>
+          <ion-col size="3">
+            <ion-checkbox [(ngModel)]="entry.DIS"></ion-checkbox>
+          </ion-col>
+          <ion-col size="auto">
+            <ion-label>BMS?</ion-label>
+          </ion-col>
+          <ion-col size="3">
+            <ion-checkbox [(ngModel)]="entry.BMS"></ion-checkbox>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>No. Pots Hauled:</ion-label></ion-col>
+          <ion-col size="auto">
+            <ion-input type="number" [value]="entry.numPotsHauled"
+                       (change)="entry.numPotsHauled = $event.target.value">
+            </ion-input>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>Landing or Discard Date:</ion-label></ion-col>
+          <ion-col>
+            <ion-datetime #landingDiscardDatePicker
+                 displayFormat="DD MMM YYYY"
+                 [value]="(entry.landingDiscardDate != null ? entry.landingDiscardDate.toISOString() : null)"
+                 min="2021-01-01" [max]="today"
+                 (ionChange)="entry.landingDiscardDate = dateFromISO($event.target.value)">
+            </ion-datetime>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-justify-content-between ion-align-items-center">
+          <ion-col size="auto">
+            <ion-button (click)="setLandingDateFromActivityDate()">
+              Same Day
+            </ion-button>
+          </ion-col>
+          <ion-col size="auto">
+            <ion-button (click)="setLandingDateFromActivityDate(1)">
+              Next Day
+            </ion-button>
+          </ion-col>
+          <ion-col size="auto">
+            <ion-button (click)="landingDiscardDatePicker.open()">
+              Select...
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col>
+            <ion-label>Buyer, TransporterReg. or Landed to Keeps:</ion-label>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col>
+            <ion-textarea [value]="entry.buyerTransporterRegLandedToKeeps"
+                 (change)="entry.buyerTransporterRegLandedToKeeps = $event.target.value">
+            </ion-textarea>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col>
+            <ion-button expand="block" (click)="recordEntry()">Save Entry</ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </div>
 
-    <div *ngIf="page.toLowerCase() == 'f1-form-gen'">
+    <div *ngIf="page.toLowerCase() == 'f1formgen'">
+      <ion-grid class="ion-no-padding vertical-padding-only">
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>Fisheries Office:</ion-label></ion-col>
+          <ion-col>
+          <ion-select placeholder="Select office..."
+            [value]="' '+f1Form.fisheriesOffice?.name+' '"
+            (ionChange)="f1Form.fisheriesOffice = settingsService.getFisheriesOffice($event.target.value.trim())">
+            <ion-select-option
+                  *ngFor="let office of settingsService.getFisheriesOffices()">
+              {{ office.name }}
+            </ion-select-option>
+          </ion-select>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          {{ f1Form.fisheriesOffice?.address }} <br />
+          {{ f1Form.fisheriesOffice?.phone }} <br />
+          {{ f1Form.fisheriesOffice?.email }} <br />
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>PLN</ion-label></ion-col>
+          <ion-col size="auto">
+            <ion-input [(ngModel)]="f1Form.PLN"></ion-input>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>Vessel Name</ion-label></ion-col>
+          <ion-col size="auto">
+            <ion-input [(ngModel)]="f1Form.vesselName"></ion-input>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>Owner/Master</ion-label></ion-col>
+          <ion-col size="auto">
+            <ion-input [(ngModel)]="f1Form.ownerMaster"></ion-input>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col>
+            <ion-label>Address</ion-label>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col>
+            <ion-textarea [(ngModel)]="f1Form.address"></ion-textarea>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>Port of Departure</ion-label></ion-col>
+          <ion-col size="auto">
+            <ion-input [(ngModel)]="f1Form.portOfDeparture"></ion-input>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>Port of Landing</ion-label></ion-col>
+          <ion-col size="auto">
+            <ion-input [(ngModel)]="f1Form.portOfLanding"></ion-input>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>Total Pots Fishing</ion-label></ion-col>
+          <ion-col size="auto">
+            <ion-input type="number" [(ngModel)]="f1Form.totalPotsFishing">
+            </ion-input>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col>
+            <ion-label>Comments</ion-label>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col>
+            <ion-textarea [(ngModel)]="f1Form.comments"></ion-textarea>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>Week Starting</ion-label></ion-col>
+          <ion-col>
+          <ion-select placeholder="Select date..."
+                      [value]="f1Form.weekStarting?.toISOString()"
+            (ionChange)="setf1FormWeekStarting($event.target.value)">
+            <ion-select-option *ngFor="let sunday of sundays" [value]="sunday.toISOString()">
+              {{ sunday.toLocaleDateString('en-gb', {weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'}) }}
+            </ion-select-option>
+          </ion-select>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </div>
 
     <div *ngIf="page.toLowerCase() == 'wildlife'">
