@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
+import { Location } from "@angular/common";
 import {
   DbService,
   CompleteCatch,
@@ -76,6 +77,7 @@ export class Page implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
+    private location: Location,
     private db: DbService,
     private settingsService: SettingsService,
     private authService: AuthService,
@@ -223,7 +225,7 @@ export class Page implements OnInit {
 
     if (!this.entryFormIncomplete && !this.entryFormDataError) {
       this.db.insertOrUpdateEntry(this.entry as CompleteEntry).then(
-        _ => this.router.navigate([`../F1EntriesList`], { relativeTo: this.activatedRoute })
+        _ => this.location.back()
       );
     }
 
