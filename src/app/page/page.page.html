@@ -182,6 +182,14 @@
             </ion-button>
           </ion-col>
         </ion-row>
+        <ion-row class="ion-justify-content-between ion-align-items-center">
+          <ion-col size="auto">
+            <ion-label>ICES Rectangle:</ion-label>
+          </ion-col>
+          <ion-col size="auto">
+            {{ getEntryICESRectangleString() }}
+          </ion-col>
+        </ion-row>
         <ion-row class="ion-align-items-center">
           <ion-col><ion-label>Gear:</ion-label></ion-col>
           <ion-col>
@@ -397,7 +405,33 @@
           </ion-select>
           </ion-col>
         </ion-row>
+        <ion-row class="ion-align-items-center">
+          <ion-col>
+            <ion-button expand='block' (click)='saveDraft()'>Save Draft</ion-button>
+          </ion-col>
+        </ion-row>
       </ion-grid>
+      <ion-card *ngFor="let entry of entries">
+        <ion-card-content>
+          <ion-grid class="ion-no-padding">
+            <ion-row class="ion-justify-content-between">
+              <ion-col size="auto">
+                <div>
+                  {{ entry.activityDate.toLocaleDateString('en-gb') }} <br />
+                  {{ entry.species }}
+                </div>
+              </ion-col>
+              <ion-col size="auto" class="ion-text-end">
+                <ion-button routerLink="../F1EntryDetails"
+                            [queryParams]="{ entry_id: entry.id }"
+                            routerDirection="forward">
+                  Details
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
     </div>
 
     <div *ngIf="page.toLowerCase() == 'wildlife'">

@@ -63,6 +63,7 @@ export class Page implements OnInit {
   public entryFormIncomplete = false;
   public entryFormDataError = false;
   public entryLocationString = '';
+  public entryICESRectangle = '';
 
   public f1Form = {};
   public sundays = [];
@@ -107,6 +108,8 @@ export class Page implements OnInit {
           this.db.selectEntry(parseInt(params.entry_id)).then(
             entry => {
               this.entry = entry;
+              this.entryLocationString = `${this.entry.latitude.toFixed(2)},${this.entry.longitude.toFixed(2)}`;
+              this.entryICESRectangle = this.getIcesRectangle(this.entry.latitude, this.entry.longitude);
             }
           );
         }
@@ -119,19 +122,22 @@ export class Page implements OnInit {
       this.db.selectEarliestEntryDate().then(
         date => this.sundays = this.getSundays(date)
       );
-      this.f1Form = {
-        fisheriesOffice: this.settingsService.getFisheriesOffice(
-          this.settings.get('fisheries_office')
-        ),
-        PLN: this.settings.get('pln'),
-        vesselName: this.settings.get('vessel_name'),
-        portOfDeparture: this.settings.get('port_of_departure'),
-        portOfLanding: this.settings.get('port_of_landing'),
-        ownerMaster: this.settings.get('owner_master'),
-        address: this.settings.get('address'),
-        totalPotsFishing: this.settings.get('total_pots_fishing')
-      };
-      console.log(this.f1Form);
+      this.loadDraft();
+      if (!this.f1Form['fisheriesOffice']) {
+        this.f1Form = {
+          fisheriesOffice: this.settingsService.getFisheriesOffice(
+            this.settings.get('fisheries_office')
+          ),
+          PLN: this.settings.get('pln'),
+          vesselName: this.settings.get('vessel_name'),
+          portOfDeparture: this.settings.get('port_of_departure'),
+          portOfLanding: this.settings.get('port_of_landing'),
+          ownerMaster: this.settings.get('owner_master'),
+          address: this.settings.get('address'),
+          totalPotsFishing: this.settings.get('total_pots_fishing')
+        };
+        console.log(this.f1Form);
+      }
     }
   }
 
@@ -141,6 +147,7 @@ export class Page implements OnInit {
     let sunday = new Date(
       startDate.setDate(startDate.getDate() - startDate.getDay())
     );
+    sunday.setHours(0,0,0,0);
     while (
       sunday.getFullYear() < today.getFullYear() || (
         sunday.getFullYear() == today.getFullYear() &&
@@ -240,6 +247,13 @@ export class Page implements OnInit {
     return '';
   }
 
+  private getEntryICESRectangleString() {
+    if (this.entry.latitude && this.entry.longitude) {
+      return this.getIcesRectangle(this.entry.latitude, this.entry.longitude);
+    }
+    return '';
+  }
+
   public recordEntry() {
 
     if (this.entry.activityDate == null ||
@@ -306,6 +320,83 @@ export class Page implements OnInit {
 
   public setf1FormWeekStarting(dateString: string) {
     this.f1Form['weekStarting'] = new Date(dateString);
+    const weekEnd = new Date(this.f1Form['weekStarting']);
+    weekEnd.setDate(weekEnd.getDate() + 7);
+    this.db.selectEntrySummarieBetweenDates(
+      this.f1Form['weekStarting'], weekEnd
+    ).then(
+      entries => this.entries = entries
+    );
+    console.log(this.deserializeF1Form(this.serializeF1Form()));
+  }
+
+  private serializeF1Form(): string {
+    return JSON.stringify(this.f1Form);
+  }
+
+  private deserializeF1Form(serializedForm: string) {
+    const f1Form = JSON.parse(serializedForm);
+    if (f1Form['weekStarting']) {
+      f1Form['weekStarting'] = new Date(f1Form['weekStarting']);
+    }
+    return f1Form;
+  }
+
+  public saveDraft() {
+    this.settingsService.setCurrentF1Form(this.serializeF1Form());
+  }
+
+  private loadDraft() {
+    this.settingsService.getCurrentF1Form().then(
+      serializedForm => this.f1Form = this.deserializeF1Form(serializedForm)
+    );
+  }
+
+  /* As per http://www.ices.dk/marine-data/maps/Pages/ICES-statistical-rectangles.aspx
+
+       ICES rectangle should be a 4-character string of the form "digit, digit, letter, digit"
+
+       ICES statistical rectangles provide a grid covering the area between 36°N and 85°30'N and
+       44°W and 68°30'E.
+
+       Latitudinal rows, with intervals of 30', are numbered (two-digits) from 01 at the southern
+       boundary (latitude 36°00'N) and increasing northwards to 99. The northern boundary of the
+       statistical rectangle system is, thus, latitude 85°30'N.
+
+       Longitudinal columns, with intervals of 1°, are coded according to an alphanumeric system,
+       beginning with A0 at the western boundary (longitude 44°00'W), continuing A1, A2, A3 to
+       longitude 40°W (due to historical reasons, codes A4, A5, A6, A7, A8, and A9 are omitted from
+       the alphanumeric codes for longitude referencing). East of 40°W, the coding continues B0, B1,
+       B2, ..., B9, C0, C1, C2, ..., C9, etc., using a different letter for each 10° block, to the
+       eastern boundary of the area covered. Note that the letter I is omitted.
+
+       When designating an ICES rectangle, the northern coordinate is stated first. Thus, the
+       rectangle of which the south-west corner is 54°00'N 03°00'E is designated 37F3.
+    */
+  private getIcesRectangle(lat: number, lng: number): string {
+    let icesRect = "";
+    if (lat < 36.0 || lat >= 85.5 || lng < -44.0 || lng >= 68.5) {
+      return icesRect;
+    }
+
+    //Latitudinal row
+    const latval = Math.floor((lat - 36.0) * 2) +1;
+    icesRect += (latval <= 9 ? `0${latval}` : latval);
+
+    //Longitudinal Column
+    const letterString = "ABCDEFGHJKLM";
+    const letters = Array.from(letterString);
+    icesRect += letters[(Math.floor(lng / 10)) + 5];
+    if (lng < -40.0) {
+      icesRect += Math.floor(Math.abs(-44.0 - lng));
+    }
+    else if (lng < 0.0) {
+      icesRect += (9 + Math.ceil(lng % 10));
+    }
+    else {
+      icesRect += Math.floor(lng % 10);
+    }
+    return icesRect;
   }
 
   public recordWildlife() {}
@@ -320,6 +411,7 @@ export class Page implements OnInit {
         this.entry.latitude = data.data['latitude'];
         this.entry.longitude = data.data['longitude'];
         this.entryLocationString = `${this.entry.latitude.toFixed(2)},${this.entry.longitude.toFixed(2)}`;
+        this.entryICESRectangle = this.getIcesRectangle(this.entry.latitude, this.entry.longitude);
       }
     });
     return await modal.present();

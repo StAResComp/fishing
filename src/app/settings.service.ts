@@ -40,6 +40,14 @@ export class SettingsService {
     }
   }
 
+  public setCurrentF1Form(serializedForm: string) {
+    return this.storage.set('currentF1Form', serializedForm);
+  }
+
+  public async getCurrentF1Form(): Promise<string>{
+    return this.storage.get('currentF1Form');
+  }
+
   public getFisheriesOffice(officeName: string) {
     for (const office of this.getFisheriesOffices()) {
       if (office.name.trim() == officeName.trim()) {

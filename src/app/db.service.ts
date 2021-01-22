@@ -190,6 +190,39 @@ export class DbService {
     return entries;
   }
 
+  public async selectEntrySummarieBetweenDates(
+    startDate: Date,
+    endDate:Date = new Date()
+  ): Promise<EntrySummary[]> {
+    const entries = [];
+    this.db?.executeSql(
+      `SELECT id, activity_date, species
+       FROM entries
+       WHERE activity_date >= ?
+       AND activity_date < ?
+       ORDER BY id DESC
+       LIMIT 50`,
+      [startDate.toISOString(), endDate.toISOString()]
+    ).then(
+      res => {
+        for(let i = 0; i < res.rows.length; i ++) {
+          const row = res.rows.item(i);
+          const activityDate = new Date(row.activity_date);
+          entries.push(
+            {
+              id: row.id,
+              activityDate: activityDate,
+              species: row.species,
+            }
+          );
+        }
+      }
+    ).catch(
+      e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+    );
+    return entries;
+  }
+
   public async selectEarliestEntryDate(): Promise<Date> {
     let date = new Date();
     this.db?.executeSql(
