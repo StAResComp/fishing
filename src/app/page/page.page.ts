@@ -245,7 +245,9 @@ export class Page implements OnInit {
 
   private getEntryLocationString() {
     if (this.entry.latitude && this.entry.longitude) {
-      return `${this.entry.latitude.toFixed(2)},${this.entry.longitude.toFixed(2)}`;
+      const coords = this.degreesMinutes(this.entry.latitude, this.entry.longitude);
+      return `${coords[0][0]}° ${coords[0][1]}' ${coords[0][2]},
+              ${coords[1][0]}° ${coords[1][1]}' ${coords[1][2]}`;
     }
     return '';
   }
