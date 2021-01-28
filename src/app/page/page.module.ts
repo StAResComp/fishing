@@ -11,6 +11,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { Page } from './page.page';
 import { DbService } from '../db.service';
 import { SettingsService } from '../settings.service';
+import { SheetService } from '../sheet.service';
 import { AuthService } from '../auth.service';
 
 @NgModule({
@@ -21,7 +22,13 @@ import { AuthService } from '../auth.service';
     PageRoutingModule,
     HttpClientModule
   ],
-  providers: [DbService, SettingsService, AuthService, InAppBrowser],
+  providers: [
+    DbService,
+    SettingsService,
+    SheetService,
+    AuthService,
+    InAppBrowser
+  ],
   declarations: [Page]
 })
 export class PageModule {}

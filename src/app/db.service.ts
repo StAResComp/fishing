@@ -21,6 +21,7 @@ export type CompleteEntry = {
   species: string
   state: string
   presentation: string
+  weight: number
   DIS: boolean
   BMS: boolean
   numPotsHauled: number
@@ -73,6 +74,7 @@ export class DbService {
         species TEXT NOT NULL,
         state TEXT NOT NULL,
         presentation TEXT NOT NULL,
+        weight REAL NOT NULL,
         DIS INTEGER NOT NULL DEFAULT 0,
         BMS INTEGER NOT NULL DEFAULT 0,
         num_pots_hauled INTEGER NOT NULL,
@@ -150,6 +152,7 @@ export class DbService {
         entry['species'] = row.species;
         entry['state'] = row.state;
         entry['presentation'] = row.presentation;
+        entry['weight'] = row.weight;
         entry['DIS'] = !!row.DIS;
         entry['BMS'] = !!row.BMS;
         entry['numPotsHauled'] = row.num_pots_hauled;
@@ -239,10 +242,10 @@ export class DbService {
   public async insertOrUpdateEntry(entry: CompleteEntry) {
     let query = `INSERT INTO entries
         (activity_date, latitude, longitude, gear, mesh_size, species,
-        state, presentation, DIS, BMS, num_pots_hauled, landing_discard_date,
-        buyer_transporter_reg_landed_to_keeps)
+        state, presentation, weight, DIS, BMS, num_pots_hauled,
+        landing_discard_date, buyer_transporter_reg_landed_to_keeps)
       VALUES
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
     const params = [
       entry.activityDate.toISOString(),
       entry.latitude,
@@ -252,6 +255,7 @@ export class DbService {
       entry.species,
       entry.state,
       entry.presentation,
+      entry.weight,
       (entry.DIS ? 1 : 0),
       (entry.BMS ? 1 : 0),
       entry.numPotsHauled,
@@ -268,6 +272,7 @@ export class DbService {
           species = ?,
           state = ?,
           presentation = ?,
+          weight = ?,
           DIS = ?,
           BMS = ?,
           num_pots_hauled = ?,

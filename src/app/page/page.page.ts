@@ -9,6 +9,7 @@ import {
   EntrySummary
 } from '../db.service';
 import { SettingsService } from '../settings.service';
+import { SheetService } from '../sheet.service';
 import { AuthService } from '../auth.service';
 import { MapModalPage } from '../map-modal/map-modal.page';
 
@@ -30,6 +31,7 @@ type Entry = {
   species?: string
   state?: string
   presentation?: string
+  weight?: number
   DIS?: boolean
   BMS?: boolean
   numPotsHauled?: number
@@ -84,6 +86,7 @@ export class Page implements OnInit {
     private location: Location,
     private db: DbService,
     private settingsService: SettingsService,
+    private sheetService: SheetService,
     private authService: AuthService,
     public modalController: ModalController
   ) {
@@ -351,6 +354,43 @@ export class Page implements OnInit {
       serializedForm => this.f1Form = this.deserializeF1Form(serializedForm)
     );
   }
+
+  public generateXLSX() {
+    this.saveDraft();
+    const draftForm = {};
+    draftForm['fisheryOffice'] = this.f1Form['fisheriesOffice'];
+    draftForm['pln'] = this.f1Form['PLN'];
+    draftForm['vesselName'] = this.f1Form['vesselName'];
+    draftForm['ownerMaster'] = this.f1Form['ownerMaster'];
+    draftForm['address'] = this.f1Form['address'];
+    draftForm['portOfDeparture'] = this.f1Form['portOfDeparture'];
+    draftForm['portOfLanding'] = this.f1Form['portOfLanding'];
+    draftForm['totalPotsFishing'] = this.f1Form['totalPotsFishing'];
+    draftForm['comments'] = this.f1Form['comments'];
+    draftForm['entries'] = [];
+    console.log(draftForm);
+    this.sheetService.form = draftForm;
+    this.sheetService.createWorkbook();
+  }
+
+  private degreesMinutes(lat: number, lng: number) {
+
+    const absLat = Math.abs(lat);
+    const latDeg = Math.floor(absLat);
+    const latMin = Math.floor((absLat - latDeg) * 60);
+    const latDir = ((lat > 0) ? "N" : "S");
+
+    const absLng = Math.abs(lng);
+    const lngDeg = Math.floor(absLng);
+    const lngMin = Math.floor((absLng - lngDeg) * 60);
+    const lngDir = ((lng > 0) ? "E" : "W");
+
+    return [
+      [latDeg, latMin, latDir],
+      [lngDeg, lngMin, lngDir]
+    ];
+  }
+
 
   /* As per http://www.ices.dk/marine-data/maps/Pages/ICES-statistical-rectangles.aspx
 
