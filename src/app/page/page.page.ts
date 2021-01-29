@@ -145,6 +145,7 @@ export class Page implements OnInit {
   }
 
   public getSundays(startDate: Date): Date[] {
+    console.log(startDate);
     const sundays = []
     const today = new Date();
     let sunday = new Date(
@@ -161,6 +162,7 @@ export class Page implements OnInit {
       sundays.push(new Date(sunday));
       sunday = new Date(sunday.setDate(sunday.getDate() + 7));
     }
+    console.log(sundays);
     return sundays.reverse();
   }
 
@@ -327,7 +329,7 @@ export class Page implements OnInit {
     this.f1Form['weekStarting'] = new Date(dateString);
     const weekEnd = new Date(this.f1Form['weekStarting']);
     weekEnd.setDate(weekEnd.getDate() + 7);
-    this.db.selectEntrySummarieBetweenDates(
+    this.db.selectEntrySummariesBetweenDates(
       this.f1Form['weekStarting'], weekEnd
     ).then(
       entries => this.entries = entries
@@ -370,8 +372,37 @@ export class Page implements OnInit {
     draftForm['totalPotsFishing'] = this.f1Form['totalPotsFishing'];
     draftForm['comments'] = this.f1Form['comments'];
     draftForm['entries'] = [];
-    console.log(draftForm);
-    this.sheetService.form = draftForm as Fish1Form;
+    const weekEnd = new Date(this.f1Form['weekStarting']);
+    weekEnd.setDate(weekEnd.getDate() + 7);
+    const entries = this.db.selectFullEntriesBetweenDates(
+      this.f1Form['weekStarting'], weekEnd
+    ).then( entries => {
+      console.log(entries);
+      entries.forEach((entry, index) => {
+        draftForm['entries'][index] = {};
+        const coords = this.degreesMinutes(entry.latitude, entry.longitude);
+        draftForm['entries'][index]['fishingActivityDate'] = entry.activityDate;
+        draftForm['entries'][index]['latitudeDegrees'] = coords[0][0];
+        draftForm['entries'][index]['latitudeMinutes'] = coords[0][1];
+        draftForm['entries'][index]['longitudeDegrees'] = coords[1][0];
+        draftForm['entries'][index]['longitudeMinutes'] = coords[1][1];
+        draftForm['entries'][index]['longitudeDirection'] = coords[1][2];
+        draftForm['entries'][index]['statRect'] = this.getIcesRectangle(entry.latitude, entry.longitude);
+        draftForm['entries'][index]['gear'] = entry.gear;
+        draftForm['entries'][index]['meshSize'] = entry.meshSize;
+        draftForm['entries'][index]['species'] = entry.species;
+        draftForm['entries'][index]['state'] = entry.state;
+        draftForm['entries'][index]['presentation'] = entry.presentation;
+        draftForm['entries'][index]['weight'] = entry.weight;
+        draftForm['entries'][index]['DIS'] = entry.DIS;
+        draftForm['entries'][index]['BMS'] = entry.BMS;
+        draftForm['entries'][index]['numberOfPotsHauled'] = entry.numPotsHauled;
+        draftForm['entries'][index]['landingOrDiscardDate'] = entry.landingDiscardDate;;
+        draftForm['entries'][index]['buyerTransporterRegOrLandedToKeeps'] = entry.buyerTransporterRegLandedToKeeps;
+      });
+      console.log(draftForm);
+      this.sheetService.form = draftForm as Fish1Form;
+    });
     return this.sheetService.createWorkbook();
   }
 

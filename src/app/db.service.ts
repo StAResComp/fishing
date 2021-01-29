@@ -193,7 +193,7 @@ export class DbService {
     return entries;
   }
 
-  public async selectEntrySummarieBetweenDates(
+  public async selectEntrySummariesBetweenDates(
     startDate: Date,
     endDate:Date = new Date()
   ): Promise<EntrySummary[]> {
@@ -203,8 +203,7 @@ export class DbService {
        FROM entries
        WHERE activity_date >= ?
        AND activity_date < ?
-       ORDER BY id DESC
-       LIMIT 50`,
+       ORDER BY activity_date DESC`,
       [startDate.toISOString(), endDate.toISOString()]
     ).then(
       res => {
@@ -226,8 +225,50 @@ export class DbService {
     return entries;
   }
 
+  public async selectFullEntriesBetweenDates(
+    startDate: Date,
+    endDate:Date = new Date()
+  ): Promise<CompleteEntry[]> {
+    return this.db?.executeSql(
+      `SELECT * FROM entries
+       WHERE activity_date >= ?
+       AND activity_date < ?
+       ORDER BY activity_date ASC`,
+      [startDate.toISOString(), endDate.toISOString()]
+    ).then(
+      res => {
+        const entries: Array<CompleteEntry> = [];
+        for(let i = 0; i < res.rows.length; i ++) {
+          const row = res.rows.item(i);
+          const activityDate = new Date(row.activity_date);
+          const landingDiscardDate = new Date(row.landing_discard_date);
+          entries.push(
+            {
+              id: row.id,
+              activityDate: activityDate,
+              latitude: row.latitude,
+              longitude: row.longitude,
+              gear: row.gear,
+              meshSize: row.mesh_size,
+              species: row.species,
+              state: row.state,
+              presentation: row.presentation,
+              weight: row.weight,
+              DIS: !!row.DIS,
+              BMS: !!row.BMS,
+              numPotsHauled: row.num_pots_hauled,
+              landingDiscardDate: landingDiscardDate,
+              buyerTransporterRegLandedToKeeps: row.buyer_transporter_reg_landed_to_keeps
+            }
+          );
+        }
+        return entries;
+      }
+    );
+  }
+
   public async selectEarliestEntryDate(): Promise<Date> {
-    let date = new Date();
+    let date = new Date('2021-01-01');
     this.db?.executeSql(
       'SELECT MIN(activity_date) AS min_date FROM entries;',
       []
