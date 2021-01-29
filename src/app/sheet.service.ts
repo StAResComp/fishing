@@ -1,5 +1,7 @@
 import { Injectable } from "@angular/core";
 import * as XLSX from 'xlsx';
+import { File } from '@ionic-native/file/ngx';
+import { FileOpener } from '@ionic-native/file-opener/ngx';
 
 type Fish1FormEntry = {
   fishingActivityDate: Date
@@ -22,7 +24,7 @@ type Fish1FormEntry = {
   buyerTransporterRegOrLandedToKeeps?: string
 }
 
-type Fish1Form = {
+export type Fish1Form = {
   fisheryOffice: {
     name: string
     address: string
@@ -108,7 +110,7 @@ export class SheetService {
     ]
   ];
 
-  constructor() {};
+  constructor(private file: File, private fileOpener: FileOpener) {};
 
   private createWorkbookIfNeeded() {
     if (!this.wb) {
@@ -117,7 +119,7 @@ export class SheetService {
     }
   }
 
-  private createWorkbook() {
+  public createWorkbook() {
     this.createWorkbookIfNeeded();
     this.header[2][6] = this.form.fisheryOffice.name;
     if (this.form.fisheryOffice.phone) {
@@ -186,5 +188,18 @@ export class SheetService {
     const ws = XLSX.utils.aoa_to_sheet(completeSheet);
     this.wb.Sheets[this.wsName] = ws;
     console.log(XLSX.utils.sheet_to_csv(ws));
+    const wbOut = XLSX.write(this.wb, {bookType:'xlsx',  type: 'binary'});
+    const buf = new ArrayBuffer(wbOut.length);
+    const filePath = this.file.dataDirectory;
+    const now = new Date();
+    const fileName = `fish1-${now.getTime()}.xlsx`;
+    const view = new Uint8Array(buf);
+    for (let i = 0; i < wbOut.length; i++) view[i] = wbOut.charCodeAt(i) & 0xFF;
+    this.file.writeFile(filePath, fileName, buf).then(_ => {
+      this.fileOpener.open(
+        `${filePath}/${fileName}`,
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      );
+    });
   }
 }

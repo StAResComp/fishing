@@ -9,7 +9,7 @@ import {
   EntrySummary
 } from '../db.service';
 import { SettingsService } from '../settings.service';
-import { SheetService } from '../sheet.service';
+import { SheetService, Fish1Form } from '../sheet.service';
 import { AuthService } from '../auth.service';
 import { MapModalPage } from '../map-modal/map-modal.page';
 
@@ -371,8 +371,8 @@ export class Page implements OnInit {
     draftForm['comments'] = this.f1Form['comments'];
     draftForm['entries'] = [];
     console.log(draftForm);
-    this.sheetService.form = draftForm;
-    this.sheetService.createWorkbook();
+    this.sheetService.form = draftForm as Fish1Form;
+    return this.sheetService.createWorkbook();
   }
 
   private degreesMinutes(lat: number, lng: number) {
