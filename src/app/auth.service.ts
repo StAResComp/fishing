@@ -48,6 +48,7 @@ export class AuthService {
   private static readonly client_secret = environment.client_secret;
   private static readonly redirect_uri = environment.redirect_uri;
 
+  public loggedIn = false;
 
   /**
    * @param storage The Ionic Storage instance to be used
@@ -60,7 +61,20 @@ export class AuthService {
     private platform: Platform,
     private browser: InAppBrowser,
     private http: HttpClient
-  ) {}
+  ) {
+    this.checkLoggedIn();
+  }
+
+  private async checkLoggedIn() {
+    this.get(AuthService.access_token_key).then(value => {
+      if (value) {
+        this.refreshTokenIfNecessary().then(_ => {
+          this.loggedIn = true;
+        });
+      }
+
+    });
+  }
 
   /**
    * @return Array<string> The set of keys handled by this service
@@ -178,6 +192,7 @@ export class AuthService {
         (grantType == AuthService.grant_type_refresh ? null : postBody),
         { headers: headers }
       ).subscribe(data => {
+          console.log(data);
           this.set(AuthService.access_token_key, data.access_token);
           this.set(
             AuthService.access_token_expiry_key,
@@ -248,4 +263,6 @@ export class AuthService {
     const authCode = await this.get(AuthService.access_token_key);
     return `Authorization: Bearer ${authCode}`;
   }
+
+
 }

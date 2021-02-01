@@ -30,28 +30,47 @@
   <div id="container" class="container">
 
     <div *ngIf="page.toLowerCase() == 'settings'">
-      <form #form="ngForm" novalidate (ngSubmit)="saveSettings()">
-        <div *ngFor="let key of keys" class="form-group">
-          <label for="{{ key }}">{{ getDisplayKey(key) }}: </label>
-          <ion-select placeholder="Select office..."
-                      *ngIf="key == 'fisheries_office'; else elseInput"
-                      [value]="settings.get(key)"
-                      (ionChange)="settings.set(key, $event.target.value)">
-            <ion-select-option *ngFor="let office of getFisheriesOffices()">
-              {{ office.name }}
-            </ion-select-option>
-          </ion-select>
-          <ng-template #elseInput>
-            <ion-input class="form-control" name="{{ key }}"
-                       [value]="settings.get(key)"
-                       (change)="settings.set(key, $event.target.value)">
-            </ion-input>
-          </ng-template>
-        </div>
-        <button class="btn btn-primary m-1" type="submit">
-          Save Settings
-        </button>
-      </form>
+      <ion-grid class="ion-no-padding vertical-padding-only">
+        <ion-row *ngFor="let key of keys">
+          <ion-col>
+            <ion-label label for="{{ key }}">
+              {{ getDisplayKey(key) }}:
+            </ion-label>
+          </ion-col>
+          <ion-col size="auto">
+            <ion-select placeholder="Select office..."
+                        *ngIf="key == 'fisheries_office'; else elseInput"
+                        [value]="settings.get(key)"
+                        (ionChange)="settings.set(key, $event.target.value)">
+              <ion-select-option *ngFor="let office of getFisheriesOffices()">
+                {{ office.name }}
+              </ion-select-option>
+            </ion-select>
+            <ng-template #elseInput>
+              <ion-input class="form-control" name="{{ key }}"
+                         [value]="settings.get(key)"
+                         (change)="settings.set(key, $event.target.value)">
+              </ion-input>
+            </ng-template>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <ion-button expand="block" (click)="saveSettings()" >
+              Save Settings
+            </ion-button>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      <ion-card>
+        <ion-card-content>
+          <ion-button *ngIf='!authService.loggedIn'
+                      expand="block" (click)="login()">
+            Login
+          </ion-button>
+          <p *ngIf='authService.loggedIn'>Logged In</p>
+        </ion-card-content>
+      </ion-card>
     </div>
 
     <div *ngIf="page.toLowerCase() == 'home'">
@@ -95,14 +114,6 @@
           {{ caught.species }}: Retained {{ caught.retained }} of {{ caught.caught }}
         </ion-card-content>
       </ion-card>
-      <!--<button (click)="login()" class="btn btn-primary m-1">Login</button>-->
-      <!--<button (click)="refresh()" class="btn btn-primary m-1">Refresh Token</button>-->
-      <!--<button (click)="checkTokens()" class="btn btn-primary m-1">Check stored tokens</button>-->
-      <!--<ul>-->
-      <!--<li>Access token: {{ accessToken }}</li>-->
-      <!--<li>Access token expiry: {{ accessTokenExpiry }} seconds</li>-->
-      <!--<li>Refresh token: {{ refreshToken }}</li>-->
-      <!--</ul>-->
     </div>
 
     <div *ngIf="page.toLowerCase() == 'f1entrieslist'">
