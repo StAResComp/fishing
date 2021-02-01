@@ -24,8 +24,8 @@ export class Fish1FormEntry {
 
   private id: number;
   public activityDate: Date;
-  public latitude: number;
-  public longitude: number;
+  private latitude: number;
+  private longitude: number;
   public gear: string;
   public meshSize: string;
   public species: string;
@@ -60,6 +60,32 @@ export class Fish1FormEntry {
         }
       );
     }
+  }
+
+  public setLatitude(latVal: number) {
+    if (latVal >= -90 && latVal <= 90) {
+      this.latitude = latVal;
+    }
+    else {
+      console.log(`Supplied latitude value (${latVal}) out of bounds`);
+    }
+  }
+
+  public getLatitude() {
+    return this.latitude;
+  }
+
+  public setLongitude(lngVal: number) {
+    if (lngVal >= -180 && lngVal <= 180) {
+      this.longitude = lngVal;
+    }
+    else {
+      console.log(`Supplied longitude value (${lngVal}) out of bounds`);
+    }
+  }
+
+  public getLongitude() {
+    return this.longitude;
   }
 
   public getLatLng()?: LatLng {
@@ -184,6 +210,7 @@ export class Fish1Form {
   public totalPotsFishing: number;
   public entries: Array<Fish1FormEntry>;
   public comments: string;
+  public weekStart: Date;
 
   constructor(id?: number) {
     this.id = id;
@@ -192,5 +219,31 @@ export class Fish1Form {
   public getId() {
     return this.id;
   }
+
+  public serializeWithouEntries(): string {
+    const copyOfThis = {
+      id: this.id
+      fisheryOffice: this.fisheryOffice
+      pln: this.pln
+      vesselName: this.vesselName
+      portOfDeparture: this.portOfDeparture
+      portOfLanding: this.portOfLanding
+      ownerMaster: this.ownerMaster
+      address: this.address
+      totalPotsFishing: this.totalPotsFishing
+      comments: this.comments
+      weekStart: this.weekStart
+    };
+    return JSON.stringify(copyOfThis);
+  }
+
+  public static deserialize(serializedForm: string): Fish1Form {
+    const f1Form = JSON.parse(serializedForm) as Fish1Form;
+    if (f1Form.weekStarting) {
+      f1Form.weekStarting = new Date(f1Form.weekStarting);
+    }
+    return f1Form;
+  }
+
 }
 
