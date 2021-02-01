@@ -1,17 +1,17 @@
-export type FisheryOffice {
+export type FisheryOffice = {
   name: string
   address: string
   phone?: string
   email: string
 };
 
-export type Fish1FormEntrySummary {
+export type Fish1FormEntrySummary = {
   id: number
   activityDate: Date
   species: string
 };
 
-export type LatLng {
+export type LatLng = {
   latDeg: number
   latMin: number
   latDir: 'N' | 'S'
@@ -46,7 +46,7 @@ export class Fish1FormEntry {
     return this.id;
   }
 
-  public getActivityDateString(format: 'ISO' | 'local' = 'ISO')?: string {
+  public getActivityDateString(format: 'ISO' | 'local' = 'ISO'): string {
     if (format == 'ISO') {
       return this.activityDate?.toISOString();
     }
@@ -88,7 +88,7 @@ export class Fish1FormEntry {
     return this.longitude;
   }
 
-  public getLatLng()?: LatLng {
+  public getLatLng(): LatLng {
     if (this.latitude != null && this.longitude != null) {
       const absLat = Math.abs(this.latitude);
       const latDeg = Math.floor(absLat);
@@ -101,12 +101,12 @@ export class Fish1FormEntry {
       const lngDir = ((this.longitude > 0) ? "E" : "W");
 
       return {
-        latDeg
-        latMin
-        latDir
-        lngDeg
-        lngMin
-        lngDir
+        latDeg: latDeg,
+        latMin: latMin,
+        latDir: latDir,
+        lngDeg: lngDeg,
+        lngMin: lngMin,
+        lngDir: lngDir
       };
     }
     return null;
@@ -222,16 +222,16 @@ export class Fish1Form {
 
   public serializeWithouEntries(): string {
     const copyOfThis = {
-      id: this.id
-      fisheryOffice: this.fisheryOffice
-      pln: this.pln
-      vesselName: this.vesselName
-      portOfDeparture: this.portOfDeparture
-      portOfLanding: this.portOfLanding
-      ownerMaster: this.ownerMaster
-      address: this.address
-      totalPotsFishing: this.totalPotsFishing
-      comments: this.comments
+      id: this.id,
+      fisheryOffice: this.fisheryOffice,
+      pln: this.pln,
+      vesselName: this.vesselName,
+      portOfDeparture: this.portOfDeparture,
+      portOfLanding: this.portOfLanding,
+      ownerMaster: this.ownerMaster,
+      address: this.address,
+      totalPotsFishing: this.totalPotsFishing,
+      comments: this.comments,
       weekStart: this.weekStart
     };
     return JSON.stringify(copyOfThis);
@@ -239,8 +239,8 @@ export class Fish1Form {
 
   public static deserialize(serializedForm: string): Fish1Form {
     const f1Form = JSON.parse(serializedForm) as Fish1Form;
-    if (f1Form.weekStarting) {
-      f1Form.weekStarting = new Date(f1Form.weekStarting);
+    if (f1Form.weekStart) {
+      f1Form.weekStart = new Date(f1Form.weekStart);
     }
     return f1Form;
   }
