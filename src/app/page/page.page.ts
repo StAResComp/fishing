@@ -145,7 +145,6 @@ export class Page implements OnInit {
   }
 
   public getSundays(startDate: Date): Date[] {
-    console.log(startDate);
     const sundays = []
     const today = new Date();
     let sunday = new Date(
@@ -155,14 +154,16 @@ export class Page implements OnInit {
     while (
       sunday.getFullYear() < today.getFullYear() || (
         sunday.getFullYear() == today.getFullYear() &&
+        sunday.getMonth() <= today.getMonth()
+      ) || (
+        sunday.getFullYear() == today.getFullYear() &&
+        sunday.getMonth() == today.getMonth() &&
         sunday.getDate() <= today.getDate()
       )
     ){
-      console.log(sunday);
       sundays.push(new Date(sunday));
       sunday = new Date(sunday.setDate(sunday.getDate() + 7));
     }
-    console.log(sundays);
     return sundays.reverse();
   }
 
