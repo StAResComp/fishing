@@ -68,11 +68,9 @@ export class AuthService {
   private async checkLoggedIn() {
     this.get(AuthService.access_token_key).then(value => {
       if (value) {
-        this.refreshTokenIfNecessary().then(_ => {
-          this.loggedIn = true;
-        });
+        this.loggedIn = true;
+        this.refreshTokenIfNecessary();
       }
-
     });
   }
 
@@ -192,16 +190,17 @@ export class AuthService {
         (grantType == AuthService.grant_type_refresh ? null : postBody),
         { headers: headers }
       ).subscribe(data => {
-          console.log(data);
           this.set(AuthService.access_token_key, data.access_token);
           this.set(
             AuthService.access_token_expiry_key,
             (AuthService.timeInSecs() + data.expires_in).toString()
           );
           this.set(AuthService.refresh_token_key, data.refresh_token);
+          this.loggedIn = true;
         }, error => {
           console.log('Token request error');
           console.log(error);
+          this.loggedIn = false;
         }
       );
     });
