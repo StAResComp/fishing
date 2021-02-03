@@ -154,7 +154,7 @@ export class Page implements OnInit {
     while (
       sunday.getFullYear() < today.getFullYear() || (
         sunday.getFullYear() == today.getFullYear() &&
-        sunday.getMonth() <= today.getMonth()
+        sunday.getMonth() < today.getMonth()
       ) || (
         sunday.getFullYear() == today.getFullYear() &&
         sunday.getMonth() == today.getMonth() &&
@@ -350,7 +350,7 @@ export class Page implements OnInit {
     return f1Form;
   }
 
-  public saveDraft() {
+  public async saveDraft() {
     this.settingsService.setCurrentF1Form(this.serializeF1Form());
   }
 
@@ -360,8 +360,8 @@ export class Page implements OnInit {
     );
   }
 
-  public generateXLSX() {
-    this.saveDraft();
+  public async generateXLSX() {
+    await this.saveDraft();
     const draftForm = {};
     draftForm['fisheryOffice'] = this.f1Form['fisheriesOffice'];
     draftForm['pln'] = this.f1Form['PLN'];

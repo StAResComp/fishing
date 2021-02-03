@@ -40,7 +40,7 @@ export class SettingsService {
     }
   }
 
-  public setCurrentF1Form(serializedForm: string) {
+  public async setCurrentF1Form(serializedForm: string) {
     return this.storage.set('currentF1Form', serializedForm);
   }
 
