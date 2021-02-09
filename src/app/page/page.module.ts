@@ -13,6 +13,7 @@ import { DbService } from '../db.service';
 import { SettingsService } from '../settings.service';
 import { SheetService } from '../sheet.service';
 import { AuthService } from '../auth.service';
+import { PostService } from '../post.service';
 
 @NgModule({
   imports: [
@@ -27,6 +28,7 @@ import { AuthService } from '../auth.service';
     SettingsService,
     SheetService,
     AuthService,
+    PostService,
     InAppBrowser
   ],
   declarations: [Page]

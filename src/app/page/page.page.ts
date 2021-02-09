@@ -11,6 +11,7 @@ import {
 import { SettingsService } from '../settings.service';
 import { SheetService, Fish1Form } from '../sheet.service';
 import { AuthService } from '../auth.service';
+import { PostService } from '../post.service';
 import { MapModalPage } from '../map-modal/map-modal.page';
 
 type Catch = {
@@ -88,6 +89,7 @@ export class Page implements OnInit {
     private settingsService: SettingsService,
     private sheetService: SheetService,
     private authService: AuthService,
+    private postService: PostService,
     public modalController: ModalController
   ) {
     this.keys = this.settingsService.getKeys();
@@ -99,6 +101,8 @@ export class Page implements OnInit {
   }
 
   ionViewDidEnter() {
+    this.postService.postCatches();
+    this.postService.postEntries();
     this.db.selectCatches().then(catches => this.catches = catches);
     if (this.page.toLowerCase() == 'f1entrieslist') {
       this.db.selectEntrySummaries().then(
@@ -139,7 +143,6 @@ export class Page implements OnInit {
           address: this.settings.get('address'),
           totalPotsFishing: this.settings.get('total_pots_fishing')
         };
-        console.log(this.f1Form);
       }
     }
   }
@@ -335,7 +338,6 @@ export class Page implements OnInit {
     ).then(
       entries => this.entries = entries
     );
-    console.log(this.deserializeF1Form(this.serializeF1Form()));
   }
 
   private serializeF1Form(): string {
@@ -378,7 +380,6 @@ export class Page implements OnInit {
     const entries = this.db.selectFullEntriesBetweenDates(
       this.f1Form['weekStarting'], weekEnd
     ).then( entries => {
-      console.log(entries);
       entries.forEach((entry, index) => {
         draftForm['entries'][index] = {};
         const coords = this.degreesMinutes(entry.latitude, entry.longitude);
@@ -401,7 +402,6 @@ export class Page implements OnInit {
         draftForm['entries'][index]['landingOrDiscardDate'] = entry.landingDiscardDate;;
         draftForm['entries'][index]['buyerTransporterRegOrLandedToKeeps'] = entry.buyerTransporterRegLandedToKeeps;
       });
-      console.log(draftForm);
       this.sheetService.form = draftForm as Fish1Form;
     });
     return this.sheetService.createWorkbook();

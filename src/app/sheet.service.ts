@@ -187,7 +187,6 @@ export class SheetService {
     const completeSheet = [...this.header, ...entries, ...this.footer];
     const ws = XLSX.utils.aoa_to_sheet(completeSheet);
     this.wb.Sheets[this.wsName] = ws;
-    console.log(XLSX.utils.sheet_to_csv(ws));
     const wbOut = XLSX.write(this.wb, {bookType:'xlsx',  type: 'binary'});
     const buf = new ArrayBuffer(wbOut.length);
     const filePath = this.file.dataDirectory;

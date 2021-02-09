@@ -62,7 +62,8 @@ export class DbService {
         species TEXT NOT NULL,
         date TEXT NOT NULL,
         caught REAL NOT NULL,
-        retained REAL NOT NULL
+        retained REAL NOT NULL,
+        submitted TEXT
       );`,
       `CREATE TABLE IF NOT EXISTS entries (
         id INTEGER PRIMARY KEY,
@@ -79,7 +80,8 @@ export class DbService {
         BMS INTEGER NOT NULL DEFAULT 0,
         num_pots_hauled INTEGER NOT NULL,
         landing_discard_date TEXT NOT NULL,
-        buyer_transporter_reg_landed_to_keeps TEXT
+        buyer_transporter_reg_landed_to_keeps TEXT,
+        submitted TEXT
       );`
     ];
     queries.forEach((query) => this.db?.executeSql(query, []).catch(
@@ -89,8 +91,8 @@ export class DbService {
 
   public async selectCatches(): Promise<CompleteCatch[]> {
     const catches = [];
-    this.db?.executeSql(
-      'SELECT * FROM catches ORDER BY id DESC LIMIT 50', []
+    return this.db?.executeSql(
+      'SELECT * FROM catches ORDER BY id DESC LIMIT 50;', []
     ).then(
       res => {
         for(let i = 0; i < res.rows.length; i ++) {
@@ -107,8 +109,44 @@ export class DbService {
           );
         }
       }
-    );
-    return catches;
+    ).then(_ => { return catches; });
+  }
+
+  public async selectUnsubmittedCatches(): Promise<CompleteCatch[]> {
+    const catches = [];
+    return this.db?.executeSql(
+      'SELECT * FROM catches WHERE submitted IS NULL;', []
+    ).then(
+      res => {
+        for(let i = 0; i < res.rows.length; i ++) {
+          const row = res.rows.item(i);
+          const catchDate = new Date(row.date);
+          catches.push(
+            {
+              id: row.id,
+              date: catchDate,
+              species: row.species,
+              caught: row.caught,
+              retained: row.retained
+            }
+          );
+        }
+      }
+    ).then(_ => {
+      return catches;
+    });
+  }
+
+  public async markCatchesSubmitted(ids: Array<number>) {
+    if (ids.length > 0) {
+      const now = new Date();
+      this.db?.executeSql(
+        'UPDATE catches SET submitted = ? WHERE id IN (?);',
+        [now.toISOString(), ids.join(", ")]
+      ).catch(
+        e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+      );
+    }
   }
 
   public async insertOrUpdateCatch(caught: CompleteCatch) {
@@ -116,7 +154,7 @@ export class DbService {
       VALUES (?, ?, ?, ?);`;
     const params =[
       caught.date.toISOString(),
-      caught.species,
+      caught.species.trim(),
       caught.caught,
       caught.retained
     ];
@@ -267,6 +305,53 @@ export class DbService {
     );
   }
 
+  public async selectUnsubmittedEntries(): Promise<CompleteEntry[]> {
+    return this.db?.executeSql(
+      `SELECT * FROM entries WHERE submitted IS NULL`, []
+    ).then(
+      res => {
+        const entries: Array<CompleteEntry> = [];
+        for(let i = 0; i < res.rows.length; i ++) {
+          const row = res.rows.item(i);
+          const activityDate = new Date(row.activity_date);
+          const landingDiscardDate = new Date(row.landing_discard_date);
+          entries.push(
+            {
+              id: row.id,
+              activityDate: activityDate,
+              latitude: row.latitude,
+              longitude: row.longitude,
+              gear: row.gear,
+              meshSize: row.mesh_size,
+              species: row.species,
+              state: row.state,
+              presentation: row.presentation,
+              weight: row.weight,
+              DIS: !!row.DIS,
+              BMS: !!row.BMS,
+              numPotsHauled: row.num_pots_hauled,
+              landingDiscardDate: landingDiscardDate,
+              buyerTransporterRegLandedToKeeps: row.buyer_transporter_reg_landed_to_keeps
+            }
+          );
+        }
+        return entries;
+      }
+    );
+  }
+
+  public async markEntriesSubmitted(ids: Array<number>) {
+    if (ids.length > 0) {
+      const now = new Date();
+      this.db?.executeSql(
+        'UPDATE entries SET submitted = ? WHERE id IN (?);',
+        [now.toISOString(), ids.join(", ")]
+      ).catch(
+        e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+      );
+    }
+  }
+
   public async selectEarliestEntryDate(): Promise<Date> {
     let date = new Date('2021-01-01');
     this.db?.executeSql(
@@ -324,8 +409,6 @@ export class DbService {
     }
     this.db?.executeSql(
       query, params
-    ).then(
-      (res) => { console.log(res); }
     ).catch(
       e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
     );

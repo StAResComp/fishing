@@ -257,10 +257,12 @@ export class AuthService {
    * requests requiring authentication.
    * @return Promise<string> A Promise of the authorization header
    */
-  public async getAuthHeader() : Promise<string>{
-    await this.refreshTokenIfNecessary();
-    const authCode = await this.get(AuthService.access_token_key);
-    return `Authorization: Bearer ${authCode}`;
+  public async getAuthHeader() : Promise<Array<string>>{
+    return this.refreshTokenIfNecessary().then(_ => {
+      return this.get(AuthService.access_token_key).then(authCode => {
+        return ['Authorization', `Bearer ${authCode}`];
+      });
+    });
   }
 
 
