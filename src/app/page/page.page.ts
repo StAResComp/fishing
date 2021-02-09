@@ -56,7 +56,7 @@ export class Page implements OnInit {
   public caught: Catch = {};
   public catches: Array<Catch>;
   public catchFormIncomplete = false;
-  public catchFormDataError = false;
+  public catchFormDataError = "";
 
   public entry: Entry = {
     DIS: false,
@@ -71,7 +71,7 @@ export class Page implements OnInit {
   public f1Form = {};
   public sundays = [];
 
-  public today = (new Date()).toISOString();
+  public today = new Date();
 
   public speciesList = [
     { id: 'CRE', name: 'Brown Crab' },
@@ -103,7 +103,10 @@ export class Page implements OnInit {
   ionViewDidEnter() {
     this.postService.postCatches();
     this.postService.postEntries();
-    this.db.selectCatches().then(catches => this.catches = catches);
+    if (this.page.toLowerCase() == 'home') {
+      this.db.selectCatches().then(catches => this.catches = catches);
+      this.caught['date'] = this.today;
+    }
     if (this.page.toLowerCase() == 'f1entrieslist') {
       this.db.selectEntrySummaries().then(
         entries => this.entries = entries
@@ -222,10 +225,8 @@ export class Page implements OnInit {
 
   private recordCatch() {
 
-    if (this.caught.species == null ||
-      this.caught.caught == null ||
-      this.caught.caught == 0 ||
-      this.caught.retained == null) {
+    if (this.caught.species == null || this.caught.caught == null ||
+      this.caught.caught == 0 || this.caught.retained == null) {
       //form incomplete...
       this.catchFormIncomplete = true;
     }
@@ -233,16 +234,19 @@ export class Page implements OnInit {
       this.catchFormIncomplete = false;
     }
 
+    this.catchFormDataError = "";
     if (this.caught.caught < this.caught.retained) {
       //data error
-      this.catchFormDataError = true;
+      this.catchFormDataError += 'No. retained cannot be greater than no. caught.';
     }
-    else {
-      this.catchFormDataError = false;
+    if (this.caught.date > new Date()) {
+      if (this.catchFormDataError.length > 0) {
+        this.catchFormDataError += '\n';
+      }
+      this.catchFormDataError += 'Time cannot be in the future.';
     }
 
     if (!this.catchFormIncomplete && !this.catchFormDataError) {
-      this.caught.date = new Date();
       this.db.insertOrUpdateCatch(this.caught as CompleteCatch).then(
         _ => this.db.selectCatches().then(catches => this.catches = catches)
       );
