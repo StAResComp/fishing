@@ -81,6 +81,18 @@ export class Page implements OnInit {
     { id: 'SQC', name: 'Squid' }
   ];
 
+  public observation = {
+    animal: "",
+    species: "",
+    description: "",
+    date: null,
+    location: {
+      lat: null,
+      lng: null
+    },
+    behaviour: ""
+  };
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
@@ -253,11 +265,18 @@ export class Page implements OnInit {
     }
   }
 
-  private getEntryLocationString() {
-    if (this.entry.latitude && this.entry.longitude) {
-      const coords = this.degreesMinutes(this.entry.latitude, this.entry.longitude);
+  private getLocationString(lat: number, lng: number) {
+    if (lat && lng) {
+      const coords = this.degreesMinutes(lat, lng);
       return `${coords[0][0]}° ${coords[0][1]}' ${coords[0][2]},
               ${coords[1][0]}° ${coords[1][1]}' ${coords[1][2]}`;
+    }
+    return "";
+  }
+
+  private getEntryLocationString() {
+    if (this.entry.latitude && this.entry.longitude) {
+      return this.getLocationString(this.entry.latitude, this.entry.longitude);
     }
     return '';
   }
@@ -479,17 +498,24 @@ export class Page implements OnInit {
 
   public recordWildlife() {}
 
-  public async presentMapModal() {
+  public async presentMapModal(wildlife = false) {
+    console.log(`Wildlife? ${wildlife}`);
     const modal = await this.modalController.create({
       component: MapModalPage,
       cssClass: 'map-modal-class'
     });
     modal.onWillDismiss().then((data) => {
       if (data.data['submitted']) {
-        this.entry.latitude = data.data['latitude'];
-        this.entry.longitude = data.data['longitude'];
-        this.entryLocationString = `${this.entry.latitude.toFixed(2)},${this.entry.longitude.toFixed(2)}`;
-        this.entryICESRectangle = this.getIcesRectangle(this.entry.latitude, this.entry.longitude);
+        if (wildlife) {
+          this.observation.location['lat'] = data.data['latitude'];
+          this.observation.location['lng'] = data.data['longitude'];
+        }
+        else {
+          this.entry.latitude = data.data['latitude'];
+          this.entry.longitude = data.data['longitude'];
+          this.entryLocationString = `${this.entry.latitude.toFixed(2)},${this.entry.longitude.toFixed(2)}`;
+          this.entryICESRectangle = this.getIcesRectangle(this.entry.latitude, this.entry.longitude);
+        }
       }
     });
     return await modal.present();
@@ -523,6 +549,52 @@ export class Page implements OnInit {
     return [
       { id: "1", name: 'Whole' },
       { id: "2", name: 'Head on, gutted' }
+    ];
+  }
+
+  public getWildlifeAnimals() {
+    return [
+      { name: "Seal", subspecies: ["Harbour (Common)", "Grey"]},
+      { name: "Porpoise", subspecies: ["Harbour Porpoise"]},
+      { name: "Dolphin", subspecies: [
+        "Bottlenose Dolphin",
+        "Common Dolphin",
+        "Risso's Dolphin",
+        "White-beaked Dolphin",
+        "Atlantic White-sided Dolphin",
+        "Killer Whale (Orca)",
+        "Pilot Whale"
+      ]},
+      { name: "Whale", subspecies: [
+        "Minke Whale",
+        "Humpback Whale",
+        "Sperm Whale",
+        "Fin Whale",
+        "Sei Whale"
+      ]},
+      { name: "Shark", subspecies: ["Basking Shark", "Porbeagle Shark"]}
+    ];
+  }
+
+  public getWildlifeSpecies(species: string) {
+    const allSpecies = this.getWildlifeAnimals();
+    for (let i = 0; i < allSpecies.length; i++) {
+      if (species?.toLowerCase().trim() ==
+          allSpecies[i].name.toLowerCase().trim()) {
+        return allSpecies[i].subspecies;
+      }
+    }
+    return [];
+  }
+
+  public getWildlifeBehaviours() {
+    return [
+      "Approaching the vessel",
+      "Feeding",
+      "Interacting with fishing gear",
+      "Bow-riding",
+      "Breaching",
+      "Travelling"
     ];
   }
 }

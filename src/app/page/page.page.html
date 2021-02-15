@@ -345,16 +345,16 @@
     <div *ngIf="page.toLowerCase() == 'f1formgen'">
       <ion-grid class="ion-no-padding vertical-padding-only">
         <ion-row class="ion-align-items-center">
-          <ion-col><ion-label>Fisheries Office:</ion-label></ion-col>
-          <ion-col>
-          <ion-select placeholder="Select office..."
-            [value]="' '+f1Form.fisheriesOffice?.name+' '"
-            (ionChange)="f1Form.fisheriesOffice = settingsService.getFisheriesOffice($event.target.value.trim())">
-            <ion-select-option
-                  *ngFor="let office of settingsService.getFisheriesOffices()">
-              {{ office.name }}
-            </ion-select-option>
-          </ion-select>
+            <ion-col><ion-label>Fisheries Office:</ion-label></ion-col>
+            <ion-col>
+            <ion-select placeholder="Select office..."
+              [value]="' '+f1Form.fisheriesOffice?.name+' '"
+              (ionChange)="f1Form.fisheriesOffice = settingsService.getFisheriesOffice($event.target.value.trim())">
+              <ion-select-option
+                    *ngFor="let office of settingsService.getFisheriesOffices()">
+                {{ office.name }}
+              </ion-select-option>
+            </ion-select>
           </ion-col>
         </ion-row>
         <ion-row>
@@ -466,6 +466,67 @@
     </div>
 
     <div *ngIf="page.toLowerCase() == 'wildlife'">
+      <ion-grid class="ion-no-padding vertical-padding-only">
+        <ion-row class="ion-align-items-center">
+          <ion-col><ion-label>Animal:</ion-label></ion-col>
+          <ion-col>
+            <ion-select [value]="observation.animal"
+                 (ionChange)="observation.animal = $event.target.value; observation.species = null;">
+              <ion-select-option *ngFor="let animal of getWildlifeAnimals()">
+                {{ animal.name }}
+              </ion-select-option>
+              <ion-select-option>Other</ion-select-option>
+            </ion-select>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="observation.animal && observation.animal.toLowerCase().trim() != 'other'">
+          <ion-col><ion-label>Species:</ion-label></ion-col>
+          <ion-col>
+            <ion-select [value]='observation["species"]'
+                 (ionChange)="observation.species = $event.target.value">
+              <ion-select-option *ngFor="let species of getWildlifeSpecies(observation.animal)">
+                {{ species }}
+              </ion-select-option>
+              <ion-select-option value='other'>Unknown/Other</ion-select-option>
+            </ion-select>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="(observation.animal && observation.animal.toLowerCase().trim() == 'other') || (observation.species && observation.species.toLowerCase().trim() == 'other')">
+          <ion-col><ion-label>Description:</ion-label></ion-col>
+          <ion-col>
+            <ion-input [(ngModel)]="observation.description">
+            </ion-input>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="(observation.animal && (observation.species || observation.description))">
+          <ion-col><ion-label>Time:</ion-label></ion-col>
+          <ion-col>
+            <ion-datetime
+                 displayFormat="hh : mm : a"
+                 [value]="today.toISOString()"
+                 [max]="today.toISOString()"
+                 (ionChange)="observation.date = dateFromISO($event.target.value)">
+            </ion-datetime>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="(observation.animal && (observation.species || observation.description))"
+                 class="ion-justify-content-between ion-align-items-center">
+          <ion-col size="auto">
+            <ion-label>Location:</ion-label>
+          </ion-col>
+          <ion-col size="auto">
+            {{ getLocationString(observation.location['lat'], observation.location['lng']) }}
+          </ion-col>
+          <ion-col size="auto">
+            <ion-button (click)="presentMapModal(true)">
+              Pick on Map
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row *ngIf="(observation.animal && (observation.species || observation.description))">
+          <ion-col>If you have any photos or videos of the animal, please email them to [email address]</ion-col>
+        </ion-row>
+      </ion-grid>
     </div>
 
   </div>
