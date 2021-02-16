@@ -90,7 +90,8 @@ export class Page implements OnInit {
       lat: null,
       lng: null
     },
-    behaviour: ""
+    behaviour: [],
+    notes: ""
   };
 
   constructor(
@@ -499,7 +500,6 @@ export class Page implements OnInit {
   public recordWildlife() {}
 
   public async presentMapModal(wildlife = false) {
-    console.log(`Wildlife? ${wildlife}`);
     const modal = await this.modalController.create({
       component: MapModalPage,
       cssClass: 'map-modal-class'

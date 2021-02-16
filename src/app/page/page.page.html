@@ -479,10 +479,10 @@
             </ion-select>
           </ion-col>
         </ion-row>
-        <ion-row *ngIf="observation.animal && observation.animal.toLowerCase().trim() != 'other'">
+        <ion-row class="ion-align-items-center" *ngIf="observation.animal && observation.animal.toLowerCase().trim() != 'other'">
           <ion-col><ion-label>Species:</ion-label></ion-col>
           <ion-col>
-            <ion-select [value]='observation["species"]'
+            <ion-select [value]='observation.species'
                  (ionChange)="observation.species = $event.target.value">
               <ion-select-option *ngFor="let species of getWildlifeSpecies(observation.animal)">
                 {{ species }}
@@ -491,14 +491,15 @@
             </ion-select>
           </ion-col>
         </ion-row>
-        <ion-row *ngIf="(observation.animal && observation.animal.toLowerCase().trim() == 'other') || (observation.species && observation.species.toLowerCase().trim() == 'other')">
+        <ion-row class="ion-align-items-center" *ngIf="(observation.animal && observation.animal.toLowerCase().trim() == 'other') || (observation.species && observation.species.toLowerCase().trim() == 'other')">
           <ion-col><ion-label>Description:</ion-label></ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center" *ngIf="(observation.animal && observation.animal.toLowerCase().trim() == 'other') || (observation.species && observation.species.toLowerCase().trim() == 'other')">
           <ion-col>
-            <ion-input [(ngModel)]="observation.description">
-            </ion-input>
+            <ion-textarea [(ngModel)]="observation.description"></ion-textarea>
           </ion-col>
         </ion-row>
-        <ion-row *ngIf="(observation.animal && (observation.species || observation.description))">
+        <ion-row class="ion-align-items-center" *ngIf="(observation.animal && (observation.species || observation.description))">
           <ion-col><ion-label>Time:</ion-label></ion-col>
           <ion-col>
             <ion-datetime
@@ -523,7 +524,27 @@
             </ion-button>
           </ion-col>
         </ion-row>
-        <ion-row *ngIf="(observation.animal && (observation.species || observation.description))">
+        <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.location.lat && observation.location.lng">
+          <ion-col><ion-label>Behaviour:</ion-label></ion-col>
+          <ion-col>
+            <ion-select multiple='true' [value]='observation.behaviour'
+                 (ionChange)="observation.behaviour = $event.target.value">
+              <ion-select-option *ngFor="let behaviour of getWildlifeBehaviours()">
+                {{ behaviour }}
+              </ion-select-option>
+              <ion-select-option value='other'>Unknown/Other</ion-select-option>
+            </ion-select>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.location.lat && observation.location.lng && observation.behaviour.length > 0">
+          <ion-col><ion-label>Behaviour or other notes:</ion-label></ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.location.lat && observation.location.lng && observation.behaviour.length > 0">
+          <ion-col>
+            <ion-textarea [(ngModel)]="observation.notes"></ion-textarea>
+          </ion-col>
+        </ion-row>
+        <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.location.lat && observation.location.lng && observation.behaviour.length > 0">
           <ion-col>If you have any photos or videos of the animal, please email them to [email address]</ion-col>
         </ion-row>
       </ion-grid>
