@@ -445,6 +445,49 @@ export class DbService {
     );
   }
 
+  public async selectObservations(): Promise<Observation[]> {
+    const observations = [];
+    this.db?.executeSql(
+      `SELECT * FROM observations ORDER BY id DESC LIMIT 50`, []
+    ).then(
+      res => {
+        for(let i = 0; i < res.rows.length; i++) {
+          const row = res.rows.item(i);
+          const date = new Date(row.date);
+          const observation = {
+            id: row.id,
+            animal: row.animal.trim(),
+            species: row.species.trim(),
+            description: row.description.trim(),
+            date: date,
+            location: {
+              lat: row.latitude,
+              lng: row.longitude
+            },
+            behaviour: [],
+            notes: row.notes.trim()
+          }
+          this.db?.executeSql(
+            'SELECT * FROM behaviours WHERE observation_id = ?;', [row.id]
+          ).then(
+            result => {
+              for(let j = 0; j < result.rows.length; j++) {
+                const beRow = result.rows.item(j);
+                observation.behaviour.push(beRow.behaviour.trim());
+              }
+            }
+          ).catch(
+            e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+          );
+          observations.push(observation);
+        }
+      }
+    ).catch(
+      e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+    );
+    return observations;
+  }
+
   public async insertObservation(observation: Observation) {
     const observationQuery = `INSERT INTO observations
         (animal, species, description, date, latitude, longitude, notes)
@@ -464,7 +507,6 @@ export class DbService {
       observationQuery, observationParams
     ).then(
       result => {
-        console.log(`Inserted observation ${result.insertId}`);
         observation.behaviour.forEach(
           behaviour => {
             const behaviourParams = [
@@ -473,8 +515,6 @@ export class DbService {
             ];
             this.db?.executeSql(
               behaviourQuery, behaviourParams
-            ).then(
-              res => console.log(`Inserted behaviour ${res.insertId}`)
             ).catch(
               e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
             );

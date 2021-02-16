@@ -6,7 +6,8 @@ import {
   DbService,
   CompleteCatch,
   CompleteEntry,
-  EntrySummary
+  EntrySummary,
+  Observation
 } from '../db.service';
 import { SettingsService } from '../settings.service';
 import { SheetService, Fish1Form } from '../sheet.service';
@@ -93,6 +94,7 @@ export class Page implements OnInit {
     behaviour: [],
     notes: ""
   };
+  public observations: Array<Observation>;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -160,6 +162,11 @@ export class Page implements OnInit {
           totalPotsFishing: this.settings.get('total_pots_fishing')
         };
       }
+    }
+    else if (this.page.toLowerCase() == 'wildlife') {
+      this.db.selectObservations().then(
+        observations => this.observations = observations
+      );
     }
   }
 
@@ -498,7 +505,23 @@ export class Page implements OnInit {
   }
 
   public recordWildlife() {
-    this.db.insertObservation(this.observation);
+    this.db.insertObservation(this.observation).then(
+      _ => this.db.selectObservations().then(observations => {
+        this.observations = observations
+        this.observation = {
+          animal: "",
+          species: "",
+          description: "",
+          date: this.today,
+          location: {
+            lat: null,
+            lng: null
+          },
+          behaviour: [],
+          notes: ""
+        };
+      })
+    );
   }
 
   public async presentMapModal(wildlife = false) {
@@ -556,7 +579,7 @@ export class Page implements OnInit {
 
   public getWildlifeAnimals() {
     return [
-      { name: "Seal", subspecies: ["Harbour (Common)", "Grey"]},
+      { name: "Seal", subspecies: ["Harbour (Common) Seal", "Grey Seal"]},
       { name: "Porpoise", subspecies: ["Harbour Porpoise"]},
       { name: "Dolphin", subspecies: [
         "Bottlenose Dolphin",
