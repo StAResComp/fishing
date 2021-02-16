@@ -547,6 +547,11 @@
         <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.location.lat && observation.location.lng && observation.behaviour.length > 0">
           <ion-col>If you have any photos or videos of the animal, please email them to [email address]</ion-col>
         </ion-row>
+        <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.location.lat && observation.location.lng && observation.behaviour.length > 0">
+          <ion-col>
+            <ion-button expand='block' (click)='recordWildlife()'>Record Observation</ion-button>
+          </ion-col>
+        </ion-row>
       </ion-grid>
     </div>
 
