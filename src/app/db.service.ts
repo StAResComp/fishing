@@ -33,7 +33,21 @@ export type EntrySummary = {
   id: number
   activityDate: Date
   species: string
-}
+};
+
+export type Observation = {
+  id?: number
+  animal: string
+  species?: string
+  description?: string
+  date: Date
+  location: {
+    lat: number
+    lng: number
+  }
+  behaviour: Array<string>
+  notes: string
+};
 
 @Injectable()
 export class DbService {
@@ -82,6 +96,23 @@ export class DbService {
         landing_discard_date TEXT NOT NULL,
         buyer_transporter_reg_landed_to_keeps TEXT,
         submitted TEXT
+      );`,
+      `CREATE TABLE IF NOT EXISTS observations (
+        id INTEGER PRIMARY KEY,
+        animal TEXT NOT NULL,
+        species TEXT,
+        description TEXT,
+        date TEXT NOT NULL,
+        latitude REAL NOT NULL,
+        longitude REAL NOT NULL,
+        notes TEXT,
+        submitted TEXT
+      );`,
+      `CREATE TABLE IF NOT EXISTS behaviours (
+        id INTEGER PRIMARY KEY,
+        behaviour TEXT NOT NULL,
+        observation_id INTEGER NOT NULL,
+        FOREIGN KEY(observation_id) REFERENCES observations(id)
       );`
     ];
     queries.forEach((query) => this.db?.executeSql(query, []).catch(
@@ -409,6 +440,47 @@ export class DbService {
     }
     this.db?.executeSql(
       query, params
+    ).catch(
+      e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+    );
+  }
+
+  public async insertObservation(observation: Observation) {
+    const observationQuery = `INSERT INTO observations
+        (animal, species, description, date, latitude, longitude, notes)
+      VALUES (? ,?, ?, ?, ?, ?, ?);`;
+    const behaviourQuery = `INSERT INTO behaviours (behaviour, observation_id)
+      VALUES (?, ?);`;
+    const observationParams = [
+      observation.animal,
+      observation.species,
+      observation.description,
+      observation.date.toISOString(),
+      observation.location.lat,
+      observation.location.lng,
+      observation.notes
+    ];
+    this.db?.executeSql(
+      observationQuery, observationParams
+    ).then(
+      result => {
+        console.log(`Inserted observation ${result.insertId}`);
+        observation.behaviour.forEach(
+          behaviour => {
+            const behaviourParams = [
+              behaviour,
+              result.insertId
+            ];
+            this.db?.executeSql(
+              behaviourQuery, behaviourParams
+            ).then(
+              res => console.log(`Inserted behaviour ${res.insertId}`)
+            ).catch(
+              e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+            );
+          }
+        );
+      }
     ).catch(
       e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
     );

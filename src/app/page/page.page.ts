@@ -85,7 +85,7 @@ export class Page implements OnInit {
     animal: "",
     species: "",
     description: "",
-    date: null,
+    date: this.today,
     location: {
       lat: null,
       lng: null
@@ -497,7 +497,9 @@ export class Page implements OnInit {
     return icesRect;
   }
 
-  public recordWildlife() {}
+  public recordWildlife() {
+    this.db.insertObservation(this.observation);
+  }
 
   public async presentMapModal(wildlife = false) {
     const modal = await this.modalController.create({
