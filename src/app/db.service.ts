@@ -115,17 +115,19 @@ export class DbService {
         FOREIGN KEY(observation_id) REFERENCES observations(id)
       );`
     ];
-    queries.forEach((query) => this.db?.executeSql(query, []).catch(
+    queries.forEach((query) => this.db.executeSql(query, []).catch(
       e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
     ));
   }
 
-  public async selectCatches(): Promise<CompleteCatch[]> {
-    const catches = [];
-    return this.db?.executeSql(
-      'SELECT * FROM catches ORDER BY id DESC LIMIT 50;', []
-    ).then(
+  public async selectCatches(unsubmitted = false): Promise<CompleteCatch[]> {
+    let query = 'SELECT * FROM catches ORDER BY id DESC LIMIT 50;'
+    if (unsubmitted) {
+      query = 'SELECT * FROM catches WHERE submitted IS NULL;'
+    }
+    return this.db.executeSql(query, []).then(
       res => {
+        const catches = [];
         for(let i = 0; i < res.rows.length; i ++) {
           const row = res.rows.item(i);
           const catchDate = new Date(row.date);
@@ -139,45 +141,16 @@ export class DbService {
             }
           );
         }
+        return catches;
       }
-    ).then(_ => { return catches; });
-  }
-
-  public async selectUnsubmittedCatches(): Promise<CompleteCatch[]> {
-    const catches = [];
-    return this.db?.executeSql(
-      'SELECT * FROM catches WHERE submitted IS NULL;', []
-    ).then(
-      res => {
-        for(let i = 0; i < res.rows.length; i ++) {
-          const row = res.rows.item(i);
-          const catchDate = new Date(row.date);
-          catches.push(
-            {
-              id: row.id,
-              date: catchDate,
-              species: row.species,
-              caught: row.caught,
-              retained: row.retained
-            }
-          );
-        }
-      }
-    ).then(_ => {
-      return catches;
+    ).catch(e => {
+      console.log(`Error executing SQL: ${JSON.stringify(e)}`);
+      return [] as CompleteCatch[];
     });
   }
 
-  public async markCatchesSubmitted(ids: Array<number>) {
-    if (ids.length > 0) {
-      const now = new Date();
-      this.db?.executeSql(
-        'UPDATE catches SET submitted = ? WHERE id IN (?);',
-        [now.toISOString(), ids.join(", ")]
-      ).catch(
-        e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
-      );
-    }
+  public async selectUnsubmittedCatches(): Promise<CompleteCatch[]> {
+    return this.selectCatches(true);
   }
 
   public async insertOrUpdateCatch(caught: CompleteCatch) {
@@ -191,26 +164,21 @@ export class DbService {
     ];
     if (caught.id) {
       query = `UPDATE catches SET
-          date = ?
-          species = ?,
-          caught = ?,
-          retained = ?
+          date = ?, species = ?, caught = ?, retained = ?
         WHERE id = ?;`;
       params.push(caught.id);
     }
-    this.db?.executeSql(
-      query, params
-    ).catch(
+    this.db.executeSql(query, params).catch(
       e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
     );
   }
 
   public async selectEntry(id: number): Promise<CompleteEntry> {
-    const entry = {};
-    this.db?.executeSql(
+    return this.db.executeSql(
       'SELECT * FROM entries WHERE id = ?;', [id]
     ).then(
       res => {
+        const entry = {};
         const row = res.rows.item(0);
         entry['id'] = row.id;
         entry['activityDate'] = new Date(row.activity_date);
@@ -227,23 +195,30 @@ export class DbService {
         entry['numPotsHauled'] = row.num_pots_hauled;
         entry['landingDiscardDate'] = new Date(row.landing_discard_date);
         entry['buyerTransporterRegLandedToKeeps'] = row.buyer_transporter_reg_landed_to_keeps;
+        return entry;
       }
-    ).catch(
-      e => alert(`Error executing SQL: ${JSON.stringify(e)}`)
-    );
-    return entry as CompleteEntry;
+    ).catch(e => {
+      console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+      return null;
+    });
   }
 
-  public async selectEntrySummaries(): Promise<EntrySummary[]> {
-    const entries = [];
-    this.db?.executeSql(
-      `SELECT id, activity_date, species
-       FROM entries
-       ORDER BY id DESC
-       LIMIT 50`,
-      []
-    ).then(
+  public async selectEntrySummaries(
+    startDate: Date = null,
+    endDate: Date = null
+  ): Promise<EntrySummary[]> {
+    let query = `SELECT id, activity_date, species FROM entries
+       ORDER BY id DESC LIMIT 50`;
+    let params = [];
+    if (startDate && endDate) {
+      query = `SELECT id, activity_date, species FROM entries
+               WHERE activity_date >= ? AND activity_date < ?
+               ORDER BY activity_date DESC;`;
+      params = [startDate.toISOString(), endDate.toISOString()];
+    }
+    return this.db.executeSql(query, params).then(
       res => {
+        const entries: EntrySummary[] = [];
         for(let i = 0; i < res.rows.length; i ++) {
           const row = res.rows.item(i);
           const activityDate = new Date(row.activity_date);
@@ -255,53 +230,28 @@ export class DbService {
             }
           );
         }
+        return entries;
       }
-    ).catch(
-      e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
-    );
-    return entries;
+    ).catch(e => {
+      console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+      return [] as EntrySummary[];
+    });
   }
 
   public async selectEntrySummariesBetweenDates(
     startDate: Date,
     endDate:Date = new Date()
   ): Promise<EntrySummary[]> {
-    const entries = [];
-    this.db?.executeSql(
-      `SELECT id, activity_date, species
-       FROM entries
-       WHERE activity_date >= ?
-       AND activity_date < ?
-       ORDER BY activity_date DESC`,
-      [startDate.toISOString(), endDate.toISOString()]
-    ).then(
-      res => {
-        for(let i = 0; i < res.rows.length; i ++) {
-          const row = res.rows.item(i);
-          const activityDate = new Date(row.activity_date);
-          entries.push(
-            {
-              id: row.id,
-              activityDate: activityDate,
-              species: row.species,
-            }
-          );
-        }
-      }
-    ).catch(
-      e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
-    );
-    return entries;
+    return this.selectEntrySummaries(startDate, endDate);
   }
 
   public async selectFullEntriesBetweenDates(
     startDate: Date,
     endDate:Date = new Date()
   ): Promise<CompleteEntry[]> {
-    return this.db?.executeSql(
+    return this.db.executeSql(
       `SELECT * FROM entries
-       WHERE activity_date >= ?
-       AND activity_date < ?
+       WHERE activity_date >= ? AND activity_date < ?
        ORDER BY activity_date ASC`,
       [startDate.toISOString(), endDate.toISOString()]
     ).then(
@@ -333,11 +283,14 @@ export class DbService {
         }
         return entries;
       }
-    );
+    ).catch(e => {
+      console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+      return [] as CompleteEntry[];
+    });
   }
 
   public async selectUnsubmittedEntries(): Promise<CompleteEntry[]> {
-    return this.db?.executeSql(
+    return this.db.executeSql(
       `SELECT * FROM entries WHERE submitted IS NULL`, []
     ).then(
       res => {
@@ -368,32 +321,22 @@ export class DbService {
         }
         return entries;
       }
-    );
-  }
-
-  public async markEntriesSubmitted(ids: Array<number>) {
-    if (ids.length > 0) {
-      const now = new Date();
-      this.db?.executeSql(
-        'UPDATE entries SET submitted = ? WHERE id IN (?);',
-        [now.toISOString(), ids.join(", ")]
-      ).catch(
-        e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
-      );
-    }
+    ).catch(e => {
+      console.log(`Error executing SQL: ${JSON.stringify(e)}`);
+      return [] as CompleteEntry[];
+    });
   }
 
   public async selectEarliestEntryDate(): Promise<Date> {
-    let date = new Date('2021-01-01');
-    this.db?.executeSql(
+    return this.db.executeSql(
       'SELECT MIN(activity_date) AS min_date FROM entries;',
       []
-    ).then(
-      res => date = new Date(res.rows.item(0).min_date)
-    ).catch(
-      e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
-    );
-    return date;
+    ).then(res => {
+        return new Date(res.rows.item(0).min_date);
+    }).catch(e => {
+      console.log(`Error executing SQL: ${JSON.stringify(e)}`);
+      return new Date();
+    });
   }
 
   public async insertOrUpdateEntry(entry: CompleteEntry) {
@@ -438,54 +381,59 @@ export class DbService {
         WHERE id = ?;`;
       params.push(entry.id);
     }
-    this.db?.executeSql(
-      query, params
-    ).catch(
+    this.db.executeSql(query, params).catch(
       e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
     );
   }
 
-  public async selectObservations(): Promise<Observation[]> {
-    const observations = [];
-    this.db?.executeSql(
-      `SELECT * FROM observations ORDER BY id DESC LIMIT 50`, []
-    ).then(
-      res => {
-        for(let i = 0; i < res.rows.length; i++) {
-          const row = res.rows.item(i);
-          const date = new Date(row.date);
-          const observation = {
-            id: row.id,
-            animal: row.animal.trim(),
-            species: row.species.trim(),
-            description: row.description.trim(),
-            date: date,
-            location: {
-              lat: row.latitude,
-              lng: row.longitude
-            },
-            behaviour: [],
-            notes: row.notes.trim()
-          }
-          this.db?.executeSql(
-            'SELECT * FROM behaviours WHERE observation_id = ?;', [row.id]
-          ).then(
-            result => {
-              for(let j = 0; j < result.rows.length; j++) {
-                const beRow = result.rows.item(j);
-                observation.behaviour.push(beRow.behaviour.trim());
-              }
-            }
-          ).catch(
-            e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
-          );
-          observations.push(observation);
+  public async selectObservations(unsubmitted = false): Promise<Observation[]>{
+    let query = 'SELECT * FROM observations ORDER BY id DESC LIMIT 50;';
+    if (unsubmitted) {
+      query = `SELECT * FROM observations WHERE submitted IS NULL;`;
+    }
+    return this.db.executeSql(
+      query, []
+    ).then(res => {
+      const observations = [];
+      for(let i = 0; i < res.rows.length; i++) {
+        const row = res.rows.item(i);
+        const date = new Date(row.date);
+        const observation = {
+          id: row.id,
+          animal: row.animal.trim(),
+          species: row.species.trim(),
+          description: row.description.trim(),
+          date: date,
+          location: {
+            lat: row.latitude,
+            lng: row.longitude
+          },
+          behaviour: [],
+          notes: row.notes.trim()
         }
+        this.db.executeSql(
+          'SELECT * FROM behaviours WHERE observation_id = ?;', [row.id]
+        ).then(
+          result => {
+            for(let j = 0; j < result.rows.length; j++) {
+              const beRow = result.rows.item(j);
+              observation.behaviour.push(beRow.behaviour.trim());
+            }
+          }
+        ).catch(
+          e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+        );
+        observations.push(observation);
       }
-    ).catch(
-      e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
-    );
-    return observations;
+      return observations;
+    }).catch(e => {
+      console.log(`Error executing SQL: ${JSON.stringify(e)}`);
+      return [] as Observation[];
+    });
+  }
+
+  public async selectUnsubmittedObservations(): Promise<Observation[]> {
+    return this.selectObservations(true);
   }
 
   public async insertObservation(observation: Observation) {
@@ -503,7 +451,7 @@ export class DbService {
       observation.location.lng,
       observation.notes
     ];
-    this.db?.executeSql(
+    this.db.executeSql(
       observationQuery, observationParams
     ).then(
       result => {
@@ -513,7 +461,7 @@ export class DbService {
               behaviour,
               result.insertId
             ];
-            this.db?.executeSql(
+            this.db.executeSql(
               behaviourQuery, behaviourParams
             ).catch(
               e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
@@ -524,6 +472,26 @@ export class DbService {
     ).catch(
       e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
     );
+  }
+
+  public async markAsSubmitted(table: string, ids: Array<number>) {
+    if (ids.length > 0) {
+      const now = new Date();
+      this.db.transaction(tx => {
+        for (let i = 0; i < ids.length; i++) {
+          tx.executeSql(
+            `UPDATE ${table} SET submitted = ?1 WHERE id = ?2;`,
+            [now.toISOString(), ids[i]],
+            (tx, result) => console.log(JSON.stringify(result)),
+            (tx, e) => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+          );
+        }
+      }).then(
+        response => console.log(response)
+      ).catch(
+        e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+      );
+    }
   }
 }
 

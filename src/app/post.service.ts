@@ -14,7 +14,7 @@ import { DbService } from "./db.service";
 @Injectable()
 export class PostService {
 
-  private postUrl = "https://hookb.in/oXRp1QBg78F1mmLaRDrO";
+  private postUrl = "https://hookb.in/6Jw3MwzOqLFLbb031zyO";
 
   constructor(
     private http: HttpClient,
@@ -26,37 +26,85 @@ export class PostService {
     return this.authService.loggedIn;
   }
 
+  public async postData() {
+    this.postObservations();
+    this.postCatches();
+    this.postEntries();
+  }
+
   public async postCatches() {
-    let response = null;
-    this.db.selectUnsubmittedCatches().then(catches => {
+    return this.db.selectUnsubmittedCatches().then(catches => {
       if (catches && catches.length > 0) {
-        response = this.sendPostRequest(catches);
+        return this.sendPostRequest(catches).then(response => {
+          if (response) {
+            const ids: number[] = [];
+            for (let i = 0; i < catches.length; i++){
+              ids.push(catches[i].id);
+            }
+            this.db.markAsSubmitted('catches', ids);
+          }
+          return response;
+        });
       }
+      return false;
     });
-    return response;
   }
 
   public async postEntries() {
-    let response = null;
-    this.db.selectUnsubmittedEntries().then(entries => {
+    return this.db.selectUnsubmittedEntries().then(entries => {
       if (entries && entries.length > 0) {
-        response = this.sendPostRequest(entries);
+        return this.sendPostRequest(entries).then(response => {
+          if (response) {
+            const ids: number[] = [];
+            for (let i = 0; i < entries.length; i++){
+              ids.push(entries[i].id);
+            }
+            this.db.markAsSubmitted('entries', ids);
+          }
+          return response;
+        });
       }
+      return false;
     });
-    return response;
   }
 
-  private sendPostRequest(data: Array<any>) {
+  public async postObservations() {
+    return this.db.selectUnsubmittedObservations().then(observations => {
+      if (observations && observations.length > 0) {
+        return this.sendPostRequest(observations).then(response => {
+          if (response) {
+            const ids: number[] = [];
+            for (let i = 0; i < observations.length; i++){
+              ids.push(observations[i].id);
+            }
+            this.db.markAsSubmitted('observations', ids);
+          }
+          return response;
+        });
+      }
+      return false;
+    });
+  }
+
+  private async sendPostRequest(data: Array<any>) {
     if (this.isLoggedIn()) {
       return this.authService.getAuthHeader().then(header => {
         const options = {
           headers: new HttpHeaders({
-            'Authorization': header[1]
+            //'Authorization': header[1]
           })
         };
-        return this.http.post(this.postUrl, data, options).subscribe(
-          response => { return response; }
-        );
+        return this.http.post(this.postUrl, data, options).toPromise().then(
+          response => {
+            return response['success'];
+          }
+        ).catch(e => {
+          console.log(`Error posting data: ${JSON.stringify(e)}`);
+          return false;
+        });
+      }).catch(e => {
+        console.log(`Error posting data: ${JSON.stringify(e)}`);
+        return false;
       });
     }
   }

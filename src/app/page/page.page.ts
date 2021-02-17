@@ -116,8 +116,7 @@ export class Page implements OnInit {
   }
 
   ionViewDidEnter() {
-    this.postService.postCatches();
-    this.postService.postEntries();
+    this.postService.postData();
     if (this.page.toLowerCase() == 'home') {
       this.db.selectCatches().then(catches => this.catches = catches);
       this.caught['date'] = this.today;
