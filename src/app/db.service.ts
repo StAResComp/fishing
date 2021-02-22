@@ -40,6 +40,7 @@ export type Observation = {
   animal: string
   species?: string
   description?: string
+  num: number
   date: Date
   location: {
     lat: number
@@ -102,6 +103,7 @@ export class DbService {
         animal TEXT NOT NULL,
         species TEXT,
         description TEXT,
+        num INTEGER,
         date TEXT NOT NULL,
         latitude REAL NOT NULL,
         longitude REAL NOT NULL,
@@ -403,6 +405,7 @@ export class DbService {
           animal: row.animal.trim(),
           species: row.species.trim(),
           description: row.description.trim(),
+          num: row.num,
           date: date,
           location: {
             lat: row.latitude,
@@ -438,14 +441,15 @@ export class DbService {
 
   public async insertObservation(observation: Observation) {
     const observationQuery = `INSERT INTO observations
-        (animal, species, description, date, latitude, longitude, notes)
-      VALUES (? ,?, ?, ?, ?, ?, ?);`;
+        (animal, species, description, num, date, latitude, longitude, notes)
+      VALUES (? ,?, ?, ?, ?, ?, ?, ?);`;
     const behaviourQuery = `INSERT INTO behaviours (behaviour, observation_id)
       VALUES (?, ?);`;
     const observationParams = [
       observation.animal,
       observation.species,
       observation.description,
+      observation.num,
       observation.date.toISOString(),
       observation.location.lat,
       observation.location.lng,

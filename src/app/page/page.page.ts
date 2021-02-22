@@ -86,6 +86,7 @@ export class Page implements OnInit {
     animal: "",
     species: "",
     description: "",
+    num: 0,
     date: this.today,
     location: {
       lat: null,
@@ -511,6 +512,7 @@ export class Page implements OnInit {
           animal: "",
           species: "",
           description: "",
+          num: 0,
           date: this.today,
           location: {
             lat: null,
