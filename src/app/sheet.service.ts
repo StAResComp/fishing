@@ -53,50 +53,32 @@ export class SheetService {
   //27 columns
   private header: Array<Array<string | number>> = [
     [
-      null, null, null, null, null, null, null, null, null, null, null, null,
-      null, null, null, null, null, null, null, null, null, null, null, null,
-      null, null, "FSF1-2016.02"
+      "Fishery Office:", "FO name goes here (0,1)"
     ],
     [
-      null, null, null, "MARINE SCOTLAND COMPLIANCE", null, null, null, null,
-      null, null, null,
-      "ALL SPECIES 10M AND UNDER WEEKLY LANDING DECLARATION FORM"
+      null, "FO address and tel goes here (1,1)"
     ],
     [
-      null, null, null, "Fishery Office", null, null, "FO name goes here (2,6)"
+      "Email:", "FO email goes here (2,1)"
     ],
     [
-      null, null, null, null, null, null, "FO address and tel goes here (3,6)"
-    ],
-    [],
-    [],
-    [
-      null, null, null, "Email", null, null, "FO email goes here (6,6)"
+      "PLN:", "PLN goes here (3,1)", null,
+      "Vessel Name:", "Vessel name goes here (3,4)"
     ],
     [
-      null, null, null, null, null, null, null, null, null, null, null, "PLN",
-      null, "PLN goes here (7,13)", null, null, null, null, null, null, null,
-      "Vessel Name", null,null, "Vessel name goes here (7,24)"
+      "Port of Departure:", "Port of Departure goes here (4,1)",null,
+      "Owner/Master:", "Owner/master goes here (4,4)", null, "Signed:"
     ],
     [
-      "Port of Departure", null, null, "Port of Departure goes here (8,3)",
-      null, null, null, null, null, null, null, "Owner/Master", null,
-      "Owner/master goes here (8,13)", null, null, null, null, null, null,
-      null, null, null, null, "Signed"
-    ],
-    [
-      "Port of Landing", null, null, "Port of Landing goes here (9,3)",
-      null, null, null, null, null, null, null, "Address", null,
-      "Address goes here (9,13)", null, null, null, null, null, null,
-      null, null, null, null, "Total Pots Fishing",
-      "Total Pots Fishing goes here (9,25)"
+      "Port of Landing:", "Port of Landing goes here (5,1)", null,
+      "Address:", "Address goes here (5,4)", null,
+      "Total Pots Fishing:", "Total Pots Fishing goes here (5,7)"
     ],
     [],
     [
       "Fishing Activity Date", "Lat", null, "Lon", null, null, "Stat Rect",
-      null, "Gear", "Mesh Size", null, "Species", "State", null,
-      "Presentation", null, "Weight", null, "DIS", null, "BMS", null,
-      "Number of Pots Hauled", null, "Landing or Discard Date",
+      "Gear", "Mesh Size", "Species", "State", "Presentation", "Weight", "DIS",
+      "BMS", "Number of Pots Hauled", "Landing or Discard Date",
       "Buyer, Transporter Reg. or Landed to Keeps"
     ],
     [
@@ -106,7 +88,7 @@ export class SheetService {
 
   private footer =[
     [
-      "Comments", null, null, "Comments go here (0,3)"
+      "Comments:", "Comments go here (0,3)"
     ]
   ];
 
@@ -121,24 +103,24 @@ export class SheetService {
 
   public createWorkbook() {
     this.createWorkbookIfNeeded();
-    this.header[2][6] = this.form.fisheryOffice.name;
+    this.header[0][1] = this.form.fisheryOffice.name;
     if (this.form.fisheryOffice.phone) {
-      this.header[3][6] =
+      this.header[1][1] =
         `${this.form.fisheryOffice.address}
         Tel: ${this.form.fisheryOffice.phone}`;
     }
     else {
-      this.header[3][6] = this.form.fisheryOffice.address;
+      this.header[1][1] = this.form.fisheryOffice.address;
     }
-    this.header[6][6] = this.form.fisheryOffice.email;
-    this.header[7][13] = this.form.pln;
-    this.header[7][24] = this.form.vesselName;
-    this.header[8][3] = this.form.portOfDeparture;
-    this.header[8][13] = this.form.ownerMaster;
-    this.header[9][3] = this.form.portOfLanding;
-    this.header[9][13] = this.form.address;
-    this.header[9][25] = this.form.totalPotsFishing;
-    this.footer[0][3] = this.form.comments;
+    this.header[2][1] = this.form.fisheryOffice.email;
+    this.header[3][1] = this.form.pln;
+    this.header[3][4] = this.form.vesselName;
+    this.header[4][1] = this.form.portOfDeparture;
+    this.header[4][4] = this.form.ownerMaster;
+    this.header[5][1] = this.form.portOfLanding;
+    this.header[5][4] = this.form.address;
+    this.header[5][7] = this.form.totalPotsFishing;
+    this.footer[0][1] = this.form.comments;
     const entries = [];
     this.form.entries.forEach(entry => {
       entries.push(
@@ -156,23 +138,15 @@ export class SheetService {
           entry.longitudeMinutes,
           entry.longitudeDirection,
           entry.statRect,
-          null,
           entry.gear,
           entry.meshSize,
-          null,
           entry.species,
           entry.state,
-          null,
           entry.presentation,
-          null,
           entry.weight,
-          null,
           entry.DIS,
-          null,
           entry.BMS,
-          null,
           entry.numberOfPotsHauled,
-          null,
           entry.landingOrDiscardDate.toLocaleDateString(
             'en-gb', {
               weekday: 'short',
