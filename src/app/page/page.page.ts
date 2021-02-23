@@ -10,10 +10,16 @@ import {
   Observation
 } from '../db.service';
 import { SettingsService } from '../settings.service';
-import { SheetService, F1Form } from '../sheet.service';
+import { SheetService } from '../sheet.service';
 import { AuthService } from '../auth.service';
 import { PostService } from '../post.service';
 import { MapModalPage } from '../map-modal/map-modal.page';
+import {
+  F1Form,
+  F1FormEntry,
+  FisheryOffice,
+  LatLng
+} from '../models/F1Form.model';
 
 type Catch = {
   id?: number
@@ -395,43 +401,39 @@ export class Page implements OnInit {
 
   public async generateXLSX() {
     await this.saveDraft();
-    const draftForm = {};
-    draftForm['fisheryOffice'] = this.f1Form['fisheriesOffice'];
-    draftForm['pln'] = this.f1Form['PLN'];
-    draftForm['vesselName'] = this.f1Form['vesselName'];
-    draftForm['ownerMaster'] = this.f1Form['ownerMaster'];
-    draftForm['address'] = this.f1Form['address'];
-    draftForm['portOfDeparture'] = this.f1Form['portOfDeparture'];
-    draftForm['portOfLanding'] = this.f1Form['portOfLanding'];
-    draftForm['totalPotsFishing'] = this.f1Form['totalPotsFishing'];
-    draftForm['comments'] = this.f1Form['comments'];
-    draftForm['entries'] = [];
+    const draftForm = new F1Form();
+    draftForm.fisheryOffice = this.f1Form['fisheriesOffice'];
+    draftForm.pln = this.f1Form['PLN'];
+    draftForm.vesselName = this.f1Form['vesselName'];
+    draftForm.ownerMaster = this.f1Form['ownerMaster'];
+    draftForm.address = this.f1Form['address'];
+    draftForm.portOfDeparture = this.f1Form['portOfDeparture'];
+    draftForm.portOfLanding = this.f1Form['portOfLanding'];
+    draftForm.totalPotsFishing = this.f1Form['totalPotsFishing'];
+    draftForm.comments = this.f1Form['comments'];
+    draftForm.entries = [];
     const weekEnd = new Date(this.f1Form['weekStarting']);
     weekEnd.setDate(weekEnd.getDate() + 7);
     const entries = this.db.selectFullEntriesBetweenDates(
       this.f1Form['weekStarting'], weekEnd
     ).then( entries => {
       entries.forEach((entry, index) => {
-        draftForm['entries'][index] = {};
+        draftForm['entries'][index] = new F1FormEntry();
         const coords = this.degreesMinutes(entry.latitude, entry.longitude);
-        draftForm['entries'][index]['fishingActivityDate'] = entry.activityDate;
-        draftForm['entries'][index]['latitudeDegrees'] = coords[0][0];
-        draftForm['entries'][index]['latitudeMinutes'] = coords[0][1];
-        draftForm['entries'][index]['longitudeDegrees'] = coords[1][0];
-        draftForm['entries'][index]['longitudeMinutes'] = coords[1][1];
-        draftForm['entries'][index]['longitudeDirection'] = coords[1][2];
-        draftForm['entries'][index]['statRect'] = this.getIcesRectangle(entry.latitude, entry.longitude);
-        draftForm['entries'][index]['gear'] = entry.gear;
-        draftForm['entries'][index]['meshSize'] = entry.meshSize;
-        draftForm['entries'][index]['species'] = entry.species;
-        draftForm['entries'][index]['state'] = entry.state;
-        draftForm['entries'][index]['presentation'] = entry.presentation;
-        draftForm['entries'][index]['weight'] = entry.weight;
-        draftForm['entries'][index]['DIS'] = entry.DIS;
-        draftForm['entries'][index]['BMS'] = entry.BMS;
-        draftForm['entries'][index]['numberOfPotsHauled'] = entry.numPotsHauled;
-        draftForm['entries'][index]['landingOrDiscardDate'] = entry.landingDiscardDate;;
-        draftForm['entries'][index]['buyerTransporterRegOrLandedToKeeps'] = entry.buyerTransporterRegLandedToKeeps;
+        draftForm['entries'][index].activityDate = entry.activityDate;
+        draftForm['entries'][index].setLatitude(entry.latitude);
+        draftForm['entries'][index].setLongitude(entry.longitude);
+        draftForm['entries'][index].gear = entry.gear;
+        draftForm['entries'][index].meshSize = entry.meshSize;
+        draftForm['entries'][index].species = entry.species;
+        draftForm['entries'][index].state = entry.state;
+        draftForm['entries'][index].presentation = entry.presentation;
+        draftForm['entries'][index].weight = entry.weight;
+        draftForm['entries'][index].DIS = entry.DIS;
+        draftForm['entries'][index].BMS = entry.BMS;
+        draftForm['entries'][index].numPotsHauled = entry.numPotsHauled;
+        draftForm['entries'][index].landingDiscardDate = entry.landingDiscardDate;
+        draftForm['entries'][index].buyerTransporterRegLandedToKeeps = entry.buyerTransporterRegLandedToKeeps;
       });
       this.sheetService.form = draftForm as F1Form;
     });

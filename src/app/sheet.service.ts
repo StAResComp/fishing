@@ -2,45 +2,12 @@ import { Injectable } from "@angular/core";
 import * as XLSX from 'xlsx';
 import { File } from '@ionic-native/file/ngx';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
-
-type F1FormEntry = {
-  fishingActivityDate: Date
-  latitudeDegrees: number
-  latitudeMinutes: number
-  longitudeDegrees: number
-  longitudeMinutes: number
-  longitudeDirection: string
-  statRect: string
-  gear: string
-  meshSize?: string
-  species: string
-  state: string
-  presentation: string
-  weight: number
-  DIS: boolean
-  BMS: boolean
-  numberOfPotsHauled?: number
-  landingOrDiscardDate: Date
-  buyerTransporterRegOrLandedToKeeps?: string
-}
-
-export type F1Form = {
-  fisheryOffice: {
-    name: string
-    address: string
-    phone?: string
-    email: string
-  }
-  pln: string
-  vesselName: string
-  ownerMaster: string
-  address: string
-  portOfDeparture: string
-  portOfLanding: string
-  totalPotsFishing: number
-  entries: Array<F1FormEntry>
-  comments?: string
-};
+import {
+  F1Form,
+  F1FormEntry,
+  FisheryOffice,
+  LatLng
+} from './models/F1Form.model';
 
 @Injectable()
 export class SheetService {
@@ -123,21 +90,16 @@ export class SheetService {
     this.footer[0][1] = this.form.comments;
     const entries = [];
     this.form.entries.forEach(entry => {
+      const latLng = entry.getLatLng();
       entries.push(
         [
-          entry.fishingActivityDate.toLocaleDateString(
-            'en-gb', {
-              weekday: 'short',
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric'}
-          ),
-          entry.latitudeDegrees,
-          entry.latitudeMinutes,
-          entry.longitudeDegrees,
-          entry.longitudeMinutes,
-          entry.longitudeDirection,
-          entry.statRect,
+          entry.getActivityDateString('local'),
+          latLng.latDeg,
+          latLng.latMin,
+          latLng.lngDeg,
+          latLng.lngMin,
+          latLng.lngDir,
+          entry.getIcesRectangle(),
           entry.gear,
           entry.meshSize,
           entry.species,
@@ -146,15 +108,9 @@ export class SheetService {
           entry.weight,
           entry.DIS,
           entry.BMS,
-          entry.numberOfPotsHauled,
-          entry.landingOrDiscardDate.toLocaleDateString(
-            'en-gb', {
-              weekday: 'short',
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric'}
-          ),
-          entry.buyerTransporterRegOrLandedToKeeps
+          entry.numPotsHauled,
+          entry.getLandingDiscardDateString('local'),
+          entry.buyerTransporterRegLandedToKeeps
         ]
       );
     });

@@ -37,6 +37,12 @@ export class F1FormEntry {
   public numPotsHauled: number;
   public landingDiscardDate: Date;
   public buyerTransporterRegLandedToKeeps: string;
+  private localeDateFormat = {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  }
 
   constructor(id?: number) {
     this.id = id;
@@ -52,12 +58,18 @@ export class F1FormEntry {
     }
     else {
       return this.activityDate?.toLocaleDateString(
-        'en-gb', {
-          weekday: 'short',
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        }
+        'en-gb', this.localeDateFormat
+      );
+    }
+  }
+
+  public getLandingDiscardDateString(format: 'ISO' | 'local' = 'ISO'): string {
+    if (format == 'ISO') {
+      return this.landingDiscardDate?.toISOString();
+    }
+    else {
+      return this.landingDiscardDate?.toLocaleDateString(
+        'en-gb', this.localeDateFormat
       );
     }
   }
@@ -150,7 +162,7 @@ export class F1FormEntry {
        first. Thus, the rectangle of which the south-west corner is 54°00'N
        03°00'E is designated 37F3.
     */
-  private getIcesRectangle(): string {
+  public getIcesRectangle(): string {
     if (this.latitude && this.longitude) {
       const lat = this.latitude;
       const lng = this.longitude;
@@ -195,6 +207,13 @@ export class F1FormEntry {
     );
   }
 
+  public getSummary(): F1FormEntrySummary {
+    return {
+      id: this.id,
+      activityDate: this.activityDate,
+      species: this.species
+    }
+  }
 }
 
 export class F1Form {
@@ -244,6 +263,5 @@ export class F1Form {
     }
     return f1Form;
   }
-
 }
 
