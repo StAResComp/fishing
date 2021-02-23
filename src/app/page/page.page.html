@@ -4,9 +4,9 @@
       <ion-menu-button></ion-menu-button>
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title *ngSwitchCase="'f1entrieslist'">FISH1 Entries</ion-title>
-    <ion-title *ngSwitchCase="'f1entrydetails'">FISH1 Entry</ion-title>
-    <ion-title *ngSwitchCase="'f1formgen'">FISH1 Form Generation</ion-title>
+    <ion-title *ngSwitchCase="'f1entrieslist'">Form Entries</ion-title>
+    <ion-title *ngSwitchCase="'f1entrydetails'">Form Entry</ion-title>
+    <ion-title *ngSwitchCase="'f1formgen'">Spreadsheet Generation</ion-title>
     <ion-title *ngSwitchDefault>{{ page }}</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -15,13 +15,13 @@
   <ion-header collapse="condense">
     <ion-toolbar [ngSwitch]="page.toLowerCase()">
       <ion-title size="large" *ngSwitchCase="'f1entrieslist'">
-        FISH1 Entries
+        Form Entries
       </ion-title>
       <ion-title size="large" *ngSwitchCase="'f1entrydetails'">
-        FISH1 Entry
+        Form Entry
       </ion-title>
       <ion-title size="large" *ngSwitchCase="'f1formgen'">
-        FISH1 Form Generation
+        Spreadsheet Generation
       </ion-title>
       <ion-title size="large" *ngSwitchDefault>{{ page }}</ion-title>
     </ion-toolbar>

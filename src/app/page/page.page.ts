@@ -10,7 +10,7 @@ import {
   Observation
 } from '../db.service';
 import { SettingsService } from '../settings.service';
-import { SheetService, Fish1Form } from '../sheet.service';
+import { SheetService, F1Form } from '../sheet.service';
 import { AuthService } from '../auth.service';
 import { PostService } from '../post.service';
 import { MapModalPage } from '../map-modal/map-modal.page';
@@ -433,7 +433,7 @@ export class Page implements OnInit {
         draftForm['entries'][index]['landingOrDiscardDate'] = entry.landingDiscardDate;;
         draftForm['entries'][index]['buyerTransporterRegOrLandedToKeeps'] = entry.buyerTransporterRegLandedToKeeps;
       });
-      this.sheetService.form = draftForm as Fish1Form;
+      this.sheetService.form = draftForm as F1Form;
     });
     return this.sheetService.createWorkbook();
   }

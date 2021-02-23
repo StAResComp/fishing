@@ -3,7 +3,7 @@ import * as XLSX from 'xlsx';
 import { File } from '@ionic-native/file/ngx';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 
-type Fish1FormEntry = {
+type F1FormEntry = {
   fishingActivityDate: Date
   latitudeDegrees: number
   latitudeMinutes: number
@@ -24,7 +24,7 @@ type Fish1FormEntry = {
   buyerTransporterRegOrLandedToKeeps?: string
 }
 
-export type Fish1Form = {
+export type F1Form = {
   fisheryOffice: {
     name: string
     address: string
@@ -38,7 +38,7 @@ export type Fish1Form = {
   portOfDeparture: string
   portOfLanding: string
   totalPotsFishing: number
-  entries: Array<Fish1FormEntry>
+  entries: Array<F1FormEntry>
   comments?: string
 };
 
@@ -47,8 +47,8 @@ export class SheetService {
 
   private wopts: XLSX.WritingOptions = { bookType: 'xlsx', type: 'array' };
   private wb: XLSX.WorkBook;
-  private wsName: string = "FISH1";
-  public form: Fish1Form;
+  private wsName: string = "Fishing";
+  public form: F1Form;
 
   //27 columns
   private header: Array<Array<string | number>> = [
@@ -191,7 +191,7 @@ export class SheetService {
     const buf = new ArrayBuffer(wbOut.length);
     const filePath = this.file.dataDirectory;
     const now = new Date();
-    const fileName = `fish1-${now.getTime()}.xlsx`;
+    const fileName = `f1-${now.getTime()}.xlsx`;
     const view = new Uint8Array(buf);
     for (let i = 0; i < wbOut.length; i++) view[i] = wbOut.charCodeAt(i) & 0xFF;
     this.file.writeFile(filePath, fileName, buf).then(_ => {

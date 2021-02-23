@@ -5,7 +5,7 @@ export type FisheryOffice = {
   email: string
 };
 
-export type Fish1FormEntrySummary = {
+export type F1FormEntrySummary = {
   id: number
   activityDate: Date
   species: string
@@ -20,7 +20,7 @@ export type LatLng = {
   lngDir: 'E' | 'W'
 };
 
-export class Fish1FormEntry {
+export class F1FormEntry {
 
   private id: number;
   public activityDate: Date;
@@ -197,7 +197,7 @@ export class Fish1FormEntry {
 
 }
 
-export class Fish1Form {
+export class F1Form {
 
   private id: number;
   public fisheryOffice: FisheryOffice;
@@ -208,7 +208,7 @@ export class Fish1Form {
   public ownerMaster: string;
   public address: string;
   public totalPotsFishing: number;
-  public entries: Array<Fish1FormEntry>;
+  public entries: Array<F1FormEntry>;
   public comments: string;
   public weekStart: Date;
 
@@ -237,8 +237,8 @@ export class Fish1Form {
     return JSON.stringify(copyOfThis);
   }
 
-  public static deserialize(serializedForm: string): Fish1Form {
-    const f1Form = JSON.parse(serializedForm) as Fish1Form;
+  public static deserialize(serializedForm: string): F1Form {
+    const f1Form = JSON.parse(serializedForm) as F1Form;
     if (f1Form.weekStart) {
       f1Form.weekStart = new Date(f1Form.weekStart);
     }
