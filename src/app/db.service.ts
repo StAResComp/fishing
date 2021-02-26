@@ -6,9 +6,9 @@ import {
   F1Form,
   F1FormEntry,
   F1FormEntrySummary,
-  FisheryOffice,
-  LatLng
+  FisheryOffice
 } from './models/F1Form.model';
+import { WildlifeObservation } from './models/WildlifeObservation.model';
 
 export type CompleteCatch = {
   id?: number
@@ -16,21 +16,6 @@ export type CompleteCatch = {
   species: string
   caught: number
   retained: number
-};
-
-export type Observation = {
-  id?: number
-  animal: string
-  species?: string
-  description?: string
-  num: number
-  date: Date
-  location: {
-    lat: number
-    lng: number
-  }
-  behaviour: Array<string>
-  notes: string
 };
 
 @Injectable()
@@ -335,7 +320,7 @@ export class DbService {
     );
   }
 
-  public async selectObservations(unsubmitted = false): Promise<Observation[]>{
+  public async selectObservations(unsubmitted = false): Promise<WildlifeObservation[]>{
     let query = 'SELECT * FROM observations ORDER BY id DESC LIMIT 50;';
     if (unsubmitted) {
       query = `SELECT * FROM observations WHERE submitted IS NULL;`;
@@ -346,21 +331,16 @@ export class DbService {
       const observations = [];
       for(let i = 0; i < res.rows.length; i++) {
         const row = res.rows.item(i);
-        const date = new Date(row.date);
-        const observation = {
-          id: row.id,
-          animal: row.animal.trim(),
-          species: row.species.trim(),
-          description: row.description.trim(),
-          num: row.num,
-          date: date,
-          location: {
-            lat: row.latitude,
-            lng: row.longitude
-          },
-          behaviour: [],
-          notes: row.notes.trim()
-        }
+        const observation = new WildlifeObservation(row.id);
+        observation.animal = row.animal.trim();
+        observation.species = row.species?.trim();
+        observation.description = row.description?.trim();
+        observation.num = row.num;
+        observation.date = new Date(row.date);
+        observation.setLatitude(row.latitude);
+        observation.setLongitude(row.longitude);
+        observation.behaviour = [];
+        observation.notes = row.notes?.trim();
         this.db.executeSql(
           'SELECT * FROM behaviours WHERE observation_id = ?;', [row.id]
         ).then(
@@ -371,22 +351,22 @@ export class DbService {
             }
           }
         ).catch(
-          e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+          e => console.log(`Error executing SQL (selecting behaviours): ${JSON.stringify(e)}`)
         );
         observations.push(observation);
       }
       return observations;
     }).catch(e => {
-      console.log(`Error executing SQL: ${JSON.stringify(e)}`);
-      return [] as Observation[];
+      console.log(`Error executing SQL (selecting observations): ${JSON.stringify(e)}`);
+      return [] as WildlifeObservation[];
     });
   }
 
-  public async selectUnsubmittedObservations(): Promise<Observation[]> {
+  public async selectUnsubmittedObservations(): Promise<WildlifeObservation[]> {
     return this.selectObservations(true);
   }
 
-  public async insertObservation(observation: Observation) {
+  public async insertObservation(observation: WildlifeObservation) {
     const observationQuery = `INSERT INTO observations
         (animal, species, description, num, date, latitude, longitude, notes)
       VALUES (? ,?, ?, ?, ?, ?, ?, ?);`;
@@ -397,9 +377,9 @@ export class DbService {
       observation.species,
       observation.description,
       observation.num,
-      observation.date.toISOString(),
-      observation.location.lat,
-      observation.location.lng,
+      observation.getDateString(),
+      observation.getLatitude(),
+      observation.getLongitude(),
       observation.notes
     ];
     this.db.executeSql(
@@ -415,13 +395,13 @@ export class DbService {
             this.db.executeSql(
               behaviourQuery, behaviourParams
             ).catch(
-              e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+              e => console.log(`Error executing SQL (inserting behaviour): ${JSON.stringify(e)}`)
             );
           }
         );
       }
     ).catch(
-      e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
+      e => console.log(`Error executing SQL (inserting observation): ${JSON.stringify(e)}`)
     );
   }
 

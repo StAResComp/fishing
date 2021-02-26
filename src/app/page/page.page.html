@@ -515,7 +515,7 @@
               <ion-col>
                 <ion-datetime
                      displayFormat="hh : mm : a"
-                     [value]="today.toISOString()"
+                     [value]="observation.getDateString()"
                      [max]="today.toISOString()"
                      (ionChange)="observation.date = dateFromISO($event.target.value)">
                 </ion-datetime>
@@ -535,10 +535,10 @@
                 </ion-button>
               </ion-col>
               <ion-col size="auto">
-                {{ getLocationString(observation.location['lat'], observation.location['lng']) }}
+                {{ observation.getLocation() }}
               </ion-col>
             </ion-row>
-            <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.location.lat && observation.location.lng">
+            <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.getLatitude() && observation.getLongitude()">
               <ion-col><ion-label>Behaviour:</ion-label></ion-col>
               <ion-col>
                 <ion-select multiple='true' [value]='observation.behaviour'
@@ -550,18 +550,18 @@
                 </ion-select>
               </ion-col>
             </ion-row>
-            <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.location.lat && observation.location.lng && observation.behaviour.length > 0">
+            <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.getLatitude() && observation.getLongitude() && observation.behaviour.length > 0">
               <ion-col><ion-label>Behaviour or other notes:</ion-label></ion-col>
             </ion-row>
-            <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.location.lat && observation.location.lng && observation.behaviour.length > 0">
+            <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.getLatitude() && observation.getLongitude() && observation.behaviour.length > 0">
               <ion-col>
                 <ion-textarea [(ngModel)]="observation.notes"></ion-textarea>
               </ion-col>
             </ion-row>
-            <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.location.lat && observation.location.lng && observation.behaviour.length > 0">
+            <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.getLatitude() && observation.getLongitude() && observation.behaviour.length > 0">
               <ion-col>If you have any photos or videos of the animal, please email them to [email address]</ion-col>
             </ion-row>
-            <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.location.lat && observation.location.lng && observation.behaviour.length > 0">
+            <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.getLatitude() && observation.getLongitude() && observation.behaviour.length > 0">
               <ion-col>
                 <ion-button expand='block' (click)='recordWildlife()'>Record Observation</ion-button>
               </ion-col>
@@ -574,8 +574,8 @@
           <ion-grid class="ion-no-padding">
             <ion-row class="ion-justify-content-between">
               <ion-col size="auto">
-                {{ observation.date.toLocaleString('en-gb') }}<br />
-                {{ getLocationString(observation.location.lat, observation.location.lng) }}<br />
+                {{ observation.getDateString() }}<br />
+                {{ observation.getLocation() }}<br />
                 {{ (observation.species ? observation.species : observation.description) }} × {{ observation.num }}<br />
                 {{ observation.behaviour.join(', ') }}<br />
                 {{ observation.notes }}

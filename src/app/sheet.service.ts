@@ -5,8 +5,7 @@ import { FileOpener } from '@ionic-native/file-opener/ngx';
 import {
   F1Form,
   F1FormEntry,
-  FisheryOffice,
-  LatLng
+  FisheryOffice
 } from './models/F1Form.model';
 
 @Injectable()

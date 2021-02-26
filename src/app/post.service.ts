@@ -75,7 +75,7 @@ export class PostService {
           if (response) {
             const ids: number[] = [];
             for (let i = 0; i < observations.length; i++){
-              ids.push(observations[i].id);
+              ids.push(observations[i].getId());
             }
             this.db.markAsSubmitted('observations', ids);
           }

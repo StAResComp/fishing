@@ -1,3 +1,5 @@
+import { RecordWithLocationAndDate } from './RecordWithLocation.model'
+
 export type FisheryOffice = {
   name: string
   address: string
@@ -11,21 +13,10 @@ export type F1FormEntrySummary = {
   species: string
 };
 
-export type LatLng = {
-  latDeg: number
-  latMin: number
-  latDir: 'N' | 'S'
-  lngDeg: number
-  lngMin: number
-  lngDir: 'E' | 'W'
-};
-
-export class F1FormEntry {
+export class F1FormEntry extends RecordWithLocationAndDate {
 
   private id: number;
   public activityDate: Date;
-  private latitude: number;
-  private longitude: number;
   public gear: string;
   public meshSize: string;
   public species: string;
@@ -46,6 +37,7 @@ export class F1FormEntry {
   }
 
   constructor(id?: number) {
+    super();
     this.id = id;
   }
 
@@ -54,86 +46,17 @@ export class F1FormEntry {
   }
 
   public getActivityDateString(format: 'ISO' | 'local' = 'ISO'): string {
-    if (format == 'ISO') {
-      return this.activityDate?.toISOString();
+    if (this.activityDate) {
+      return F1FormEntry.dateToString(this.activityDate, format);
     }
-    else {
-      return this.activityDate?.toLocaleDateString(
-        'en-gb', this.localeDateFormat
-      );
-    }
+    return "";
   }
 
   public getLandingDiscardDateString(format: 'ISO' | 'local' = 'ISO'): string {
-    if (format == 'ISO') {
-      return this.landingDiscardDate?.toISOString();
+    if (this.landingDiscardDate) {
+      return F1FormEntry.dateToString(this.landingDiscardDate, format);
     }
-    else {
-      return this.landingDiscardDate?.toLocaleDateString(
-        'en-gb', this.localeDateFormat
-      );
-    }
-  }
-
-  public setLatitude(latVal: number) {
-    if (latVal >= -90 && latVal <= 90) {
-      this.latitude = latVal;
-    }
-    else {
-      console.log(`Supplied latitude value (${latVal}) out of bounds`);
-    }
-  }
-
-  public getLatitude() {
-    return this.latitude;
-  }
-
-  public setLongitude(lngVal: number) {
-    if (lngVal >= -180 && lngVal <= 180) {
-      this.longitude = lngVal;
-    }
-    else {
-      console.log(`Supplied longitude value (${lngVal}) out of bounds`);
-    }
-  }
-
-  public getLongitude() {
-    return this.longitude;
-  }
-
-  public getLatLng(): LatLng {
-    if (this.latitude != null && this.longitude != null) {
-      const absLat = Math.abs(this.latitude);
-      const latDeg = Math.floor(absLat);
-      const latMin = Math.floor((absLat - latDeg) * 60);
-      const latDir = ((this.latitude > 0) ? "N" : "S");
-
-      const absLng = Math.abs(this.longitude);
-      const lngDeg = Math.floor(absLng);
-      const lngMin = Math.floor((absLng - lngDeg) * 60);
-      const lngDir = ((this.longitude > 0) ? "E" : "W");
-
-      return {
-        latDeg: latDeg,
-        latMin: latMin,
-        latDir: latDir,
-        lngDeg: lngDeg,
-        lngMin: lngMin,
-        lngDir: lngDir
-      };
-    }
-    return null;
-  }
-
-  public getLocation(): string {
-    if (this.latitude != null && this.longitude != null) {
-      const latLng = this.getLatLng();
-      if (latLng) {
-        return `${latLng.latDeg}° ${latLng.latMin}' ${latLng.latDir},
-                ${latLng.lngDeg}° ${latLng.lngMin}' ${latLng.lngDir}`;
-      }
-    }
-    return '';
+    return "";
   }
 
   /* As per
@@ -164,9 +87,9 @@ export class F1FormEntry {
        03°00'E is designated 37F3.
     */
   public getIcesRectangle(): string {
-    if (this.latitude && this.longitude) {
-      const lat = this.latitude;
-      const lng = this.longitude;
+    const lat = this.getLatitude();
+    const lng = this.getLongitude();
+    if (lat && lng) {
       let icesRect = "";
       if (lat < 36.0 || lat >= 85.5 || lng < -44.0 || lng >= 68.5) {
         return icesRect;
@@ -197,8 +120,8 @@ export class F1FormEntry {
   public isComplete(): boolean {
     return (
       this.activityDate != null &&
-      this.latitude != null &&
-      this.longitude != null &&
+      this.getLatitude() != null &&
+      this.getLongitude() != null &&
       this.gear != null &&
       this.species != null &&
       this.state != null &&

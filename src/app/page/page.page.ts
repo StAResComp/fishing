@@ -5,7 +5,6 @@ import { Location } from "@angular/common";
 import {
   DbService,
   CompleteCatch,
-  Observation
 } from '../db.service';
 import { SettingsService } from '../settings.service';
 import { SheetService } from '../sheet.service';
@@ -16,9 +15,9 @@ import {
   F1Form,
   F1FormEntry,
   F1FormEntrySummary,
-  FisheryOffice,
-  LatLng
+  FisheryOffice
 } from '../models/F1Form.model';
+import { WildlifeObservation } from '../models/WildlifeObservation.model';
 
 type Catch = {
   id?: number
@@ -56,20 +55,8 @@ export class Page implements OnInit {
 
   public today = new Date();
 
-  public observation = {
-    animal: "",
-    species: "",
-    description: "",
-    num: 0,
-    date: this.today,
-    location: {
-      lat: null,
-      lng: null
-    },
-    behaviour: [],
-    notes: ""
-  };
-  public observations: Array<Observation>;
+  public observation = new WildlifeObservation();
+  public observations: Array<WildlifeObservation>;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -127,8 +114,8 @@ export class Page implements OnInit {
     modal.onWillDismiss().then((data) => {
       if (data.data['submitted']) {
         if (wildlife) {
-          this.observation.location['lat'] = data.data['latitude'];
-          this.observation.location['lng'] = data.data['longitude'];
+          this.observation.setLatitude(data.data['latitude']);
+          this.observation.setLongitude(data.data['longitude']);
         }
         else {
           this.entry.setLatitude(data.data['latitude']);
@@ -407,66 +394,20 @@ export class Page implements OnInit {
     this.db.insertObservation(this.observation).then(
       _ => this.db.selectObservations().then(observations => {
         this.observations = observations
-        this.observation = {
-          animal: "",
-          species: "",
-          description: "",
-          num: 0,
-          date: this.today,
-          location: {
-            lat: null,
-            lng: null
-          },
-          behaviour: [],
-          notes: ""
-        };
+        this.observation = new WildlifeObservation();
       })
     );
   }
 
   public getWildlifeAnimals() {
-    return [
-      { name: "Seal", subspecies: ["Harbour (Common) Seal", "Grey Seal"]},
-      { name: "Porpoise", subspecies: ["Harbour Porpoise"]},
-      { name: "Dolphin", subspecies: [
-        "Bottlenose Dolphin",
-        "Common Dolphin",
-        "Risso's Dolphin",
-        "White-beaked Dolphin",
-        "Atlantic White-sided Dolphin",
-        "Killer Whale (Orca)",
-        "Pilot Whale"
-      ]},
-      { name: "Whale", subspecies: [
-        "Minke Whale",
-        "Humpback Whale",
-        "Sperm Whale",
-        "Fin Whale",
-        "Sei Whale"
-      ]},
-      { name: "Shark", subspecies: ["Basking Shark", "Porbeagle Shark"]}
-    ];
+    return WildlifeObservation.getWildlifeAnimals();
   }
 
-  public getWildlifeSpecies(species: string) {
-    const allSpecies = this.getWildlifeAnimals();
-    for (let i = 0; i < allSpecies.length; i++) {
-      if (species?.toLowerCase().trim() ==
-          allSpecies[i].name.toLowerCase().trim()) {
-        return allSpecies[i].subspecies;
-      }
-    }
-    return [];
+  public getWildlifeSpecies(animal: string) {
+    return WildlifeObservation.getWildlifeSpecies(animal);
   }
 
   public getWildlifeBehaviours() {
-    return [
-      "Approaching the vessel",
-      "Feeding",
-      "Interacting with fishing gear",
-      "Bow-riding",
-      "Breaching",
-      "Travelling"
-    ];
+    return WildlifeObservation.getWildlifeBehaviours();
   }
 }
