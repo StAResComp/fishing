@@ -42,7 +42,7 @@
                         *ngIf="key == 'fisheries_office'; else elseInput"
                         [value]="settings.get(key)"
                         (ionChange)="settings.set(key, $event.target.value)">
-              <ion-select-option *ngFor="let office of getFisheriesOffices()">
+              <ion-select-option *ngFor="let office of settingsService.getFisheriesOffices()">
                 {{ office.name }}
               </ion-select-option>
             </ion-select>
@@ -80,7 +80,7 @@
             <ion-label>Species:</ion-label>
             <ion-select [value]="caught.species"
                         (ionChange)="caught.species = $event.target.value">
-              <ion-select-option *ngFor="let species of speciesList">
+              <ion-select-option *ngFor="let species of getSpeciesList()">
                 {{ species.name }}
               </ion-select-option>
             </ion-select>
@@ -194,7 +194,7 @@
             <ion-label>Location:</ion-label>
           </ion-col>
           <ion-col size="auto">
-            {{ getEntryLocationString() }}
+            {{ entry.getLocation() }}
           </ion-col>
           <ion-col size="auto">
             <ion-button (click)="presentMapModal()">
@@ -207,7 +207,7 @@
             <ion-label>ICES Rectangle:</ion-label>
           </ion-col>
           <ion-col size="auto">
-            {{ getEntryICESRectangleString() }}
+            {{ entry.getIcesRectangle() }}
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
@@ -237,7 +237,7 @@
           <ion-col>
             <ion-select [value]="entry.species"
                  (ionChange)="entry.species = $event.target.value">
-              <ion-select-option *ngFor="let species of speciesList">
+              <ion-select-option *ngFor="let species of getSpeciesList()">
                 {{ species.name }}
               </ion-select-option>
             </ion-select>

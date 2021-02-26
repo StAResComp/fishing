@@ -2,6 +2,13 @@ import { Injectable } from "@angular/core";
 import { Platform } from '@ionic/angular';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite/ngx';
 import { BehaviorSubject, Observable } from 'rxjs';
+import {
+  F1Form,
+  F1FormEntry,
+  F1FormEntrySummary,
+  FisheryOffice,
+  LatLng
+} from './models/F1Form.model';
 
 export type CompleteCatch = {
   id?: number
@@ -9,30 +16,6 @@ export type CompleteCatch = {
   species: string
   caught: number
   retained: number
-};
-
-export type CompleteEntry = {
-  id?: number
-  activityDate: Date
-  latitude: number
-  longitude: number
-  gear: string
-  meshSize?: string
-  species: string
-  state: string
-  presentation: string
-  weight: number
-  DIS: boolean
-  BMS: boolean
-  numPotsHauled: number
-  landingDiscardDate: Date
-  buyerTransporterRegLandedToKeeps?: string
-};
-
-export type EntrySummary = {
-  id: number
-  activityDate: Date
-  species: string
 };
 
 export type Observation = {
@@ -175,29 +158,32 @@ export class DbService {
     );
   }
 
-  public async selectEntry(id: number): Promise<CompleteEntry> {
+  private buildEntry(row: Object): F1FormEntry {
+    const entry = new F1FormEntry(row["id"]);
+    entry.activityDate = new Date(row["activity_date"]);
+    entry.setLatitude(row["latitude"]);
+    entry.setLongitude(row["longitude"]);
+    entry.gear = row["gear"];
+    entry.meshSize = row["mesh_size"];
+    entry.species = row["species"];
+    entry.state = row["state"];
+    entry.presentation = row["presentation"];
+    entry.weight = row["weight"];
+    entry.DIS = !!row["DIS"];
+    entry.BMS = !!row["BMS"];
+    entry.numPotsHauled = row["num_pots_hauled"];
+    entry.landingDiscardDate = new Date(row["landing_discard_date"]);
+    entry.buyerTransporterRegLandedToKeeps = row["buyer_transporter_reg_landed_to_keeps"];
+    return entry;
+  }
+
+  public async selectEntry(id: number): Promise<F1FormEntry> {
     return this.db.executeSql(
       'SELECT * FROM entries WHERE id = ?;', [id]
     ).then(
       res => {
-        const entry = {};
         const row = res.rows.item(0);
-        entry['id'] = row.id;
-        entry['activityDate'] = new Date(row.activity_date);
-        entry['latitude'] = row.latitude;
-        entry['longitude'] = row.longitude;
-        entry['gear'] = row.gear;
-        entry['meshSize'] = row.mesh_size;
-        entry['species'] = row.species;
-        entry['state'] = row.state;
-        entry['presentation'] = row.presentation;
-        entry['weight'] = row.weight;
-        entry['DIS'] = !!row.DIS;
-        entry['BMS'] = !!row.BMS;
-        entry['numPotsHauled'] = row.num_pots_hauled;
-        entry['landingDiscardDate'] = new Date(row.landing_discard_date);
-        entry['buyerTransporterRegLandedToKeeps'] = row.buyer_transporter_reg_landed_to_keeps;
-        return entry;
+        return this.buildEntry(row);
       }
     ).catch(e => {
       console.log(`Error executing SQL: ${JSON.stringify(e)}`)
@@ -208,7 +194,7 @@ export class DbService {
   public async selectEntrySummaries(
     startDate: Date = null,
     endDate: Date = null
-  ): Promise<EntrySummary[]> {
+  ): Promise<F1FormEntrySummary[]> {
     let query = `SELECT id, activity_date, species FROM entries
        ORDER BY id DESC LIMIT 50`;
     let params = [];
@@ -220,7 +206,7 @@ export class DbService {
     }
     return this.db.executeSql(query, params).then(
       res => {
-        const entries: EntrySummary[] = [];
+        const entries: F1FormEntrySummary[] = [];
         for(let i = 0; i < res.rows.length; i ++) {
           const row = res.rows.item(i);
           const activityDate = new Date(row.activity_date);
@@ -236,21 +222,22 @@ export class DbService {
       }
     ).catch(e => {
       console.log(`Error executing SQL: ${JSON.stringify(e)}`)
-      return [] as EntrySummary[];
+      return [] as F1FormEntrySummary[];
     });
   }
 
   public async selectEntrySummariesBetweenDates(
     startDate: Date,
     endDate:Date = new Date()
-  ): Promise<EntrySummary[]> {
+  ): Promise<F1FormEntrySummary[]> {
     return this.selectEntrySummaries(startDate, endDate);
   }
+
 
   public async selectFullEntriesBetweenDates(
     startDate: Date,
     endDate:Date = new Date()
-  ): Promise<CompleteEntry[]> {
+  ): Promise<F1FormEntry[]> {
     return this.db.executeSql(
       `SELECT * FROM entries
        WHERE activity_date >= ? AND activity_date < ?
@@ -258,74 +245,34 @@ export class DbService {
       [startDate.toISOString(), endDate.toISOString()]
     ).then(
       res => {
-        const entries: Array<CompleteEntry> = [];
+        const entries: Array<F1FormEntry> = [];
         for(let i = 0; i < res.rows.length; i ++) {
           const row = res.rows.item(i);
-          const activityDate = new Date(row.activity_date);
-          const landingDiscardDate = new Date(row.landing_discard_date);
-          entries.push(
-            {
-              id: row.id,
-              activityDate: activityDate,
-              latitude: row.latitude,
-              longitude: row.longitude,
-              gear: row.gear,
-              meshSize: row.mesh_size,
-              species: row.species,
-              state: row.state,
-              presentation: row.presentation,
-              weight: row.weight,
-              DIS: !!row.DIS,
-              BMS: !!row.BMS,
-              numPotsHauled: row.num_pots_hauled,
-              landingDiscardDate: landingDiscardDate,
-              buyerTransporterRegLandedToKeeps: row.buyer_transporter_reg_landed_to_keeps
-            }
-          );
+          entries.push(this.buildEntry(row));
         }
         return entries;
       }
     ).catch(e => {
       console.log(`Error executing SQL: ${JSON.stringify(e)}`)
-      return [] as CompleteEntry[];
+      return [] as F1FormEntry[];
     });
   }
 
-  public async selectUnsubmittedEntries(): Promise<CompleteEntry[]> {
+  public async selectUnsubmittedEntries(): Promise<F1FormEntry[]> {
     return this.db.executeSql(
       `SELECT * FROM entries WHERE submitted IS NULL`, []
     ).then(
       res => {
-        const entries: Array<CompleteEntry> = [];
+        const entries: Array<F1FormEntry> = [];
         for(let i = 0; i < res.rows.length; i ++) {
           const row = res.rows.item(i);
-          const activityDate = new Date(row.activity_date);
-          const landingDiscardDate = new Date(row.landing_discard_date);
-          entries.push(
-            {
-              id: row.id,
-              activityDate: activityDate,
-              latitude: row.latitude,
-              longitude: row.longitude,
-              gear: row.gear,
-              meshSize: row.mesh_size,
-              species: row.species,
-              state: row.state,
-              presentation: row.presentation,
-              weight: row.weight,
-              DIS: !!row.DIS,
-              BMS: !!row.BMS,
-              numPotsHauled: row.num_pots_hauled,
-              landingDiscardDate: landingDiscardDate,
-              buyerTransporterRegLandedToKeeps: row.buyer_transporter_reg_landed_to_keeps
-            }
-          );
+          entries.push(this.buildEntry(row));
         }
         return entries;
       }
     ).catch(e => {
       console.log(`Error executing SQL: ${JSON.stringify(e)}`);
-      return [] as CompleteEntry[];
+      return [] as F1FormEntry[];
     });
   }
 
@@ -341,7 +288,7 @@ export class DbService {
     });
   }
 
-  public async insertOrUpdateEntry(entry: CompleteEntry) {
+  public async insertOrUpdateEntry(entry: F1FormEntry) {
     let query = `INSERT INTO entries
         (activity_date, latitude, longitude, gear, mesh_size, species,
         state, presentation, weight, DIS, BMS, num_pots_hauled,
@@ -350,8 +297,8 @@ export class DbService {
         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
     const params = [
       entry.activityDate.toISOString(),
-      entry.latitude,
-      entry.longitude,
+      entry.getLatitude,
+      entry.getLongitude,
       entry.gear,
       entry.meshSize,
       entry.species,
@@ -364,7 +311,7 @@ export class DbService {
       entry.landingDiscardDate,
       entry.buyerTransporterRegLandedToKeeps
     ];
-    if (entry.id) {
+    if (entry.getId()) {
       query = `UPDATE entries SET
           activity_date = ?,
           latitude = ?,
@@ -381,7 +328,7 @@ export class DbService {
           landing_discard_date = ?,
           buyer_transporter_reg_landed_to_keeps = ?
         WHERE id = ?;`;
-      params.push(entry.id);
+      params.push(entry.getId());
     }
     this.db.executeSql(query, params).catch(
       e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
@@ -498,4 +445,3 @@ export class DbService {
     }
   }
 }
-

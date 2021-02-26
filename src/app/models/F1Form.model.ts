@@ -37,6 +37,7 @@ export class F1FormEntry {
   public numPotsHauled: number;
   public landingDiscardDate: Date;
   public buyerTransporterRegLandedToKeeps: string;
+
   private localeDateFormat = {
     weekday: 'short',
     year: 'numeric',
@@ -213,6 +214,47 @@ export class F1FormEntry {
       activityDate: this.activityDate,
       species: this.species
     }
+  }
+
+  public static getSpeciesList() {
+    return [
+      { id: 'CRE', name: 'Brown Crab' },
+      { id: 'LBE', name: 'Lobster' },
+      { id: 'NEP', name: 'Nephrops' },
+      { id: 'CRS', name: 'Velvet Crab' },
+      { id: 'SQC', name: 'Squid' }
+    ];
+  }
+
+  public static getGearList() {
+    return [
+      { id: "1", name: 'Pots/traps FPO' },
+      { id: "2", name: 'Handlines FPO' },
+      { id: "3", name: 'Single trawl' },
+      { id: "4", name: 'Deredge' }
+    ];
+  }
+
+  public static getMeshSizes() {
+    return [
+      { id: "1", name: '80mm' },
+      { id: "2", name: '120mm' }
+    ];
+  }
+
+  public static getStates() {
+    return [
+      { id: "1", name: 'Live' },
+      { id: "2", name: 'Fresh' },
+      { id: "3", name: 'Ungraded' }
+    ];
+  }
+
+  public static getPresentations() {
+    return [
+      { id: "1", name: 'Whole' },
+      { id: "2", name: 'Head on, gutted' }
+    ];
   }
 }
 

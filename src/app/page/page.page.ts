@@ -5,8 +5,6 @@ import { Location } from "@angular/common";
 import {
   DbService,
   CompleteCatch,
-  CompleteEntry,
-  EntrySummary,
   Observation
 } from '../db.service';
 import { SettingsService } from '../settings.service';
@@ -17,6 +15,7 @@ import { MapModalPage } from '../map-modal/map-modal.page';
 import {
   F1Form,
   F1FormEntry,
+  F1FormEntrySummary,
   FisheryOffice,
   LatLng
 } from '../models/F1Form.model';
@@ -27,24 +26,6 @@ type Catch = {
   species?: string
   caught?: number
   retained?: number
-};
-
-type Entry = {
-  id?: number
-  activityDate?: Date
-  latitude?: number
-  longitude?: number
-  gear?: string
-  meshSize?: string
-  species?: string
-  state?: string
-  presentation?: string
-  weight?: number
-  DIS?: boolean
-  BMS?: boolean
-  numPotsHauled?: number
-  landingDiscardDate?: Date
-  buyerTransporterRegLandedToKeeps?: string
 };
 
 @Component({
@@ -65,28 +46,15 @@ export class Page implements OnInit {
   public catchFormIncomplete = false;
   public catchFormDataError = "";
 
-  public entry: Entry = {
-    DIS: false,
-    BMS: false
-  };
-  public entries: Array<EntrySummary>;
+  public entry = new F1FormEntry();
+  public entries: Array<F1FormEntrySummary>;
   public entryFormIncomplete = false;
   public entryFormDataError = false;
-  public entryLocationString = '';
-  public entryICESRectangle = '';
 
-  public f1Form = {};
+  public f1Form = new F1Form;
   public sundays = [];
 
   public today = new Date();
-
-  public speciesList = [
-    { id: 'CRE', name: 'Brown Crab' },
-    { id: 'LBE', name: 'Lobster' },
-    { id: 'NEP', name: 'Nephrops' },
-    { id: 'CRS', name: 'Velvet Crab' },
-    { id: 'SQC', name: 'Squid' }
-  ];
 
   public observation = {
     animal: "",
@@ -125,79 +93,53 @@ export class Page implements OnInit {
   ionViewDidEnter() {
     this.postService.postData();
     if (this.page.toLowerCase() == 'home') {
-      this.db.selectCatches().then(catches => this.catches = catches);
-      this.caught['date'] = this.today;
+      this.homeInit();
     }
     if (this.page.toLowerCase() == 'f1entrieslist') {
-      this.db.selectEntrySummaries().then(
-        entries => this.entries = entries
-      );
+      this.entriesInit();
     }
     else if (this.page.toLowerCase() == 'f1entrydetails') {
-      this.activatedRoute.queryParams.subscribe(params => {
-        if (params.entry_id) {
-          this.db.selectEntry(parseInt(params.entry_id)).then(
-            entry => {
-              this.entry = entry;
-              this.entryLocationString = `${this.entry.latitude.toFixed(2)},${this.entry.longitude.toFixed(2)}`;
-              this.entryICESRectangle = this.getIcesRectangle(this.entry.latitude, this.entry.longitude);
-            }
-          );
-        }
-        else {
-          this.entry = { DIS: false, BMS: false };
-        }
-      });
+      this.entryInit();
     }
     else if (this.page.toLowerCase() == 'f1formgen') {
-      this.db.selectEarliestEntryDate().then(
-        date => this.sundays = this.getSundays(date)
-      );
-      this.loadDraft();
-      if (!this.f1Form['fisheriesOffice']) {
-        this.f1Form = {
-          fisheriesOffice: this.settingsService.getFisheriesOffice(
-            this.settings.get('fisheries_office')
-          ),
-          PLN: this.settings.get('pln'),
-          vesselName: this.settings.get('vessel_name'),
-          portOfDeparture: this.settings.get('port_of_departure'),
-          portOfLanding: this.settings.get('port_of_landing'),
-          ownerMaster: this.settings.get('owner_master'),
-          address: this.settings.get('address'),
-          totalPotsFishing: this.settings.get('total_pots_fishing')
-        };
-      }
+      this.formInit();
     }
     else if (this.page.toLowerCase() == 'wildlife') {
-      this.db.selectObservations().then(
-        observations => this.observations = observations
-      );
+      this.wildlifeInit();
     }
   }
 
-  public getSundays(startDate: Date): Date[] {
-    const sundays = []
-    const today = new Date();
-    let sunday = new Date(
-      startDate.setDate(startDate.getDate() - startDate.getDay())
-    );
-    sunday.setHours(0,0,0,0);
-    while (
-      sunday.getFullYear() < today.getFullYear() || (
-        sunday.getFullYear() == today.getFullYear() &&
-        sunday.getMonth() < today.getMonth()
-      ) || (
-        sunday.getFullYear() == today.getFullYear() &&
-        sunday.getMonth() == today.getMonth() &&
-        sunday.getDate() <= today.getDate()
-      )
-    ){
-      sundays.push(new Date(sunday));
-      sunday = new Date(sunday.setDate(sunday.getDate() + 7));
-    }
-    return sundays.reverse();
+////////////////////////////// Cross-page Helpers //////////////////////////////
+
+  public getSpeciesList() {
+    return F1FormEntry.getSpeciesList();
   }
+
+  public dateFromISO(isoDate: string) {
+    return new Date(isoDate);
+  }
+
+  public async presentMapModal(wildlife = false) {
+    const modal = await this.modalController.create({
+      component: MapModalPage,
+      cssClass: 'map-modal-class'
+    });
+    modal.onWillDismiss().then((data) => {
+      if (data.data['submitted']) {
+        if (wildlife) {
+          this.observation.location['lat'] = data.data['latitude'];
+          this.observation.location['lng'] = data.data['longitude'];
+        }
+        else {
+          this.entry.setLatitude(data.data['latitude']);
+          this.entry.setLongitude(data.data['longitude']);
+        }
+      }
+    });
+    return await modal.present();
+  }
+
+/////////////////////////////////// Settings ///////////////////////////////////
 
   private loadSettings() {
     this.settings.clear()
@@ -249,6 +191,13 @@ export class Page implements OnInit {
     );
   }
 
+///////////////////////////////////// Home /////////////////////////////////////
+
+  private homeInit() {
+    this.db.selectCatches().then(catches => this.catches = catches);
+    this.caught['date'] = this.today;
+  }
+
   private recordCatch() {
 
     if (this.caught.species == null || this.caught.caught == null ||
@@ -279,39 +228,34 @@ export class Page implements OnInit {
     }
   }
 
-  private getLocationString(lat: number, lng: number) {
-    if (lat && lng) {
-      const coords = this.degreesMinutes(lat, lng);
-      return `${coords[0][0]}° ${coords[0][1]}' ${coords[0][2]},
-              ${coords[1][0]}° ${coords[1][1]}' ${coords[1][2]}`;
-    }
-    return "";
+
+//////////////////////////////////// Entries ///////////////////////////////////
+
+  private entriesInit() {
+    this.db.selectEntrySummaries().then(
+      entries => this.entries = entries
+    );
   }
 
-  private getEntryLocationString() {
-    if (this.entry.latitude && this.entry.longitude) {
-      return this.getLocationString(this.entry.latitude, this.entry.longitude);
-    }
-    return '';
-  }
+///////////////////////////////// Entry Details ////////////////////////////////
 
-  private getEntryICESRectangleString() {
-    if (this.entry.latitude && this.entry.longitude) {
-      return this.getIcesRectangle(this.entry.latitude, this.entry.longitude);
-    }
-    return '';
+  private entryInit() {
+    this.activatedRoute.queryParams.subscribe(params => {
+      if (params.entry_id) {
+        this.db.selectEntry(parseInt(params.entry_id)).then(
+          entry => {
+            this.entry = entry;
+          }
+        );
+      }
+      else {
+        this.entry = new F1FormEntry();
+      }
+    });
   }
 
   public recordEntry() {
-
-    if (this.entry.activityDate == null ||
-        this.entry.latitude == null ||
-        this.entry.longitude == null ||
-        this.entry.gear == null ||
-        this.entry.species == null ||
-        this.entry.state == null ||
-        this.entry.presentation == null ||
-        this.entry.landingDiscardDate == null) {
+    if (!this.entry.isComplete()) {
       this.entryFormIncomplete = true;
     }
     else {
@@ -326,20 +270,10 @@ export class Page implements OnInit {
     }
 
     if (!this.entryFormIncomplete && !this.entryFormDataError) {
-      this.db.insertOrUpdateEntry(this.entry as CompleteEntry).then(
+      this.db.insertOrUpdateEntry(this.entry).then(
         _ => this.location.back()
       );
     }
-
-  }
-
-  private checkIfEntryIsComplete(entry: Entry): entry is CompleteEntry {
-    for (const [k, v] of Object.entries(entry)) {
-      if (k != 'id' && v == null) {
-        return false;
-      }
-    }
-    return true
   }
 
   public getDate(offset: number = 0) {
@@ -356,14 +290,65 @@ export class Page implements OnInit {
     }
   }
 
-  public dateFromISO(isoDate: string) {
-    return new Date(isoDate);
+  public getGear() {
+    return F1FormEntry.getGearList();
   }
 
-  public generateForm() {}
+  public getMeshSizes() {
+    return F1FormEntry.getMeshSizes();
+  }
 
-  public getFisheriesOffices() {
-    return this.settingsService.getFisheriesOffices();
+  public getStates() {
+    return F1FormEntry.getStates();
+  }
+
+  public getPresentations() {
+    return F1FormEntry.getPresentations();
+  }
+
+
+//////////////////////////////// Form Generation ///////////////////////////////
+
+  private formInit() {
+    this.db.selectEarliestEntryDate().then(
+      date => this.sundays = this.getSundays(date)
+    );
+    this.loadDraft();
+    if (!this.f1Form['fisheriesOffice']) {
+      this.f1Form.fisheryOffice = this.settingsService.getFisheriesOffice(
+        this.settings.get('fisheries_office')
+      );
+      this.f1Form.pln = this.settings.get('pln');
+      this.f1Form.vesselName = this.settings.get('vessel_name');
+      this.f1Form.portOfDeparture = this.settings.get('port_of_departure');
+      this.f1Form.portOfLanding = this.settings.get('port_of_landing');
+      this.f1Form.ownerMaster = this.settings.get('owner_master');
+      this.f1Form.address = this.settings.get('address');
+      this.f1Form.totalPotsFishing = +this.settings.get('total_pots_fishing');
+    }
+  }
+
+  public getSundays(startDate: Date): Date[] {
+    const sundays = []
+    const today = new Date();
+    let sunday = new Date(
+      startDate.setDate(startDate.getDate() - startDate.getDay())
+    );
+    sunday.setHours(0,0,0,0);
+    while (
+      sunday.getFullYear() < today.getFullYear() || (
+        sunday.getFullYear() == today.getFullYear() &&
+        sunday.getMonth() < today.getMonth()
+      ) || (
+        sunday.getFullYear() == today.getFullYear() &&
+        sunday.getMonth() == today.getMonth() &&
+        sunday.getDate() <= today.getDate()
+      )
+    ){
+      sundays.push(new Date(sunday));
+      sunday = new Date(sunday.setDate(sunday.getDate() + 7));
+    }
+    return sundays.reverse();
   }
 
   public setf1FormWeekStarting(dateString: string) {
@@ -377,133 +362,45 @@ export class Page implements OnInit {
     );
   }
 
-  private serializeF1Form(): string {
-    return JSON.stringify(this.f1Form);
-  }
-
-  private deserializeF1Form(serializedForm: string) {
-    const f1Form = JSON.parse(serializedForm);
-    if (f1Form['weekStarting']) {
-      f1Form['weekStarting'] = new Date(f1Form['weekStarting']);
-    }
-    return f1Form;
-  }
-
   public async saveDraft() {
-    this.settingsService.setCurrentF1Form(this.serializeF1Form());
+    this.settingsService.setCurrentF1Form(this.f1Form.serializeWithouEntries());
   }
 
   private loadDraft() {
     this.settingsService.getCurrentF1Form().then(
-      serializedForm => this.f1Form = this.deserializeF1Form(serializedForm)
+      serializedForm => this.f1Form = F1Form.deserialize(serializedForm)
     );
   }
 
   public async generateXLSX() {
     await this.saveDraft();
-    const draftForm = new F1Form();
-    draftForm.fisheryOffice = this.f1Form['fisheriesOffice'];
-    draftForm.pln = this.f1Form['PLN'];
-    draftForm.vesselName = this.f1Form['vesselName'];
-    draftForm.ownerMaster = this.f1Form['ownerMaster'];
-    draftForm.address = this.f1Form['address'];
-    draftForm.portOfDeparture = this.f1Form['portOfDeparture'];
-    draftForm.portOfLanding = this.f1Form['portOfLanding'];
-    draftForm.totalPotsFishing = this.f1Form['totalPotsFishing'];
-    draftForm.comments = this.f1Form['comments'];
-    draftForm.entries = [];
     const weekEnd = new Date(this.f1Form['weekStarting']);
     weekEnd.setDate(weekEnd.getDate() + 7);
-    const entries = this.db.selectFullEntriesBetweenDates(
+    return this.db.selectFullEntriesBetweenDates(
       this.f1Form['weekStarting'], weekEnd
     ).then( entries => {
-      entries.forEach((entry, index) => {
-        draftForm['entries'][index] = new F1FormEntry();
-        const coords = this.degreesMinutes(entry.latitude, entry.longitude);
-        draftForm['entries'][index].activityDate = entry.activityDate;
-        draftForm['entries'][index].setLatitude(entry.latitude);
-        draftForm['entries'][index].setLongitude(entry.longitude);
-        draftForm['entries'][index].gear = entry.gear;
-        draftForm['entries'][index].meshSize = entry.meshSize;
-        draftForm['entries'][index].species = entry.species;
-        draftForm['entries'][index].state = entry.state;
-        draftForm['entries'][index].presentation = entry.presentation;
-        draftForm['entries'][index].weight = entry.weight;
-        draftForm['entries'][index].DIS = entry.DIS;
-        draftForm['entries'][index].BMS = entry.BMS;
-        draftForm['entries'][index].numPotsHauled = entry.numPotsHauled;
-        draftForm['entries'][index].landingDiscardDate = entry.landingDiscardDate;
-        draftForm['entries'][index].buyerTransporterRegLandedToKeeps = entry.buyerTransporterRegLandedToKeeps;
-      });
+      const draftForm = new F1Form();
+      draftForm.fisheryOffice = this.f1Form.fisheryOffice;
+      draftForm.pln = this.f1Form.pln;
+      draftForm.vesselName = this.f1Form.vesselName;
+      draftForm.ownerMaster = this.f1Form.ownerMaster;
+      draftForm.address = this.f1Form.address;
+      draftForm.portOfDeparture = this.f1Form.portOfDeparture;
+      draftForm.portOfLanding = this.f1Form.portOfLanding;
+      draftForm.totalPotsFishing = this.f1Form.totalPotsFishing;
+      draftForm.comments = this.f1Form.comments;
+      draftForm.entries = entries;
       this.sheetService.form = draftForm as F1Form;
+      return this.sheetService.createWorkbook();
     });
-    return this.sheetService.createWorkbook();
   }
 
-  private degreesMinutes(lat: number, lng: number) {
+/////////////////////////////////// Wildlife ///////////////////////////////////
 
-    const absLat = Math.abs(lat);
-    const latDeg = Math.floor(absLat);
-    const latMin = Math.floor((absLat - latDeg) * 60);
-    const latDir = ((lat > 0) ? "N" : "S");
-
-    const absLng = Math.abs(lng);
-    const lngDeg = Math.floor(absLng);
-    const lngMin = Math.floor((absLng - lngDeg) * 60);
-    const lngDir = ((lng > 0) ? "E" : "W");
-
-    return [
-      [latDeg, latMin, latDir],
-      [lngDeg, lngMin, lngDir]
-    ];
-  }
-
-
-  /* As per http://www.ices.dk/marine-data/maps/Pages/ICES-statistical-rectangles.aspx
-
-       ICES rectangle should be a 4-character string of the form "digit, digit, letter, digit"
-
-       ICES statistical rectangles provide a grid covering the area between 36°N and 85°30'N and
-       44°W and 68°30'E.
-
-       Latitudinal rows, with intervals of 30', are numbered (two-digits) from 01 at the southern
-       boundary (latitude 36°00'N) and increasing northwards to 99. The northern boundary of the
-       statistical rectangle system is, thus, latitude 85°30'N.
-
-       Longitudinal columns, with intervals of 1°, are coded according to an alphanumeric system,
-       beginning with A0 at the western boundary (longitude 44°00'W), continuing A1, A2, A3 to
-       longitude 40°W (due to historical reasons, codes A4, A5, A6, A7, A8, and A9 are omitted from
-       the alphanumeric codes for longitude referencing). East of 40°W, the coding continues B0, B1,
-       B2, ..., B9, C0, C1, C2, ..., C9, etc., using a different letter for each 10° block, to the
-       eastern boundary of the area covered. Note that the letter I is omitted.
-
-       When designating an ICES rectangle, the northern coordinate is stated first. Thus, the
-       rectangle of which the south-west corner is 54°00'N 03°00'E is designated 37F3.
-    */
-  private getIcesRectangle(lat: number, lng: number): string {
-    let icesRect = "";
-    if (lat < 36.0 || lat >= 85.5 || lng < -44.0 || lng >= 68.5) {
-      return icesRect;
-    }
-
-    //Latitudinal row
-    const latval = Math.floor((lat - 36.0) * 2) +1;
-    icesRect += (latval <= 9 ? `0${latval}` : latval);
-
-    //Longitudinal Column
-    const letterString = "ABCDEFGHJKLM";
-    const letters = Array.from(letterString);
-    icesRect += letters[(Math.floor(lng / 10)) + 5];
-    if (lng < -40.0) {
-      icesRect += Math.floor(Math.abs(-44.0 - lng));
-    }
-    else if (lng < 0.0) {
-      icesRect += (9 + Math.ceil(lng % 10));
-    }
-    else {
-      icesRect += Math.floor(lng % 10);
-    }
-    return icesRect;
+  private wildlifeInit() {
+    this.db.selectObservations().then(
+      observations => this.observations = observations
+    );
   }
 
   public recordWildlife() {
@@ -525,59 +422,6 @@ export class Page implements OnInit {
         };
       })
     );
-  }
-
-  public async presentMapModal(wildlife = false) {
-    const modal = await this.modalController.create({
-      component: MapModalPage,
-      cssClass: 'map-modal-class'
-    });
-    modal.onWillDismiss().then((data) => {
-      if (data.data['submitted']) {
-        if (wildlife) {
-          this.observation.location['lat'] = data.data['latitude'];
-          this.observation.location['lng'] = data.data['longitude'];
-        }
-        else {
-          this.entry.latitude = data.data['latitude'];
-          this.entry.longitude = data.data['longitude'];
-          this.entryLocationString = `${this.entry.latitude.toFixed(2)},${this.entry.longitude.toFixed(2)}`;
-          this.entryICESRectangle = this.getIcesRectangle(this.entry.latitude, this.entry.longitude);
-        }
-      }
-    });
-    return await modal.present();
-  }
-
-  public getGear() {
-    return [
-      { id: "1", name: 'Pots/traps FPO' },
-      { id: "2", name: 'Handlines FPO' },
-      { id: "3", name: 'Single trawl' },
-      { id: "4", name: 'Deredge' }
-    ];
-  }
-
-  public getMeshSizes() {
-    return [
-      { id: "1", name: '80mm' },
-      { id: "2", name: '120mm' }
-    ];
-  }
-
-  public getStates() {
-    return [
-      { id: "1", name: 'Live' },
-      { id: "2", name: 'Fresh' },
-      { id: "3", name: 'Ungraded' }
-    ];
-  }
-
-  public getPresentations() {
-    return [
-      { id: "1", name: 'Whole' },
-      { id: "2", name: 'Head on, gutted' }
-    ];
   }
 
   public getWildlifeAnimals() {
