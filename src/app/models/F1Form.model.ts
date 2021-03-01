@@ -1,4 +1,4 @@
-import { RecordWithLocationAndDate } from './RecordWithLocation.model'
+import { Record, RecordWithLocation } from './RecordWithLocation.model'
 
 export type FisheryOffice = {
   name: string
@@ -13,9 +13,8 @@ export type F1FormEntrySummary = {
   species: string
 };
 
-export class F1FormEntry extends RecordWithLocationAndDate {
+export class F1FormEntry extends RecordWithLocation {
 
-  private id: number;
   public activityDate: Date;
   public gear: string;
   public meshSize: string;
@@ -29,34 +28,16 @@ export class F1FormEntry extends RecordWithLocationAndDate {
   public landingDiscardDate: Date;
   public buyerTransporterRegLandedToKeeps: string;
 
-  private localeDateFormat = {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  }
-
   constructor(id?: number) {
-    super();
-    this.id = id;
-  }
-
-  public getId() {
-    return this.id;
+    super(id);
   }
 
   public getActivityDateString(format: 'ISO' | 'local' = 'ISO'): string {
-    if (this.activityDate) {
-      return F1FormEntry.dateToString(this.activityDate, format);
-    }
-    return "";
+    return F1FormEntry.dateToString(this.activityDate, format);
   }
 
   public getLandingDiscardDateString(format: 'ISO' | 'local' = 'ISO'): string {
-    if (this.landingDiscardDate) {
-      return F1FormEntry.dateToString(this.landingDiscardDate, format);
-    }
-    return "";
+    return F1FormEntry.dateToString(this.landingDiscardDate, format);
   }
 
   /* As per
@@ -133,7 +114,7 @@ export class F1FormEntry extends RecordWithLocationAndDate {
 
   public getSummary(): F1FormEntrySummary {
     return {
-      id: this.id,
+      id: this.getId(),
       activityDate: this.activityDate,
       species: this.species
     }
@@ -181,9 +162,8 @@ export class F1FormEntry extends RecordWithLocationAndDate {
   }
 }
 
-export class F1Form {
+export class F1Form extends Record {
 
-  private id: number;
   public fisheryOffice: FisheryOffice;
   public pln: string;
   public vesselName: string;
@@ -197,16 +177,25 @@ export class F1Form {
   public weekStart: Date;
 
   constructor(id?: number) {
-    this.id = id;
+    super(id);
   }
 
-  public getId() {
-    return this.id;
+  public isComplete(): boolean {
+    return (
+      !!this.fisheryOffice &&
+      !!this.pln &&
+      !!this.vesselName &&
+      !!this.portOfDeparture &&
+      !!this.portOfLanding &&
+      !!this.ownerMaster &&
+      !!this.address &&
+      !!this.totalPotsFishing
+    );
   }
 
   public serializeWithouEntries(): string {
     const copyOfThis = {
-      id: this.id,
+      id: this.getId(),
       fisheryOffice: this.fisheryOffice,
       pln: this.pln,
       vesselName: this.vesselName,
@@ -230,3 +219,45 @@ export class F1Form {
   }
 }
 
+export class Catch extends Record {
+
+  public date: Date;
+  public species: string;
+  public caught: number;
+  public retained: number;
+
+  constructor(id?: number) {
+    super(id);
+    this.date = new Date();
+  }
+
+  public getDateString(format: 'ISO' | 'local' = 'ISO'): string {
+    return Catch.dateToString(this.date, format);
+  }
+
+  public isComplete(): boolean {
+    return (
+      !!this.date &&
+      !!this.species &&
+      !!this.caught &&
+      !!this.retained
+    );
+  }
+
+  public isValid(): {valid: boolean, message: string} {
+    const retVal = {valid: true, message: ""};
+    if (this.retained > this.caught) {
+      retVal.valid = false;
+      retVal.message += "No. retained cannot be greater than no. caught.";
+    }
+    const now = new Date();
+    if (this.date > now ) {
+      retVal.valid = false;
+      if (retVal.message.length > 0) {
+        retVal.message += " ";
+      }
+      retVal.message += "Time cannot be in the future.";
+    }
+    return retVal;
+  }
+}

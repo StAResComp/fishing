@@ -39,7 +39,7 @@ export class PostService {
           if (response) {
             const ids: number[] = [];
             for (let i = 0; i < catches.length; i++){
-              ids.push(catches[i].id);
+              ids.push(catches[i].getId());
             }
             this.db.markAsSubmitted('catches', ids);
           }

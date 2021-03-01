@@ -6,17 +6,10 @@ import {
   F1Form,
   F1FormEntry,
   F1FormEntrySummary,
-  FisheryOffice
+  FisheryOffice,
+  Catch
 } from './models/F1Form.model';
 import { WildlifeObservation } from './models/WildlifeObservation.model';
-
-export type CompleteCatch = {
-  id?: number
-  date: Date
-  species: string
-  caught: number
-  retained: number
-};
 
 @Injectable()
 export class DbService {
@@ -90,7 +83,7 @@ export class DbService {
     ));
   }
 
-  public async selectCatches(unsubmitted = false): Promise<CompleteCatch[]> {
+  public async selectCatches(unsubmitted = false): Promise<Catch[]> {
     let query = 'SELECT * FROM catches ORDER BY id DESC LIMIT 50;'
     if (unsubmitted) {
       query = 'SELECT * FROM catches WHERE submitted IS NULL;'
@@ -100,30 +93,26 @@ export class DbService {
         const catches = [];
         for(let i = 0; i < res.rows.length; i ++) {
           const row = res.rows.item(i);
-          const catchDate = new Date(row.date);
-          catches.push(
-            {
-              id: row.id,
-              date: catchDate,
-              species: row.species,
-              caught: row.caught,
-              retained: row.retained
-            }
-          );
+          const caught = new Catch(row.id);
+          caught.date = new Date(row.date);
+          caught.species = row.species.trim();
+          caught.caught = row.caught;
+          caught.retained = row.retained;
+          catches.push(caught);
         }
         return catches;
       }
     ).catch(e => {
       console.log(`Error executing SQL: ${JSON.stringify(e)}`);
-      return [] as CompleteCatch[];
+      return [] as Catch[];
     });
   }
 
-  public async selectUnsubmittedCatches(): Promise<CompleteCatch[]> {
+  public async selectUnsubmittedCatches(): Promise<Catch[]> {
     return this.selectCatches(true);
   }
 
-  public async insertOrUpdateCatch(caught: CompleteCatch) {
+  public async insertOrUpdateCatch(caught: Catch) {
     let query = `INSERT INTO catches (date, species, caught, retained)
       VALUES (?, ?, ?, ?);`;
     const params =[
@@ -132,11 +121,11 @@ export class DbService {
       caught.caught,
       caught.retained
     ];
-    if (caught.id) {
+    if (caught.getId()) {
       query = `UPDATE catches SET
           date = ?, species = ?, caught = ?, retained = ?
         WHERE id = ?;`;
-      params.push(caught.id);
+      params.push(caught.getId());
     }
     this.db.executeSql(query, params).catch(
       e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)

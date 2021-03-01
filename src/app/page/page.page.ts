@@ -2,10 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { Location } from "@angular/common";
-import {
-  DbService,
-  CompleteCatch,
-} from '../db.service';
+import { DbService } from '../db.service';
 import { SettingsService } from '../settings.service';
 import { SheetService } from '../sheet.service';
 import { AuthService } from '../auth.service';
@@ -15,17 +12,10 @@ import {
   F1Form,
   F1FormEntry,
   F1FormEntrySummary,
-  FisheryOffice
+  FisheryOffice,
+  Catch
 } from '../models/F1Form.model';
 import { WildlifeObservation } from '../models/WildlifeObservation.model';
-
-type Catch = {
-  id?: number
-  date?: Date
-  species?: string
-  caught?: number
-  retained?: number
-};
 
 @Component({
   selector: 'app-page',
@@ -40,7 +30,7 @@ export class Page implements OnInit {
   public accessTokenExpiry: Number = 0;
   public refreshToken: string = "";
 
-  public caught: Catch = {};
+  public caught = new Catch();
   public catches: Array<Catch>;
   public catchFormIncomplete = false;
   public catchFormDataError = "";
@@ -50,7 +40,7 @@ export class Page implements OnInit {
   public entryFormIncomplete = false;
   public entryFormDataError = false;
 
-  public f1Form = new F1Form;
+  public f1Form = new F1Form();
   public sundays = [];
 
   public today = new Date();
@@ -182,35 +172,23 @@ export class Page implements OnInit {
 
   private homeInit() {
     this.db.selectCatches().then(catches => this.catches = catches);
-    this.caught['date'] = this.today;
+    this.caught = new Catch();
   }
 
   private recordCatch() {
 
-    if (this.caught.species == null || this.caught.caught == null ||
-      this.caught.caught == 0 || this.caught.retained == null) {
-      //form incomplete...
-      this.catchFormIncomplete = true;
-    }
-    else {
-      this.catchFormIncomplete = false;
-    }
-
-    this.catchFormDataError = "";
-    if (this.caught.caught < this.caught.retained) {
-      //data error
-      this.catchFormDataError += 'No. retained cannot be greater than no. caught.';
-    }
-    if (this.caught.date > new Date()) {
-      if (this.catchFormDataError.length > 0) {
-        this.catchFormDataError += '\n';
-      }
-      this.catchFormDataError += 'Time cannot be in the future.';
+    this.catchFormIncomplete = !this.caught.isComplete();
+    const validity = this.caught.isValid();
+    if (!validity.valid) {
+      this.catchFormDataError = validity.message;
     }
 
     if (!this.catchFormIncomplete && !this.catchFormDataError) {
-      this.db.insertOrUpdateCatch(this.caught as CompleteCatch).then(
-        _ => this.db.selectCatches().then(catches => this.catches = catches)
+      this.db.insertOrUpdateCatch(this.caught).then(
+        _ => {
+          this.db.selectCatches().then(catches => this.catches = catches);
+          this.caught = new Catch();
+        }
       );
     }
   }
@@ -300,6 +278,7 @@ export class Page implements OnInit {
     this.db.selectEarliestEntryDate().then(
       date => this.sundays = this.getSundays(date)
     );
+    this.f1Form = new F1Form();
     this.loadDraft();
     if (!this.f1Form['fisheriesOffice']) {
       this.f1Form.fisheryOffice = this.settingsService.getFisheriesOffice(
@@ -388,6 +367,7 @@ export class Page implements OnInit {
     this.db.selectObservations().then(
       observations => this.observations = observations
     );
+    this.observation = new WildlifeObservation();
   }
 
   public recordWildlife() {

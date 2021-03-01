@@ -1,3 +1,39 @@
+export abstract class Record {
+
+  private id: number;
+
+  constructor(id?: number) {
+    this.id = id;
+  }
+
+  public getId(): number {
+    return this.id;
+  }
+
+  private static localeDateFormat = {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  }
+
+  abstract isComplete(): boolean
+
+  public static dateToString(
+    date: Date, format: 'ISO' | 'local' = 'ISO'
+  ): string {
+    if (format == 'ISO') {
+      return date.toISOString();
+    }
+    else {
+      return date.toLocaleDateString(
+        'en-gb', this.localeDateFormat
+      );
+    }
+  }
+
+}
+
 export type LatLng = {
   latDeg: number
   latMin: number
@@ -7,16 +43,13 @@ export type LatLng = {
   lngDir: 'E' | 'W'
 };
 
-export abstract class RecordWithLocationAndDate {
+export abstract class RecordWithLocation extends Record {
 
   private latitude: number;
   private longitude: number;
 
-  private static localeDateFormat = {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
+  constructor(id?: number) {
+    super(id);
   }
 
   public setLatitude(latVal: number) {
@@ -78,19 +111,6 @@ export abstract class RecordWithLocationAndDate {
       }
     }
     return '';
-  }
-
-  abstract isComplete(): boolean
-
-  static dateToString(date: Date, format: 'ISO' | 'local' = 'ISO'): string {
-    if (format == 'ISO') {
-      return date.toISOString();
-    }
-    else {
-      return date.toLocaleDateString(
-        'en-gb', this.localeDateFormat
-      );
-    }
   }
 
 }

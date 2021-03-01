@@ -1,8 +1,7 @@
-import { RecordWithLocationAndDate } from './RecordWithLocation.model';
+import { RecordWithLocation } from './RecordWithLocation.model';
 
-export class WildlifeObservation extends RecordWithLocationAndDate {
+export class WildlifeObservation extends RecordWithLocation {
 
-  private id: number;
   public animal: string;
   public species: string;
   public description: string;
@@ -12,14 +11,9 @@ export class WildlifeObservation extends RecordWithLocationAndDate {
   public notes: string;
 
   constructor(id?: number) {
-    super();
-    this.id = id;
+    super(id);
     this.behaviour = [];
     this.date = new Date();
-  }
-
-  public getId() {
-    return this.id;
   }
 
   public getDateString(format: 'ISO' | 'local' = 'ISO'): string {
