@@ -14,6 +14,10 @@ const routes: Routes = [
   {
     path: 'map-modal',
     loadChildren: () => import('./map-modal/map-modal.module').then( m => m.MapModalPageModule)
+  },
+  {
+    path: 'consent',
+    loadChildren: () => import('./consent/consent.module').then( m => m.ConsentPageModule)
   }
 ];
 

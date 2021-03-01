@@ -8,6 +8,7 @@ import { SheetService } from '../sheet.service';
 import { AuthService } from '../auth.service';
 import { PostService } from '../post.service';
 import { MapModalPage } from '../map-modal/map-modal.page';
+import { ConsentPage } from '../consent/consent.page';
 import {
   F1Form,
   F1FormEntry,
@@ -89,8 +90,26 @@ export class Page implements OnInit {
 
 /////////////////////////////////// Consent ////////////////////////////////////
 
-  private doConsent() {
-    this.settingsService.getConsentStatus().then(status => alert(!!status));
+  private async doConsent() {
+    this.settingsService.getConsentStatus().then(consentGiven => {
+      if (!consentGiven) {
+        return this.modalController.create({
+          component: ConsentPage,
+          cssClass: 'consent-class'
+        }).then(modal => {
+          modal.onWillDismiss().then((data) => {
+            if (data.data['submitted']) {
+              this.settingsService.giveConsent();
+            }
+            else {
+              console.log("Consent not given!");
+              this.doConsent();
+            }
+          });
+          return modal.present();
+        });
+      }
+    });
   }
 
 ////////////////////////////// Cross-page Helpers //////////////////////////////
