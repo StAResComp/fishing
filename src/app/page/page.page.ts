@@ -391,12 +391,14 @@ export class Page implements OnInit {
   }
 
   public recordWildlife() {
-    this.db.insertObservation(this.observation).then(
-      _ => this.db.selectObservations().then(observations => {
-        this.observations = observations
-        this.observation = new WildlifeObservation();
-      })
-    );
+    if (this.observation.isComplete()) {
+      this.db.insertObservation(this.observation).then(
+        _ => this.db.selectObservations().then(observations => {
+          this.observations = observations
+          this.observation = new WildlifeObservation();
+        })
+      );
+    }
   }
 
   public getWildlifeAnimals() {

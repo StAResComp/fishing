@@ -29,6 +29,16 @@ export class WildlifeObservation extends RecordWithLocationAndDate {
     return "";
   }
 
+  public isComplete(): boolean {
+    return (
+      this.animal &&
+      (this.species || this.description) &&
+      this.num &&
+      this.date &&
+      this.behaviour.length > 0
+    );
+  }
+
   public static getWildlifeAnimals() {
     return [
       { name: "Seal", subspecies: ["Harbour (Common) Seal", "Grey Seal"]},

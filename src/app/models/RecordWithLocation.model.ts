@@ -80,6 +80,8 @@ export abstract class RecordWithLocationAndDate {
     return '';
   }
 
+  abstract isComplete(): boolean
+
   static dateToString(date: Date, format: 'ISO' | 'local' = 'ISO'): string {
     if (format == 'ISO') {
       return date.toISOString();
