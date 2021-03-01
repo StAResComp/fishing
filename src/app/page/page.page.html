@@ -38,7 +38,8 @@
             </ion-label>
           </ion-col>
           <ion-col size="auto">
-            <ion-select placeholder="Select office..."
+            <ion-select disabled="{{ disableInputs() }}"
+                        placeholder="Select office..."
                         *ngIf="key == 'fisheries_office'; else elseInput"
                         [value]="settings.get(key)"
                         (ionChange)="settings.set(key, $event.target.value)">
@@ -47,8 +48,8 @@
               </ion-select-option>
             </ion-select>
             <ng-template #elseInput>
-              <ion-input class="form-control" name="{{ key }}"
-                         [value]="settings.get(key)"
+              <ion-input disabled="{{ disableInputs() }}" class="form-control"
+                         name="{{ key }}" [value]="settings.get(key)"
                          (change)="settings.set(key, $event.target.value)">
               </ion-input>
             </ng-template>
@@ -56,7 +57,8 @@
         </ion-row>
         <ion-row>
           <ion-col>
-            <ion-button expand="block" (click)="saveSettings()" >
+            <ion-button disabled="{{ disableInputs() }}" expand="block"
+                                                    (click)="saveSettings()" >
               Save Settings
             </ion-button>
           </ion-col>
@@ -64,7 +66,8 @@
       </ion-grid>
       <ion-card>
         <ion-card-content>
-          <ion-button *ngIf='!authService.loggedIn'
+          <ion-button disabled="{{ disableInputs() }}"
+                      *ngIf='!authService.loggedIn'
                       expand="block" (click)="login()">
             Login
           </ion-button>
@@ -78,7 +81,8 @@
         <ion-list>
           <ion-item>
             <ion-label>Species:</ion-label>
-            <ion-select [value]="caught.species"
+            <ion-select disabled="{{ disableInputs() }}"
+                        [value]="caught.species"
                         (ionChange)="caught.species = $event.target.value">
               <ion-select-option *ngFor="let species of getSpeciesList()">
                 {{ species.name }}
@@ -87,19 +91,21 @@
           </ion-item>
           <ion-item>
             <ion-label>No. caught:</ion-label>
-            <ion-input type="number" [value]="caught.caught"
+            <ion-input disabled="{{ disableInputs() }}" type="number"
+                       [value]="caught.caught"
                        (change)="caught.caught = +$event.target.value">
             </ion-input>
           </ion-item>
           <ion-item>
             <ion-label>No. retained:</ion-label>
-            <ion-input type="number" [value]="caught.retained"
+            <ion-input disabled="{{ disableInputs() }}" type="number"
+                       [value]="caught.retained"
                        (change)="caught.retained = +$event.target.value">
             </ion-input>
           </ion-item>
           <ion-item>
             <ion-label>Time:</ion-label>
-            <ion-datetime
+            <ion-datetime disabled="{{ disableInputs() }}"
                  displayFormat="hh : mm : a"
                  [value]="today.toISOString()"
                  [max]="today.toISOString()"
@@ -113,7 +119,8 @@
             {{ catchFormDataError }}
           </ion-item>
         </ion-list>
-        <ion-button expand="block" (click)='recordCatch()'>
+        <ion-button disabled="{{ disableInputs() }}" expand="block"
+                                                     (click)='recordCatch()'>
           Record Catch
         </ion-button>
       </ion-card>
@@ -127,12 +134,13 @@
 
     <div *ngIf="page.toLowerCase() == 'f1entrieslist'">
       <ion-card>
-        <ion-button routerLink="../F1EntryDetails" routerDirection="forward"
+        <ion-button disabled="{{ disableInputs() }}"
+                    routerLink="../F1EntryDetails" routerDirection="forward"
                     expand="block">
           Create New Entry
         </ion-button>
-        <ion-button routerLink="../F1FormGen" routerDirection="forward"
-                    expand="block">
+        <ion-button disabled="{{ disableInputs() }}" routerLink="../F1FormGen"
+                    routerDirection="forward" expand="block">
           Generate Form
         </ion-button>
       </ion-card>
@@ -147,7 +155,8 @@
                 </div>
               </ion-col>
               <ion-col size="auto" class="ion-text-end">
-                <ion-button routerLink="../F1EntryDetails"
+                <ion-button disabled="{{ disableInputs() }}"
+                            routerLink="../F1EntryDetails"
                             [queryParams]="{ entry_id: entry.id }"
                             routerDirection="forward">
                   Details
@@ -164,7 +173,7 @@
         <ion-row class="ion-align-items-center">
           <ion-col><ion-label>Fishing Activity Date:</ion-label></ion-col>
           <ion-col>
-            <ion-datetime #activityDatePicker
+            <ion-datetime #activityDatePicker disabled="{{ disableInputs() }}"
                  displayFormat="DD MMM YYYY"
                  [value]="(entry.activityDate != null ? entry.activityDate.toISOString() : null)"
                  min="2021-01-01" [max]="today.toISOString()"
@@ -174,17 +183,20 @@
         </ion-row>
         <ion-row class="ion-justify-content-between ion-align-items-center">
           <ion-col size="auto">
-            <ion-button (click)="entry.activityDate = getDate(-1)">
+            <ion-button disabled="{{ disableInputs() }}"
+                        (click)="entry.activityDate = getDate(-1)">
               Yesterday
             </ion-button>
           </ion-col>
           <ion-col size="auto">
-            <ion-button (click)="entry.activityDate = getDate()">
+            <ion-button disabled="{{ disableInputs() }}"
+                        (click)="entry.activityDate = getDate()">
               Today
             </ion-button>
           </ion-col>
           <ion-col size="auto">
-            <ion-button (click)="activityDatePicker.open()">
+            <ion-button disabled="{{ disableInputs() }}"
+                        (click)="activityDatePicker.open()">
               Select...
             </ion-button>
           </ion-col>
@@ -197,7 +209,8 @@
             {{ entry.getLocation() }}
           </ion-col>
           <ion-col size="auto">
-            <ion-button (click)="presentMapModal()">
+            <ion-button disabled="{{ disableInputs() }}"
+                        (click)="presentMapModal()">
               Pick on Map
             </ion-button>
           </ion-col>
@@ -213,7 +226,7 @@
         <ion-row class="ion-align-items-center">
           <ion-col><ion-label>Gear:</ion-label></ion-col>
           <ion-col>
-            <ion-select [value]="entry.gear"
+            <ion-select disabled="{{ disableInputs() }}" [value]="entry.gear"
                  (ionChange)="entry.gear = $event.target.value">
               <ion-select-option *ngFor="let gear of getGear()">
                 {{ gear.name }}
@@ -224,7 +237,8 @@
         <ion-row class="ion-align-items-center">
           <ion-col><ion-label>Mesh Size:</ion-label></ion-col>
           <ion-col>
-            <ion-select [value]="entry.meshSize"
+            <ion-select disabled="{{ disableInputs() }}"
+                        [value]="entry.meshSize"
                         (ionChange)="entry.meshSize = $event.target.value">
               <ion-select-option *ngFor="let meshSizes of getMeshSizes()">
                 {{ meshSizes.name }}
@@ -235,7 +249,8 @@
         <ion-row class="ion-align-items-center">
           <ion-col><ion-label>Species:</ion-label></ion-col>
           <ion-col>
-            <ion-select [value]="entry.species"
+            <ion-select disabled="{{ disableInputs() }}"
+                        [value]="entry.species"
                  (ionChange)="entry.species = $event.target.value">
               <ion-select-option *ngFor="let species of getSpeciesList()">
                 {{ species.name }}
@@ -246,7 +261,7 @@
         <ion-row class="ion-align-items-center">
           <ion-col><ion-label>State:</ion-label></ion-col>
           <ion-col>
-            <ion-select [value]="entry.state"
+            <ion-select disabled="{{ disableInputs() }}" [value]="entry.state"
                  (ionChange)="entry.state = $event.target.value">
               <ion-select-option *ngFor="let state of getStates()">
                 {{ state.name }}
@@ -257,7 +272,8 @@
         <ion-row class="ion-align-items-center">
           <ion-col><ion-label>Presentation:</ion-label></ion-col>
           <ion-col>
-            <ion-select [value]="entry.presentation"
+            <ion-select disabled="{{ disableInputs() }}"
+                        [value]="entry.presentation"
                  (ionChange)="entry.presentation = $event.target.value">
               <ion-select-option
                  *ngFor="let presentation of getPresentations()">
@@ -298,6 +314,7 @@
           <ion-col><ion-label>Landing or Discard Date:</ion-label></ion-col>
           <ion-col>
             <ion-datetime #landingDiscardDatePicker
+                 disabled="{{ disableInputs() }}"
                  displayFormat="DD MMM YYYY"
                  [value]="(entry.landingDiscardDate != null ? entry.landingDiscardDate.toISOString() : null)"
                  min="2021-01-01" [max]="today.toISOString()"
@@ -307,17 +324,20 @@
         </ion-row>
         <ion-row class="ion-justify-content-between ion-align-items-center">
           <ion-col size="auto">
-            <ion-button (click)="setLandingDateFromActivityDate()">
+            <ion-button disabled="{{ disableInputs() }}"
+                        (click)="setLandingDateFromActivityDate()">
               Same Day
             </ion-button>
           </ion-col>
           <ion-col size="auto">
-            <ion-button (click)="setLandingDateFromActivityDate(1)">
+            <ion-button disabled="{{ disableInputs() }}"
+                        (click)="setLandingDateFromActivityDate(1)">
               Next Day
             </ion-button>
           </ion-col>
           <ion-col size="auto">
-            <ion-button (click)="landingDiscardDatePicker.open()">
+            <ion-button disabled="{{ disableInputs() }}"
+                        (click)="landingDiscardDatePicker.open()">
               Select...
             </ion-button>
           </ion-col>
@@ -329,14 +349,17 @@
         </ion-row>
         <ion-row class="ion-align-items-center">
           <ion-col>
-            <ion-textarea [value]="entry.buyerTransporterRegLandedToKeeps"
+            <ion-textarea disabled="{{ disableInputs() }}"
+                          [value]="entry.buyerTransporterRegLandedToKeeps"
                  (change)="entry.buyerTransporterRegLandedToKeeps = $event.target.value">
             </ion-textarea>
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
           <ion-col>
-            <ion-button expand="block" (click)="recordEntry()">Save Entry</ion-button>
+            <ion-button disabled="{{ disableInputs() }}"
+                        expand="block" (click)="recordEntry()">Save Entry
+            </ion-button>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -347,7 +370,8 @@
         <ion-row class="ion-align-items-center">
             <ion-col><ion-label>Fisheries Office:</ion-label></ion-col>
             <ion-col>
-            <ion-select placeholder="Select office..."
+            <ion-select disabled="{{ disableInputs() }}"
+                        placeholder="Select office..."
               [value]="' '+f1Form.fisheriesOffice?.name+' '"
               (ionChange)="f1Form.fisheriesOffice = settingsService.getFisheriesOffice($event.target.value.trim())">
               <ion-select-option
@@ -387,7 +411,8 @@
         </ion-row>
         <ion-row class="ion-align-items-center">
           <ion-col>
-            <ion-textarea [(ngModel)]="f1Form.address"></ion-textarea>
+            <ion-textarea disabled="{{ disableInputs() }}"
+                          [(ngModel)]="f1Form.address"></ion-textarea>
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
@@ -416,13 +441,15 @@
         </ion-row>
         <ion-row class="ion-align-items-center">
           <ion-col>
-            <ion-textarea [(ngModel)]="f1Form.comments"></ion-textarea>
+            <ion-textarea disabled="{{ disableInputs() }}"
+                          [(ngModel)]="f1Form.comments"></ion-textarea>
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
           <ion-col><ion-label>Week Starting</ion-label></ion-col>
           <ion-col>
-          <ion-select placeholder="Select date..."
+          <ion-select disabled="{{ disableInputs() }}"
+                      placeholder="Select date..."
                       [value]="f1Form.weekStarting?.toISOString()"
             (ionChange)="setf1FormWeekStarting($event.target.value)">
             <ion-select-option *ngFor="let sunday of sundays" [value]="sunday.toISOString()">
@@ -433,12 +460,15 @@
         </ion-row>
         <ion-row class="ion-align-items-center">
           <ion-col>
-            <ion-button expand='block' (click)='saveDraft()'>Save Draft</ion-button>
+            <ion-button disabled="{{ disableInputs() }}" expand='block'
+                        (click)='saveDraft()'>Save Draft</ion-button>
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
           <ion-col>
-            <ion-button expand='block' (click)='generateXLSX()'>Generate Spreadsheet</ion-button>
+            <ion-button disabled="{{ disableInputs() }}" expand='block'
+                        (click)='generateXLSX()'>Generate Spreadsheet
+            </ion-button>
           </ion-col>
         </ion-row>
       </ion-grid>
@@ -453,7 +483,8 @@
                 </div>
               </ion-col>
               <ion-col size="auto" class="ion-text-end">
-                <ion-button routerLink="../F1EntryDetails"
+                <ion-button disabled="{{ disableInputs() }}"
+                            routerLink="../F1EntryDetails"
                             [queryParams]="{ entry_id: entry.id }"
                             routerDirection="forward">
                   Details
@@ -475,7 +506,8 @@
             <ion-row class="ion-align-items-center">
               <ion-col><ion-label>Animal:</ion-label></ion-col>
               <ion-col>
-                <ion-select [value]="observation.animal"
+                <ion-select disabled="{{ disableInputs() }}"
+                            [value]="observation.animal"
                      (ionChange)="observation.animal = $event.target.value; observation.species = null;">
                   <ion-select-option *ngFor="let animal of getWildlifeAnimals()">
                     {{ animal.name }}
@@ -487,7 +519,8 @@
             <ion-row class="ion-align-items-center" *ngIf="observation.animal && observation.animal.toLowerCase().trim() != 'other'">
               <ion-col><ion-label>Species:</ion-label></ion-col>
               <ion-col>
-                <ion-select [value]='observation.species'
+                <ion-select disabled="{{ disableInputs() }}"
+                            [value]='observation.species'
                      (ionChange)="observation.species = $event.target.value">
                   <ion-select-option *ngFor="let species of getWildlifeSpecies(observation.animal)">
                     {{ species }}
@@ -501,7 +534,8 @@
             </ion-row>
             <ion-row class="ion-align-items-center" *ngIf="(observation.animal && observation.animal.toLowerCase().trim() == 'other') || (observation.species && observation.species.toLowerCase().trim() == 'other')">
               <ion-col>
-                <ion-textarea [(ngModel)]="observation.description"></ion-textarea>
+                <ion-textarea disabled="{{ disableInputs() }}"
+                          [(ngModel)]="observation.description"></ion-textarea>
               </ion-col>
             </ion-row>
             <ion-row class="ion-align-items-center" *ngIf="(observation.animal && (observation.species || observation.description))">
@@ -513,7 +547,7 @@
             <ion-row class="ion-align-items-center" *ngIf="(observation.animal && (observation.species || observation.description) && observation.num)">
               <ion-col><ion-label>Time:</ion-label></ion-col>
               <ion-col>
-                <ion-datetime
+                <ion-datetime disabled="{{ disableInputs() }}"
                      displayFormat="hh : mm : a"
                      [value]="observation.getDateString()"
                      [max]="today.toISOString()"
@@ -530,7 +564,8 @@
             <ion-row *ngIf="(observation.animal && (observation.species || observation.description) && observation.num)"
                      class="ion-justify-content-between ion-align-items-center">
               <ion-col size="auto">
-                <ion-button (click)="presentMapModal(true)">
+                <ion-button disabled="{{ disableInputs() }}"
+                            (click)="presentMapModal(true)">
                   Pick on Map
                 </ion-button>
               </ion-col>
@@ -541,7 +576,8 @@
             <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.getLatitude() && observation.getLongitude()">
               <ion-col><ion-label>Behaviour:</ion-label></ion-col>
               <ion-col>
-                <ion-select multiple='true' [value]='observation.behaviour'
+                <ion-select disabled="{{ disableInputs() }}" multiple='true'
+                            [value]='observation.behaviour'
                      (ionChange)="observation.behaviour = $event.target.value">
                   <ion-select-option *ngFor="let behaviour of getWildlifeBehaviours()">
                     {{ behaviour }}
@@ -555,7 +591,8 @@
             </ion-row>
             <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.getLatitude() && observation.getLongitude() && observation.behaviour.length > 0">
               <ion-col>
-                <ion-textarea [(ngModel)]="observation.notes"></ion-textarea>
+                <ion-textarea disabled="{{ disableInputs() }}"
+                              [(ngModel)]="observation.notes"></ion-textarea>
               </ion-col>
             </ion-row>
             <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.getLatitude() && observation.getLongitude() && observation.behaviour.length > 0">
@@ -563,7 +600,9 @@
             </ion-row>
             <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.getLatitude() && observation.getLongitude() && observation.behaviour.length > 0">
               <ion-col>
-                <ion-button expand='block' (click)='recordWildlife()'>Record Observation</ion-button>
+                <ion-button disabled="{{ disableInputs() }}" expand='block'
+                            (click)='recordWildlife()'>Record Observation
+                </ion-button>
               </ion-col>
             </ion-row>
           </ion-grid>

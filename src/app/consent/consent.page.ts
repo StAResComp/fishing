@@ -37,7 +37,8 @@ export class ConsentPage implements OnInit {
 
   giveConsent() {
     this.modalController.dismiss({
-      'submitted': true
+      'submitted': true,
+      'consentDetails': this.consent
     });
   }
 

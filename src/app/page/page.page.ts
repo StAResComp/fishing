@@ -49,6 +49,8 @@ export class Page implements OnInit {
   public observation = new WildlifeObservation();
   public observations: Array<WildlifeObservation>;
 
+  private gotConsent = false;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
@@ -88,30 +90,6 @@ export class Page implements OnInit {
     }
   }
 
-/////////////////////////////////// Consent ////////////////////////////////////
-
-  private async doConsent() {
-    this.settingsService.getConsentStatus().then(consentGiven => {
-      if (!consentGiven) {
-        return this.modalController.create({
-          component: ConsentPage,
-          cssClass: 'consent-class'
-        }).then(modal => {
-          modal.onWillDismiss().then((data) => {
-            if (data.data['submitted']) {
-              this.settingsService.giveConsent();
-            }
-            else {
-              console.log("Consent not given!");
-              this.doConsent();
-            }
-          });
-          return modal.present();
-        });
-      }
-    });
-  }
-
 ////////////////////////////// Cross-page Helpers //////////////////////////////
 
   public getSpeciesList() {
@@ -120,6 +98,10 @@ export class Page implements OnInit {
 
   public dateFromISO(isoDate: string) {
     return new Date(isoDate);
+  }
+
+  public disableInputs(): boolean {
+    return !this.gotConsent;
   }
 
   public async presentMapModal(wildlife = false) {
@@ -140,6 +122,34 @@ export class Page implements OnInit {
       }
     });
     return await modal.present();
+  }
+
+/////////////////////////////////// Consent ////////////////////////////////////
+
+  private async doConsent() {
+    this.settingsService.getConsentStatus().then(consentGiven => {
+      if (consentGiven) {
+        this.gotConsent = true;
+      }
+      if (!consentGiven) {
+        return this.modalController.create({
+          component: ConsentPage,
+          cssClass: 'consent-class'
+        }).then(modal => {
+          modal.onWillDismiss().then((data) => {
+            if (data.data['submitted']) {
+              this.settingsService.giveConsent();
+              //Need to do something with the rest of the consent data
+            }
+            else {
+              console.log("Consent not given!");
+              this.doConsent();
+            }
+          });
+          return modal.present();
+        });
+      }
+    });
   }
 
 /////////////////////////////////// Settings ///////////////////////////////////
