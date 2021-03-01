@@ -40,6 +40,14 @@ export class SettingsService {
     }
   }
 
+  public async giveConsent() {
+    return this.storage.set('consentGiven', true);
+  }
+
+  public async getConsentStatus() {
+    return this.storage.get('consentGiven');
+  }
+
   public async setCurrentF1Form(serializedForm: string) {
     return this.storage.set('currentF1Form', serializedForm);
   }

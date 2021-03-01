@@ -65,6 +65,7 @@ export class Page implements OnInit {
 
   ngOnInit() {
     this.page = this.activatedRoute.snapshot.paramMap.get('id');
+    this.doConsent();
   }
 
   ionViewDidEnter() {
@@ -84,6 +85,12 @@ export class Page implements OnInit {
     else if (this.page.toLowerCase() == 'wildlife') {
       this.wildlifeInit();
     }
+  }
+
+/////////////////////////////////// Consent ////////////////////////////////////
+
+  private doConsent() {
+    this.settingsService.getConsentStatus().then(status => alert(!!status));
   }
 
 ////////////////////////////// Cross-page Helpers //////////////////////////////
