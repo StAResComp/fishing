@@ -49,6 +49,18 @@ export class SettingsService {
     return this.storage.get('consentGiven');
   }
 
+  public async getConsentDetails() {
+    return this.storage.get('consentDetails');
+  }
+
+  public async setConsentSubmitted() {
+    return this.storage.set('consentSubmitted', 'true');
+  }
+
+  public async getConsentSubmitted() {
+    return this.storage.get('consentSubmitted');
+  }
+
   public async setCurrentF1Form(serializedForm: string) {
     return this.storage.set('currentF1Form', serializedForm);
   }

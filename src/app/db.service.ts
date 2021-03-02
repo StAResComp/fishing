@@ -54,7 +54,7 @@ export class DbService {
         weight REAL NOT NULL,
         DIS INTEGER NOT NULL DEFAULT 0,
         BMS INTEGER NOT NULL DEFAULT 0,
-        num_pots_hauled INTEGER NOT NULL,
+        num_pots_hauled INTEGER,
         landing_discard_date TEXT NOT NULL,
         buyer_transporter_reg_landed_to_keeps TEXT,
         submitted TEXT

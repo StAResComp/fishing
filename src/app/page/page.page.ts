@@ -129,7 +129,6 @@ export class Page implements OnInit {
 
   private async doConsent() {
     this.settingsService.getConsentStatus().then(consentGiven => {
-      console.log(`Consent status: ${consentGiven}`);
       if (consentGiven) {
         this.gotConsent = true;
       }
@@ -140,7 +139,6 @@ export class Page implements OnInit {
         }).then(modal => {
           modal.onWillDismiss().then((data) => {
             const consent = data.data['consent'] as Consent;
-            console.log(`Consent details: ${consent}`);
             if (data.data['submitted'] && consent != null && consent.isComplete()) {
               this.settingsService.recordConsent(consent.serialize());
               this.gotConsent = true;

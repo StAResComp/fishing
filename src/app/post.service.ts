@@ -10,16 +10,18 @@ import { catchError, retry } from 'rxjs/operators';
 
 import { AuthService } from "./auth.service";
 import { DbService } from "./db.service";
+import { SettingsService } from "./settings.service";
 
 @Injectable()
 export class PostService {
 
-  private postUrl = "https://hookb.in/6Jw3MwzOqLFLbb031zyO";
+  private postUrl = "https://hookb.in/1gjkjMJOwkfj002yk9LP";
 
   constructor(
     private http: HttpClient,
     private authService: AuthService,
-    private db: DbService
+    private db: DbService,
+    private settingsService: SettingsService
   ) {}
 
   private isLoggedIn() {
@@ -27,9 +29,11 @@ export class PostService {
   }
 
   public async postData() {
+    console.log("POSTing data");
     this.postObservations();
     this.postCatches();
     this.postEntries();
+    this.postConsent();
   }
 
   public async postCatches() {
@@ -83,6 +87,26 @@ export class PostService {
         });
       }
       return false;
+    });
+  }
+
+  public async postConsent() {
+    return this.settingsService.getConsentSubmitted().then(alreadySubmitted => {
+      if (!alreadySubmitted) {
+        console.log('POSTING consent data');
+        return this.settingsService.getConsentDetails().then(consent => {
+          return this.sendPostRequest(consent).then(response => {
+            console.log(`Received ${response} when POSTing consent data`);
+            if (response) {
+              this.settingsService.setConsentSubmitted();
+            }
+            return response;
+          });
+        });
+      }
+      else {
+        return false;
+      }
     });
   }
 
