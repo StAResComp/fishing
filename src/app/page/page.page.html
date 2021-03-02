@@ -139,7 +139,8 @@
                     expand="block">
           Create New Entry
         </ion-button>
-        <ion-button disabled="{{ disableInputs() }}" routerLink="../F1FormGen"
+        <ion-button disabled="{{ disableInputs() || entries?.length == 0 }}"
+                    routerLink="../F1FormGen"
                     routerDirection="forward" expand="block">
           Generate Form
         </ion-button>
@@ -357,7 +358,7 @@
         </ion-row>
         <ion-row class="ion-align-items-center">
           <ion-col>
-            <ion-button disabled="{{ disableInputs() }}"
+            <ion-button disabled="{{ disableInputs() || !entry.isComplete() }}"
                         expand="block" (click)="recordEntry()">Save Entry
             </ion-button>
           </ion-col>

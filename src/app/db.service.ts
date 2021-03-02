@@ -271,8 +271,8 @@ export class DbService {
         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`;
     const params = [
       entry.activityDate.toISOString(),
-      entry.getLatitude,
-      entry.getLongitude,
+      entry.getLatitude(),
+      entry.getLongitude(),
       entry.gear,
       entry.meshSize,
       entry.species,
