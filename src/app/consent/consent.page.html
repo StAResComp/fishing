@@ -271,8 +271,9 @@
     </ion-item>
     <ion-item>
       <ion-label class="ion-text-wrap">Date:</ion-label>
-      <span>{{ consentDateString() }}</span>
+      <span>{{ consent.getDateString('local') }}</span>
     </ion-item>
   </ion-list>
-  <ion-button (click)='giveConsent()' expand='block'>I Consent</ion-button>
+  <ion-button disabled="{{ !consent.isComplete() }}" (click)='giveConsent()'
+              expand='block'>I Consent</ion-button>
 </ion-content>

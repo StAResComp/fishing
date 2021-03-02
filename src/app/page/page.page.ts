@@ -17,6 +17,7 @@ import {
   Catch
 } from '../models/F1Form.model';
 import { WildlifeObservation } from '../models/WildlifeObservation.model';
+import { Consent } from '../models/Consent.model';
 
 @Component({
   selector: 'app-page',
@@ -128,6 +129,7 @@ export class Page implements OnInit {
 
   private async doConsent() {
     this.settingsService.getConsentStatus().then(consentGiven => {
+      console.log(`Consent status: ${consentGiven}`);
       if (consentGiven) {
         this.gotConsent = true;
       }
@@ -137,9 +139,11 @@ export class Page implements OnInit {
           cssClass: 'consent-class'
         }).then(modal => {
           modal.onWillDismiss().then((data) => {
-            if (data.data['submitted']) {
-              this.settingsService.giveConsent();
-              //Need to do something with the rest of the consent data
+            const consent = data.data['consent'] as Consent;
+            console.log(`Consent details: ${consent}`);
+            if (data.data['submitted'] && consent != null && consent.isComplete()) {
+              this.settingsService.recordConsent(consent.serialize());
+              this.gotConsent = true;
             }
             else {
               console.log("Consent not given!");

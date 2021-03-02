@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Platform, ModalController } from '@ionic/angular';
+import { Consent } from '../models/Consent.model';
 
 @Component({
   selector: 'app-consent',
@@ -8,25 +9,7 @@ import { Platform, ModalController } from '@ionic/angular';
 })
 export class ConsentPage implements OnInit {
 
-  public consent = {
-    understoodSheet: false,
-    questionsOpportunity: false,
-    questionsAnswered: false,
-    understandWithdrawal: false,
-    understandCoding: false,
-    secondary: {
-      agreeArchiving: false,
-      awareRisks: false,
-      agreeTakePart: false,
-    },
-    photography: {
-      agreePhotoTaken: false,
-      agreePhotoPublished: false,
-      agreePhotoFutureUse: false,
-    },
-    name: null,
-    date: new Date()
-  }
+  public consent = new Consent();
 
   constructor(
     public modalController: ModalController
@@ -38,26 +21,8 @@ export class ConsentPage implements OnInit {
   giveConsent() {
     this.modalController.dismiss({
       'submitted': true,
-      'consentDetails': this.consent
+      'consent': this.consent
     });
   }
 
-  public consentDateString() {
-    return this.consent.date.toLocaleDateString(
-      'en-gb',
-      {
-        weekday: 'short',
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      }
-    );
-  }
-
-  private static localeDateFormat = {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  }
 }

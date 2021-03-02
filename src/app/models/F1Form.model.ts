@@ -211,11 +211,11 @@ export class F1Form extends Record {
   }
 
   public static deserialize(serializedForm: string): F1Form {
-    const f1Form = JSON.parse(serializedForm) as F1Form;
+    const f1Form = JSON.parse(serializedForm);
     if (f1Form.weekStart) {
       f1Form.weekStart = new Date(f1Form.weekStart);
     }
-    return f1Form;
+    return f1Form as F1Form;
   }
 }
 

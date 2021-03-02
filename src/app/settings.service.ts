@@ -40,8 +40,9 @@ export class SettingsService {
     }
   }
 
-  public async giveConsent() {
-    return this.storage.set('consentGiven', true);
+  public async recordConsent(serializedConsent: string) {
+    this.storage.set('consentGiven', true);
+    this.storage.set('consentDetails', serializedConsent);
   }
 
   public async getConsentStatus() {
