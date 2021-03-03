@@ -27,34 +27,33 @@ export class MapModalPage implements OnInit{
 
   async ngOnInit() {
     await this.platform.ready().then( _ => {
-      this.geolocation.getCurrentPosition().then((resp) => {
+      this.geolocation.getCurrentPosition({timeout:2000}).then((resp) => {
         this.latitude = resp.coords.latitude;
         this.longitude = resp.coords.longitude;
-        this.map = Leaflet.map('map_canvas').setView([this.latitude, this.longitude], 13);
-        this.map.on('click', e => {
-          this.latitude = e.latlng.lat;
-          this.longitude = e.latlng.lng;
-          if (this.marker) {
-            this.map.removeLayer(this.marker);
-          }
-          this.marker = Leaflet.marker([e.latlng.lat, e.latlng.lng]).addTo(this.map);
-        });
-        Leaflet.tileLayer(
-          'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          }
-        ).addTo(this.map);
+        this.doMap();
       }).catch((error) => {
         console.log('Error getting location', error);
+        this.doMap();
       });
     });
   }
 
-  onMapClick(e) {
-    this.latitude = e.latlng.lat;
-    this.longitude = e.latlng.lng;
-    let marker = Leaflet.marker([e.latlng.lat, e.latlng.lng]).addTo(this.map);
+  private doMap() {
+    this.map = Leaflet.map('map_canvas').setView([this.latitude, this.longitude], 13);
+    this.map.on('click', e => {
+      this.latitude = e.latlng.lat;
+      this.longitude = e.latlng.lng;
+      if (this.marker) {
+        this.map.removeLayer(this.marker);
+      }
+      this.marker = Leaflet.marker([e.latlng.lat, e.latlng.lng]).addTo(this.map);
+    });
+    Leaflet.tileLayer(
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }
+    ).addTo(this.map);
   }
 
   dismiss() {
