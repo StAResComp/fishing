@@ -13,8 +13,8 @@ import "leaflet/dist/images/marker-icon-2x.png";
 })
 export class MapModalPage implements OnInit{
 
-  public latitude: number = 56.81692;
-  public longitude: number = -4.18265;
+  public latitude: number = 57.76958852557177;
+  public longitude: number = -7.019251515775875;
   private marker: Leaflet.Marker;
 
   map: Leaflet.Map;
@@ -26,20 +26,19 @@ export class MapModalPage implements OnInit{
   ) { }
 
   async ngOnInit() {
-    await this.platform.ready().then( _ => {
-      this.geolocation.getCurrentPosition({timeout:2000}).then((resp) => {
+    await this.platform.ready().then( async _ => {
+      await this.geolocation.getCurrentPosition({timeout:2000}).then((resp) => {
         this.latitude = resp.coords.latitude;
         this.longitude = resp.coords.longitude;
-        this.doMap();
       }).catch((error) => {
         console.log('Error getting location', error);
-        this.doMap();
       });
+      this.doMap();
     });
   }
 
   private doMap() {
-    this.map = Leaflet.map('map_canvas').setView([this.latitude, this.longitude], 13);
+    this.map = Leaflet.map('map_canvas').setView([this.latitude, this.longitude], 11);
     this.map.on('click', e => {
       this.latitude = e.latlng.lat;
       this.longitude = e.latlng.lng;
