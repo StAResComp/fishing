@@ -4,5 +4,6 @@ export const environment = {
   tokenUrl: "",
   client_id: "",
   client_secret: "",
-  redirect_uri: "uk.ac.standrews.fishing://callback"
+  redirect_uri: "uk.ac.standrews.fishing://callback",
+  dataUrl: ""
 };

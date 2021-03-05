@@ -7,6 +7,7 @@ import {
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
+import { environment } from '../environments/environment';
 
 import { AuthService } from "./auth.service";
 import { DbService } from "./db.service";
@@ -15,7 +16,7 @@ import { SettingsService } from "./settings.service";
 @Injectable()
 export class PostService {
 
-  private postUrl = "https://hookb.in/1gjkjMJOwkfj002yk9LP";
+  private static readonly postUrl = environment.dataUrl;
 
   constructor(
     private http: HttpClient,
@@ -118,7 +119,7 @@ export class PostService {
             //'Authorization': header[1]
           })
         };
-        return this.http.post(this.postUrl, data, options).toPromise().then(
+        return this.http.post(PostService.postUrl, data, options).toPromise().then(
           response => {
             return response['success'];
           }
