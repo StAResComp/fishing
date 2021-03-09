@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
-import { Location } from "@angular/common";
+import { Location } from '@angular/common';
 import { DbService } from '../db.service';
 import { SettingsService } from '../settings.service';
 import { SheetService } from '../sheet.service';
@@ -28,14 +28,14 @@ export class Page implements OnInit {
   public settings = new Map<string, string>();
   private keys: Array<string>;
 
-  public accessToken: string = "";
-  public accessTokenExpiry: Number = 0;
-  public refreshToken: string = "";
+  public accessToken = '';
+  public accessTokenExpiry = 0;
+  public refreshToken = '';
 
   public caught = new Catch();
   public catches: Array<Catch>;
   public catchFormIncomplete = false;
-  public catchFormDataError = "";
+  public catchFormDataError = '';
 
   public entry = new F1FormEntry();
   public entries: Array<F1FormEntrySummary>;
@@ -74,19 +74,19 @@ export class Page implements OnInit {
 
   ionViewDidEnter() {
     this.postService.postData();
-    if (this.page.toLowerCase() == 'home') {
+    if (this.page.toLowerCase() === 'home') {
       this.homeInit();
     }
-    if (this.page.toLowerCase() == 'f1entrieslist') {
+    if (this.page.toLowerCase() === 'f1entrieslist') {
       this.entriesInit();
     }
-    else if (this.page.toLowerCase() == 'f1entrydetails') {
+    else if (this.page.toLowerCase() === 'f1entrydetails') {
       this.entryInit();
     }
-    else if (this.page.toLowerCase() == 'f1formgen') {
+    else if (this.page.toLowerCase() === 'f1formgen') {
       this.formInit();
     }
-    else if (this.page.toLowerCase() == 'wildlife') {
+    else if (this.page.toLowerCase() === 'wildlife') {
       this.wildlifeInit();
     }
   }
@@ -111,14 +111,14 @@ export class Page implements OnInit {
       cssClass: 'map-modal-class'
     });
     modal.onWillDismiss().then((data) => {
-      if (data.data['submitted']) {
+      if (data.data.submitted) {
         if (wildlife) {
-          this.observation.setLatitude(data.data['latitude']);
-          this.observation.setLongitude(data.data['longitude']);
+          this.observation.setLatitude(data.data.latitude);
+          this.observation.setLongitude(data.data.longitude);
         }
         else {
-          this.entry.setLatitude(data.data['latitude']);
-          this.entry.setLongitude(data.data['longitude']);
+          this.entry.setLatitude(data.data.latitude);
+          this.entry.setLongitude(data.data.longitude);
         }
       }
     });
@@ -138,13 +138,13 @@ export class Page implements OnInit {
           cssClass: 'consent-class'
         }).then(modal => {
           modal.onWillDismiss().then((data) => {
-            const consent = data.data['consent'] as Consent;
-            if (data.data['submitted'] && consent != null && consent.isComplete()) {
+            const consent = data.data.consent as Consent;
+            if (data.data.submitted && consent != null && consent.isComplete()) {
               this.settingsService.recordConsent(consent.serialize());
               this.gotConsent = true;
             }
             else {
-              console.log("Consent not given!");
+              console.log('Consent not given!');
               this.doConsent();
             }
           });
@@ -157,8 +157,8 @@ export class Page implements OnInit {
 /////////////////////////////////// Settings ///////////////////////////////////
 
   private loadSettings() {
-    this.settings.clear()
-    this.keys.forEach(async(key) => {
+    this.settings.clear();
+    this.keys.forEach(async (key) => {
       const val = await this.settingsService.get(key);
       this.settings.set(key, val);
     });
@@ -172,14 +172,14 @@ export class Page implements OnInit {
     );
   }
 
-  private getDisplayKey(key :string) {
-    if (key.toUpperCase() == 'PLN') {
+  private getDisplayKey(key: string) {
+    if (key.toUpperCase() === 'PLN') {
       return key.toUpperCase();
     }
     else {
       return key.replace(/_/g, ' ').replace(
         /\w\S*/g,
-        function (txt) {
+        (txt) => {
           return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
         }
       );
@@ -195,13 +195,13 @@ export class Page implements OnInit {
   }
 
   public checkTokens() {
-    this.authService.get(AuthService.access_token_key).then(
+    this.authService.get(AuthService.accessTokenKey).then(
       value => this.accessToken = value
     );
-    this.authService.get(AuthService.access_token_expiry_key).then(
+    this.authService.get(AuthService.accessTokenExpiryKey).then(
       value => this.accessTokenExpiry = +value - (new Date().getTime() / 1000)
     );
-    this.authService.get(AuthService.refresh_token_key).then(
+    this.authService.get(AuthService.refreshTokenKey).then(
       value => this.refreshToken = value
     );
   }
@@ -245,7 +245,7 @@ export class Page implements OnInit {
   private entryInit() {
     this.activatedRoute.queryParams.subscribe(params => {
       if (params.entry_id) {
-        this.db.selectEntry(parseInt(params.entry_id)).then(
+        this.db.selectEntry(parseInt(params.entry_id, 10)).then(
           entry => {
             this.entry = entry;
           }
@@ -318,7 +318,7 @@ export class Page implements OnInit {
     );
     this.f1Form = new F1Form();
     this.loadDraft();
-    if (!this.f1Form['fisheriesOffice']) {
+    if (!this.f1Form.fisheryOffice) {
       this.f1Form.fisheryOffice = this.settingsService.getFisheriesOffice(
         this.settings.get('fisheries_office')
       );
@@ -333,19 +333,19 @@ export class Page implements OnInit {
   }
 
   public getSundays(startDate: Date): Date[] {
-    const sundays = []
+    const sundays = [];
     const today = new Date();
     let sunday = new Date(
       startDate.setDate(startDate.getDate() - startDate.getDay())
     );
-    sunday.setHours(0,0,0,0);
+    sunday.setHours(0, 0, 0, 0);
     while (
       sunday.getFullYear() < today.getFullYear() || (
-        sunday.getFullYear() == today.getFullYear() &&
+        sunday.getFullYear() === today.getFullYear() &&
         sunday.getMonth() < today.getMonth()
       ) || (
-        sunday.getFullYear() == today.getFullYear() &&
-        sunday.getMonth() == today.getMonth() &&
+        sunday.getFullYear() === today.getFullYear() &&
+        sunday.getMonth() === today.getMonth() &&
         sunday.getDate() <= today.getDate()
       )
     ){
@@ -356,11 +356,11 @@ export class Page implements OnInit {
   }
 
   public setf1FormWeekStarting(dateString: string) {
-    this.f1Form['weekStarting'] = new Date(dateString);
-    const weekEnd = new Date(this.f1Form['weekStarting']);
+    this.f1Form.weekStart = new Date(dateString);
+    const weekEnd = new Date(this.f1Form.weekStart);
     weekEnd.setDate(weekEnd.getDate() + 7);
     this.db.selectEntrySummariesBetweenDates(
-      this.f1Form['weekStarting'], weekEnd
+      this.f1Form.weekStart, weekEnd
     ).then(
       entries => this.entries = entries
     );
@@ -378,10 +378,10 @@ export class Page implements OnInit {
 
   public async generateXLSX() {
     await this.saveDraft();
-    const weekEnd = new Date(this.f1Form['weekStarting']);
+    const weekEnd = new Date(this.f1Form.weekStart);
     weekEnd.setDate(weekEnd.getDate() + 7);
     return this.db.selectFullEntriesBetweenDates(
-      this.f1Form['weekStarting'], weekEnd
+      this.f1Form.weekStart, weekEnd
     ).then( entries => {
       const draftForm = new F1Form();
       draftForm.fisheryOffice = this.f1Form.fisheryOffice;
@@ -412,7 +412,7 @@ export class Page implements OnInit {
     if (this.observation.isComplete()) {
       this.db.insertObservation(this.observation).then(
         _ => this.db.selectObservations().then(observations => {
-          this.observations = observations
+          this.observations = observations;
           this.observation = new WildlifeObservation();
         })
       );

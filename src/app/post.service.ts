@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 import {
   HttpClient,
   HttpHeaders,
@@ -9,9 +9,9 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 
-import { AuthService } from "./auth.service";
-import { DbService } from "./db.service";
-import { SettingsService } from "./settings.service";
+import { AuthService } from './auth.service';
+import { DbService } from './db.service';
+import { SettingsService } from './settings.service';
 
 @Injectable()
 export class PostService {
@@ -30,7 +30,7 @@ export class PostService {
   }
 
   public async postData() {
-    console.log("POSTing data");
+    console.log('POSTing data');
     this.postObservations();
     this.postCatches();
     this.postEntries();
@@ -43,8 +43,8 @@ export class PostService {
         return this.sendPostRequest(catches).then(response => {
           if (response) {
             const ids: number[] = [];
-            for (let i = 0; i < catches.length; i++){
-              ids.push(catches[i].getId());
+            for (const caught of catches){
+              ids.push(caught.getId());
             }
             this.db.markAsSubmitted('catches', ids);
           }
@@ -61,8 +61,8 @@ export class PostService {
         return this.sendPostRequest(entries).then(response => {
           if (response) {
             const ids: number[] = [];
-            for (let i = 0; i < entries.length; i++){
-              ids.push(entries[i].getId());
+            for (const entry of entries){
+              ids.push(entry.getId());
             }
             this.db.markAsSubmitted('entries', ids);
           }
@@ -79,8 +79,8 @@ export class PostService {
         return this.sendPostRequest(observations).then(response => {
           if (response) {
             const ids: number[] = [];
-            for (let i = 0; i < observations.length; i++){
-              ids.push(observations[i].getId());
+            for (const observation of observations){
+              ids.push(observation.getId());
             }
             this.db.markAsSubmitted('observations', ids);
           }
@@ -116,7 +116,7 @@ export class PostService {
       return this.authService.getAuthHeader().then(header => {
         const options = {
           headers: new HttpHeaders({
-            //'Authorization': header[1]
+            Authorization: header[1]
           })
         };
         return this.http.post(PostService.postUrl, data, options).toPromise().then(

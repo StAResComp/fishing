@@ -1,6 +1,26 @@
 export abstract class Record {
 
+  private static localeDateFormat = {
+    weekday: 'short',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  };
+
   private id: number;
+
+  public static dateToString(
+    date: Date, format: 'ISO' | 'local' = 'ISO'
+  ): string {
+    if (format === 'ISO') {
+      return date.toISOString();
+    }
+    else {
+      return date.toLocaleDateString(
+        'en-gb', this.localeDateFormat
+      );
+    }
+  }
 
   constructor(id?: number) {
     this.id = id;
@@ -10,27 +30,7 @@ export abstract class Record {
     return this.id;
   }
 
-  private static localeDateFormat = {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  }
-
-  abstract isComplete(): boolean
-
-  public static dateToString(
-    date: Date, format: 'ISO' | 'local' = 'ISO'
-  ): string {
-    if (format == 'ISO') {
-      return date.toISOString();
-    }
-    else {
-      return date.toLocaleDateString(
-        'en-gb', this.localeDateFormat
-      );
-    }
-  }
+  abstract isComplete(): boolean;
 
 }
 
@@ -83,21 +83,14 @@ export abstract class RecordWithLocation extends Record {
       const absLat = Math.abs(this.latitude);
       const latDeg = Math.floor(absLat);
       const latMin = Math.floor((absLat - latDeg) * 60);
-      const latDir = ((this.latitude > 0) ? "N" : "S");
+      const latDir = ((this.latitude > 0) ? 'N' : 'S');
 
       const absLng = Math.abs(this.longitude);
       const lngDeg = Math.floor(absLng);
       const lngMin = Math.floor((absLng - lngDeg) * 60);
-      const lngDir = ((this.longitude > 0) ? "E" : "W");
+      const lngDir = ((this.longitude > 0) ? 'E' : 'W');
 
-      return {
-        latDeg: latDeg,
-        latMin: latMin,
-        latDir: latDir,
-        lngDeg: lngDeg,
-        lngMin: lngMin,
-        lngDir: lngDir
-      };
+      return { latDeg, latMin, latDir, lngDeg, lngMin, lngDir };
     }
     return null;
   }

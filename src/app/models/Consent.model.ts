@@ -20,6 +20,12 @@ export class Consent extends Record {
   public name: string;
   public date = new Date();
 
+  public static deserialize(serializedConsent: string): Consent {
+    const consent = JSON.parse(serializedConsent);
+    consent.date = new Date(consent.date);
+    return consent as Consent;
+  }
+
   constructor() {
     super();
   }
@@ -47,9 +53,4 @@ export class Consent extends Record {
     return JSON.stringify(this);
   }
 
-  public static deserialize(serializedConsent: string): Consent {
-    const consent = JSON.parse(serializedConsent);
-    consent.date = new Date(consent.date);
-    return consent as Consent;
-  }
 }

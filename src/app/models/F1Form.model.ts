@@ -1,4 +1,4 @@
-import { Record, RecordWithLocation } from './RecordWithLocation.model'
+import { Record, RecordWithLocation } from './RecordWithLocation.model';
 
 export type FisheryOffice = {
   name: string
@@ -22,11 +22,52 @@ export class F1FormEntry extends RecordWithLocation {
   public state: string;
   public presentation: string;
   public weight: number;
-  public DIS: boolean = false;
-  public BMS: boolean = false;
+  public DIS = false;
+  public BMS = false;
   public numPotsHauled: number;
   public landingDiscardDate: Date;
   public buyerTransporterRegLandedToKeeps: string;
+
+  public static getSpeciesList() {
+    return [
+      { id: 'CRE', name: 'Brown Crab' },
+      { id: 'LBE', name: 'Lobster' },
+      { id: 'NEP', name: 'Nephrops' },
+      { id: 'CRS', name: 'Velvet Crab' },
+      { id: 'SQC', name: 'Squid' }
+    ];
+  }
+
+  public static getGearList() {
+    return [
+      { id: '1', name: 'Pots/traps FPO' },
+      { id: '2', name: 'Handlines FPO' },
+      { id: '3', name: 'Single trawl' },
+      { id: '4', name: 'Deredge' }
+    ];
+  }
+
+  public static getMeshSizes() {
+    return [
+      { id: '1', name: '80mm' },
+      { id: '2', name: '120mm' }
+    ];
+  }
+
+  public static getStates() {
+    return [
+      { id: '1', name: 'Live' },
+      { id: '2', name: 'Fresh' },
+      { id: '3', name: 'Ungraded' }
+    ];
+  }
+
+  public static getPresentations() {
+    return [
+      { id: '1', name: 'Whole' },
+      { id: '2', name: 'Head on, gutted' }
+    ];
+  }
 
   constructor(id?: number) {
     super(id);
@@ -71,17 +112,17 @@ export class F1FormEntry extends RecordWithLocation {
     const lat = this.getLatitude();
     const lng = this.getLongitude();
     if (lat && lng) {
-      let icesRect = "";
+      let icesRect = '';
       if (lat < 36.0 || lat >= 85.5 || lng < -44.0 || lng >= 68.5) {
         return icesRect;
       }
 
-      //Latitudinal row
-      const latval = Math.floor((lat - 36.0) * 2) +1;
+      // Latitudinal row
+      const latval = Math.floor((lat - 36.0) * 2) + 1;
       icesRect += (latval <= 9 ? `0${latval}` : latval);
 
-      //Longitudinal Column
-      const letterString = "ABCDEFGHJKLM";
+      // Longitudinal Column
+      const letterString = 'ABCDEFGHJKLM';
       const letters = Array.from(letterString);
       icesRect += letters[(Math.floor(lng / 10)) + 5];
       if (lng < -40.0) {
@@ -117,49 +158,9 @@ export class F1FormEntry extends RecordWithLocation {
       id: this.getId(),
       activityDate: this.activityDate,
       species: this.species
-    }
+    };
   }
 
-  public static getSpeciesList() {
-    return [
-      { id: 'CRE', name: 'Brown Crab' },
-      { id: 'LBE', name: 'Lobster' },
-      { id: 'NEP', name: 'Nephrops' },
-      { id: 'CRS', name: 'Velvet Crab' },
-      { id: 'SQC', name: 'Squid' }
-    ];
-  }
-
-  public static getGearList() {
-    return [
-      { id: "1", name: 'Pots/traps FPO' },
-      { id: "2", name: 'Handlines FPO' },
-      { id: "3", name: 'Single trawl' },
-      { id: "4", name: 'Deredge' }
-    ];
-  }
-
-  public static getMeshSizes() {
-    return [
-      { id: "1", name: '80mm' },
-      { id: "2", name: '120mm' }
-    ];
-  }
-
-  public static getStates() {
-    return [
-      { id: "1", name: 'Live' },
-      { id: "2", name: 'Fresh' },
-      { id: "3", name: 'Ungraded' }
-    ];
-  }
-
-  public static getPresentations() {
-    return [
-      { id: "1", name: 'Whole' },
-      { id: "2", name: 'Head on, gutted' }
-    ];
-  }
 }
 
 export class F1Form extends Record {
@@ -178,6 +179,14 @@ export class F1Form extends Record {
 
   constructor(id?: number) {
     super(id);
+  }
+
+  public static deserialize(serializedForm: string): F1Form {
+    const f1Form = JSON.parse(serializedForm);
+    if (f1Form.weekStart) {
+      f1Form.weekStart = new Date(f1Form.weekStart);
+    }
+    return f1Form as F1Form;
   }
 
   public isComplete(): boolean {
@@ -210,13 +219,6 @@ export class F1Form extends Record {
     return JSON.stringify(copyOfThis);
   }
 
-  public static deserialize(serializedForm: string): F1Form {
-    const f1Form = JSON.parse(serializedForm);
-    if (f1Form.weekStart) {
-      f1Form.weekStart = new Date(f1Form.weekStart);
-    }
-    return f1Form as F1Form;
-  }
 }
 
 export class Catch extends Record {
@@ -245,18 +247,18 @@ export class Catch extends Record {
   }
 
   public isValid(): {valid: boolean, message: string} {
-    const retVal = {valid: true, message: ""};
+    const retVal = {valid: true, message: ''};
     if (this.retained > this.caught) {
       retVal.valid = false;
-      retVal.message += "No. retained cannot be greater than no. caught.";
+      retVal.message += 'No. retained cannot be greater than no. caught.';
     }
     const now = new Date();
     if (this.date > now ) {
       retVal.valid = false;
       if (retVal.message.length > 0) {
-        retVal.message += " ";
+        retVal.message += ' ';
       }
-      retVal.message += "Time cannot be in the future.";
+      retVal.message += 'Time cannot be in the future.';
     }
     return retVal;
   }
