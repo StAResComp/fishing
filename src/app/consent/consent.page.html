@@ -171,60 +171,41 @@
   the research team having access.  It will be securely stored; in (1)
   electronic form (coded format) on the University computer system; (2) in the
   case of hardcopy in a locked storage cupboard.</p>
-  <p class="ion-padding-start ion-padding-end">Please answer each statement
+  <p class="ion-padding-start ion-padding-end">Please read each statement
   concerning the collection and use of the research data.</p>
-  <ion-list>
-    <ion-item>
-      <ion-label class="ion-text-wrap">I have read and understood the participant information
-      sheet.</ion-label>
-      <ion-toggle [(ngModel)]="consent.understoodSheet"></ion-toggle>
-    </ion-item>
-    <ion-item>
-      <ion-label class="ion-text-wrap">I have been given the opportunity to ask questions about the
-        study.</ion-label>
-      <ion-toggle [(ngModel)]="consent.questionsOpportunity"></ion-toggle>
-    </ion-item>
-    <ion-item>
-      <ion-label class="ion-text-wrap">I have had my questions answered satisfactorily.</ion-label>
-      <ion-toggle [(ngModel)]="consent.questionsAnswered"></ion-toggle>
-    </ion-item>
-    <ion-item>
-      <ion-label class="ion-text-wrap">I understand that I can withdraw from the study at any time
-        without having to give an explanation.</ion-label>
-      <ion-toggle [(ngModel)]="consent.understandWithdrawal"></ion-toggle>
-    </ion-item>
-    <ion-item>
-      <ion-label class="ion-text-wrap">I understand that my data will be confidential and that it
-        will contain identifiable personal data but that will be stored with
-        personal identifiers removed by the researchers and that only the
-        project researchers will be able to decode this information as and when
-        necessary.</ion-label>
-      <ion-toggle [(ngModel)]="consent.understandCoding"></ion-toggle>
-    </ion-item>
-  </ion-list>
+  <ol>
+    <li>I have read and understood the participant information sheet.</li>
+    <li>
+      I have been given the opportunity to ask questions about the study.
+    </li>
+    <li>I have had my questions answered satisfactorily.</li>
+    <li>
+      I understand that I can withdraw from the study at any time without
+      having to give an explanation.
+    </li>
+    <li>
+      I understand that my data will be confidential and that it will contain
+      identifiable personal data but that will be stored with personal
+      identifiers removed by the researchers and that only the project
+      researchers will be able to decode this information as and when
+      necessary.
+    </li>
+  </ol>
   <h2 class="ion-padding-start ion-padding-end">Secondary Data
     Permission/Decline</h2>
-  <ion-list>
-    <ion-item>
-      <ion-label class="ion-text-wrap">I agree to my data (in line with
-        conditions outlined above) being kept by the researchers and being
-        archived for potential use in further research projects / by other bona
-        fide researchers. I understand that this may allow other researchers to
-        de-code the data and identify me.</ion-label>
-      <ion-toggle [(ngModel)]="consent.secondary.agreeArchiving"></ion-toggle>
-    </ion-item>
-    <ion-item>
-      <ion-label class="ion-text-wrap">I have been made fully aware of the
-        potential risks associated with this research and am satisfied with the
-        information provided.</ion-label>
-      <ion-toggle [(ngModel)]="consent.secondary.awareRisks"></ion-toggle>
-    </ion-item>
-    <ion-item>
-      <ion-label class="ion-text-wrap">I agree to take part in the
-        study</ion-label>
-      <ion-toggle [(ngModel)]="consent.secondary.agreeTakePart"></ion-toggle>
-    </ion-item>
-  </ion-list>
+  <ol start="6">
+    <li>
+      I agree to my data (in line with conditions outlined above) being kept by
+      the researchers and being archived for potential use in further research
+      projects / by other bona fide researchers. I understand that this may
+      allow other researchers to de-code the data and identify me.
+    </li>
+    <li>
+      I have been made fully aware of the potential risks associated with this
+      research and am satisfied with the information provided.
+    </li>
+    <li>I agree to take part in the study.</li>
+  </ol>
   <h2 class="ion-padding-start ion-padding-end">Photographic Images and
     Video</h2>
   <p class="ion-padding-start ion-padding-end">Part of our research may involve
@@ -234,26 +215,17 @@
   <p class="ion-padding-start ion-padding-end">Photographs and recorded data
   can be valuable resources for future studies therefore we ask for your
   additional consent to maintain data and images for this purpose.</p>
-  <ion-list>
-    <ion-item>
-      <ion-label class="ion-text-wrap">I agree to have my photo taken / to
-        being videoed</ion-label>
-      <ion-toggle
-                 [(ngModel)]="consent.photography.agreePhotoTaken"></ion-toggle>
-    </ion-item>
-    <ion-item>
-      <ion-label class="ion-text-wrap">I agree for my photo and video recorded
-        material to be published as part of this research</ion-label>
-      <ion-toggle
-            [(ngModel)]="consent.photography.agreePhotoPublished"></ion-toggle>
-    </ion-item>
-    <ion-item>
-      <ion-label class="ion-text-wrap">I agree for my photos and video recorded
-        material to be used in future studies </ion-label>
-      <ion-toggle
-            [(ngModel)]="consent.photography.agreePhotoFutureUse"></ion-toggle>
-    </ion-item>
-  </ion-list>
+  <ol start="9">
+    <li>I agree to have my photo taken / to being videoed.</li>
+    <li>
+      I agree for my photo and video recorded material to be published as part
+      of this research.
+    </li>
+    <li>
+      I agree for my photos and video recorded material to be used in future
+      studies.
+    </li>
+  </ol>
   <p class="ion-padding-start ion-padding-end">Participation in this research
   is completely voluntary and your consent is required before you can
   participate in this research. If you decide at a later date that data should
@@ -261,13 +233,16 @@
   <ion-list>
     <ion-item>
       <ion-label class="ion-text-wrap">Name:</ion-label>
-      <ion-input [(ngModel)]="consent.name"></ion-input>
+      <ion-input required="true" [(ngModel)]="consent.name"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label class="ion-text-wrap">Date:</ion-label>
       <span>{{ consent.getDateString('local') }}</span>
     </ion-item>
   </ion-list>
+  <p class="ion-padding-start ion-padding-end"><strong>By pressing "I Consent"
+    you are confirming that you agree to the statements numbered 1 to 11 above.
+  </strong></p>
   <ion-button disabled="{{ !consent.isComplete() }}" (click)='giveConsent()'
               expand='block'>I Consent</ion-button>
 </ion-content>

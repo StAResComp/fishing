@@ -2,20 +2,20 @@ import { Record } from './RecordWithLocation.model';
 
 export class Consent extends Record {
 
-  public understoodSheet = false;
-  public questionsOpportunity = false;
-  public questionsAnswered = false;
-  public understandWithdrawal = false;
-  public understandCoding = false;
+  public understoodSheet = true;
+  public questionsOpportunity = true;
+  public questionsAnswered = true;
+  public understandWithdrawal = true;
+  public understandCoding = true;
   public secondary = {
-    agreeArchiving: false,
-    awareRisks: false,
-    agreeTakePart: false,
+    agreeArchiving: true,
+    awareRisks: true,
+    agreeTakePart: true,
   };
   public photography = {
-    agreePhotoTaken: false,
-    agreePhotoPublished: false,
-    agreePhotoFutureUse: false,
+    agreePhotoTaken: true,
+    agreePhotoPublished: true,
+    agreePhotoFutureUse: true,
   };
   public name: string;
   public date = new Date();
