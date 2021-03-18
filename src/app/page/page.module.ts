@@ -6,6 +6,7 @@ import { IonicModule } from '@ionic/angular';
 
 import { PageRoutingModule } from './page-routing.module';
 import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
+import { Dialogs } from '@ionic-native/dialogs/ngx';
 import { HttpClientModule } from '@angular/common/http';
 
 import { Page } from './page.page';
@@ -29,7 +30,8 @@ import { PostService } from '../post.service';
     SheetService,
     AuthService,
     PostService,
-    InAppBrowser
+    InAppBrowser,
+    Dialogs
   ],
   declarations: [Page]
 })

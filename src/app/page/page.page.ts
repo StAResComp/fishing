@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { Location } from '@angular/common';
+import { Dialogs } from '@ionic-native/dialogs/ngx';
 import { DbService } from '../db.service';
 import { SettingsService } from '../settings.service';
 import { SheetService } from '../sheet.service';
@@ -56,6 +57,7 @@ export class Page implements OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private location: Location,
+    private dialogs: Dialogs,
     private db: DbService,
     private settingsService: SettingsService,
     private sheetService: SheetService,
@@ -297,7 +299,19 @@ export class Page implements OnInit {
 
   public deleteEntry() {
     if (this.entry.getId() != null) {
-      this.db.deleteEntry(this.entry.getId()).then(_ => this.location.back());
+      this.dialogs.confirm(
+        'Are you sure you want to delete this entry?',
+        'Confirm Delete',
+        ['Delete', 'Cancel']
+      ).then(
+        (selected) => {
+          if (selected === 1) {
+            this.db.deleteEntry(this.entry.getId()).then(
+              _ => this.location.back()
+            );
+          }
+        }
+      );
     }
   }
 
