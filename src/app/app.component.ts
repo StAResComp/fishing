@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
       icon: 'glasses'
     },
     {
-      title: 'Settings',
+      title: 'Your Details',
       url: '/page/Settings',
       icon: 'settings'
     }
