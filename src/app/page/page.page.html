@@ -182,7 +182,9 @@
     <div *ngIf="page.toLowerCase() == 'f1entrydetails'">
       <ion-grid class="ion-no-padding vertical-padding-only">
         <ion-row class="ion-align-items-center">
-          <ion-col><ion-label>Fishing Activity Date:</ion-label></ion-col>
+          <ion-col>
+            <ion-label><strong>Fishing Activity Date:</strong></ion-label>
+          </ion-col>
           <ion-col>
             <ion-datetime #activityDatePicker disabled="{{ disableInputs() }}"
                  displayFormat="DD MMM YYYY"
@@ -214,7 +216,7 @@
         </ion-row>
         <ion-row class="ion-justify-content-between ion-align-items-center">
           <ion-col size="auto">
-            <ion-label>Location:</ion-label>
+            <ion-label><strong>Location:</strong></ion-label>
           </ion-col>
           <ion-col size="auto">
             {{ entry.getLocation() }}
@@ -235,7 +237,7 @@
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
-          <ion-col><ion-label>Gear:</ion-label></ion-col>
+          <ion-col><ion-label><strong>Gear:</strong></ion-label></ion-col>
           <ion-col>
             <ion-select disabled="{{ disableInputs() }}" [value]="entry.gear"
                  (ionChange)="entry.gear = $event.target.value">
@@ -258,7 +260,7 @@
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
-          <ion-col><ion-label>Species:</ion-label></ion-col>
+          <ion-col><ion-label><strong>Species:</strong></ion-label></ion-col>
           <ion-col>
             <ion-select disabled="{{ disableInputs() }}"
                         [value]="entry.species"
@@ -270,7 +272,7 @@
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
-          <ion-col><ion-label>State:</ion-label></ion-col>
+          <ion-col><ion-label><strong>State:</strong></ion-label></ion-col>
           <ion-col>
             <ion-select disabled="{{ disableInputs() }}" [value]="entry.state"
                  (ionChange)="entry.state = $event.target.value">
@@ -281,7 +283,9 @@
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
-          <ion-col><ion-label>Presentation:</ion-label></ion-col>
+          <ion-col>
+            <ion-label><strong>Presentation:</strong></ion-label>
+          </ion-col>
           <ion-col>
             <ion-select disabled="{{ disableInputs() }}"
                         [value]="entry.presentation"
@@ -294,7 +298,7 @@
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
-          <ion-col><ion-label>Weight (kg)</ion-label></ion-col>
+          <ion-col><ion-label><strong>Weight (kg):</strong></ion-label></ion-col>
           <ion-col size="auto">
             <ion-input type="number" [(ngModel)]="entry.weight"></ion-input>
           </ion-col>
@@ -322,7 +326,9 @@
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
-          <ion-col><ion-label>Landing or Discard Date:</ion-label></ion-col>
+          <ion-col>
+            <ion-label><strong>Landing or Discard Date:</strong></ion-label>
+          </ion-col>
           <ion-col>
             <ion-datetime #landingDiscardDatePicker
                  disabled="{{ disableInputs() }}"
