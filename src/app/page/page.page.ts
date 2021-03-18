@@ -74,24 +74,40 @@ export class Page implements OnInit {
 
   ionViewDidEnter() {
     this.postService.postData();
+    if (this.page.toLowerCase() === 'settings') {
+      this.settingsService.setSettingsVisited();
+    }
     if (this.page.toLowerCase() === 'home') {
+      this.forceFirstVisitToSettings();
       this.homeInit();
     }
     if (this.page.toLowerCase() === 'f1entrieslist') {
+      this.forceFirstVisitToSettings();
       this.entriesInit();
     }
     else if (this.page.toLowerCase() === 'f1entrydetails') {
+      this.forceFirstVisitToSettings();
       this.entryInit();
     }
     else if (this.page.toLowerCase() === 'f1formgen') {
+      this.forceFirstVisitToSettings();
       this.formInit();
     }
     else if (this.page.toLowerCase() === 'wildlife') {
+      this.forceFirstVisitToSettings();
       this.wildlifeInit();
     }
   }
 
 ////////////////////////////// Cross-page Helpers //////////////////////////////
+
+  private forceFirstVisitToSettings() {
+    this.settingsService.getSettingsVisited().then(settingsVisited => {
+      if (settingsVisited == null || !settingsVisited) {
+        this.router.navigate(['page/Settings']);
+      }
+    });
+  }
 
   public getSpeciesList() {
     return F1FormEntry.getSpeciesList();

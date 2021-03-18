@@ -61,6 +61,14 @@ export class SettingsService {
     return this.storage.get('consentSubmitted');
   }
 
+  public async setSettingsVisited() {
+    this.storage.set('settingsVisited', true);
+  }
+
+  public async getSettingsVisited() {
+    return this.storage.get('settingsVisited');
+  }
+
   public async setCurrentF1Form(serializedForm: string) {
     return this.storage.set('currentF1Form', serializedForm);
   }

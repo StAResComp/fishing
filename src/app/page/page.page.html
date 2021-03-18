@@ -7,6 +7,7 @@
     <ion-title *ngSwitchCase="'f1entrieslist'">Form Entries</ion-title>
     <ion-title *ngSwitchCase="'f1entrydetails'">Form Entry</ion-title>
     <ion-title *ngSwitchCase="'f1formgen'">Spreadsheet Generation</ion-title>
+    <ion-title *ngSwitchCase="'settings'">Your Details</ion-title>
     <ion-title *ngSwitchDefault>{{ page }}</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -23,6 +24,9 @@
       <ion-title size="large" *ngSwitchCase="'f1formgen'">
         Spreadsheet Generation
       </ion-title>
+      <ion-title size="large" *ngSwitchCase="'settings'">
+        Your Details
+      </ion-title>
       <ion-title size="large" *ngSwitchDefault>{{ page }}</ion-title>
     </ion-toolbar>
   </ion-header>
@@ -31,6 +35,12 @@
 
     <div *ngIf="page.toLowerCase() == 'settings'">
       <ion-grid class="ion-no-padding vertical-padding-only">
+        <ion-row>
+          <ion-col>
+            <p>If you fill in your details here, the corresponding fields will
+            be automatically filled in when creating spreadsheets.</p>
+          </ion-col>
+        </ion-row>
         <ion-row *ngFor="let key of keys">
           <ion-col>
             <ion-label label for="{{ key }}">
