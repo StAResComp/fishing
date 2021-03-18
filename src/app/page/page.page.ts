@@ -295,6 +295,12 @@ export class Page implements OnInit {
     }
   }
 
+  public deleteEntry() {
+    if (this.entry.getId() != null) {
+      this.db.deleteEntry(this.entry.getId()).then(_ => this.location.back());
+    }
+  }
+
   public getDate(offset: number = 0) {
     const date = new Date();
     date.setDate(date.getDate() + offset);

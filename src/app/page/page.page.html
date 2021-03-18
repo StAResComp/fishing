@@ -379,6 +379,13 @@
             </ion-button>
           </ion-col>
         </ion-row>
+        <ion-row *ngIf="entry.getId() != null" class="ion-align-items-center">
+          <ion-col>
+            <ion-button disabled="{{ disableInputs() }}" color="danger"
+                        expand="block" (click)="deleteEntry()">Delete Entry
+            </ion-button>
+          </ion-col>
+        </ion-row>
       </ion-grid>
     </div>
 

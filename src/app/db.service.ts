@@ -225,7 +225,6 @@ export class DbService {
     return this.selectEntrySummaries(startDate, endDate);
   }
 
-
   public async selectFullEntriesBetweenDates(
     startDate: Date,
     endDate: Date = new Date()
@@ -325,6 +324,14 @@ export class DbService {
     this.db.executeSql(query, params).catch(
       e => console.log(`Error executing SQL: ${JSON.stringify(e)}`)
     );
+  }
+
+  public async deleteEntry(id: number) {
+    this.db.executeSql(
+      'DELETE FROM entries WHERE id =?;', [id]
+    ).catch(e => {
+      console.log(`Error executing SQL: ${JSON.stringify(e)}`);
+    });
   }
 
   public async selectObservations(unsubmitted = false): Promise<WildlifeObservation[]>{
