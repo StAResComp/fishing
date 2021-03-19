@@ -43,7 +43,7 @@ export class F1FormEntry extends RecordWithLocation {
       { id: '1', name: 'Pots/traps FPO' },
       { id: '2', name: 'Handlines FPO' },
       { id: '3', name: 'Single trawl' },
-      { id: '4', name: 'Deredge' }
+      { id: '4', name: 'Dredge' }
     ];
   }
 
