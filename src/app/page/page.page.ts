@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
+import { ToastController  } from '@ionic/angular';
 import { Location } from '@angular/common';
 import { Dialogs } from '@ionic-native/dialogs/ngx';
 import { DbService } from '../db.service';
@@ -63,7 +64,8 @@ export class Page implements OnInit {
     private sheetService: SheetService,
     private authService: AuthService,
     private postService: PostService,
-    public modalController: ModalController
+    public modalController: ModalController,
+    public toastController: ToastController
   ) {
     this.keys = this.settingsService.getKeys();
     this.loadSettings();
@@ -187,6 +189,12 @@ export class Page implements OnInit {
       (value, key) => {
         this.settingsService.set(key, value);
       }
+    );
+    this.toastController.create({
+      message: 'Details Saved',
+      duration: 2000
+    }).then(
+      toast => toast.present()
     );
   }
 
