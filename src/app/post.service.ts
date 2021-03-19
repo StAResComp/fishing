@@ -30,7 +30,6 @@ export class PostService {
   }
 
   public async postData() {
-    console.log('POSTing data');
     this.postObservations();
     this.postCatches();
     this.postEntries();
@@ -40,7 +39,8 @@ export class PostService {
   public async postCatches() {
     return this.db.selectUnsubmittedCatches().then(catches => {
       if (catches && catches.length > 0) {
-        return this.sendPostRequest(catches).then(response => {
+        const catchesObject = { catches };
+        return this.sendPostRequest(catchesObject).then(response => {
           if (response) {
             const ids: number[] = [];
             for (const caught of catches){
@@ -58,7 +58,8 @@ export class PostService {
   public async postEntries() {
     return this.db.selectUnsubmittedEntries().then(entries => {
       if (entries && entries.length > 0) {
-        return this.sendPostRequest(entries).then(response => {
+        const entriesObject = { entries };
+        return this.sendPostRequest(entriesObject).then(response => {
           if (response) {
             const ids: number[] = [];
             for (const entry of entries){
@@ -76,7 +77,8 @@ export class PostService {
   public async postObservations() {
     return this.db.selectUnsubmittedObservations().then(observations => {
       if (observations && observations.length > 0) {
-        return this.sendPostRequest(observations).then(response => {
+        const observationsObject = { observations };
+        return this.sendPostRequest(observationsObject).then(response => {
           if (response) {
             const ids: number[] = [];
             for (const observation of observations){
@@ -94,10 +96,8 @@ export class PostService {
   public async postConsent() {
     return this.settingsService.getConsentSubmitted().then(alreadySubmitted => {
       if (!alreadySubmitted) {
-        console.log('POSTING consent data');
         return this.settingsService.getConsentDetails().then(consent => {
-          return this.sendPostRequest(consent).then(response => {
-            console.log(`Received ${response} when POSTing consent data`);
+          return this.sendPostRequest(JSON.parse(consent)).then(response => {
             if (response) {
               this.settingsService.setConsentSubmitted();
             }
@@ -111,12 +111,13 @@ export class PostService {
     });
   }
 
-  private async sendPostRequest(data: Array<any>) {
+  private async sendPostRequest(data: any) {
     if (this.isLoggedIn()) {
       return this.authService.getAuthHeader().then(header => {
         const options = {
           headers: new HttpHeaders({
-            Authorization: header[1]
+            Authorization: header[1],
+            'Content-Type': 'application/json'
           })
         };
         return this.http.post(PostService.postUrl, data, options).toPromise().then(
@@ -124,11 +125,9 @@ export class PostService {
             return response['success'];
           }
         ).catch(e => {
-          console.log(`Error posting data: ${JSON.stringify(e)}`);
           return false;
         });
       }).catch(e => {
-        console.log(`Error posting data: ${JSON.stringify(e)}`);
         return false;
       });
     }
