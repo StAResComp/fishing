@@ -183,10 +183,14 @@
       <ion-grid class="ion-no-padding vertical-padding-only">
         <ion-row class="ion-align-items-center">
           <ion-col>
-            <ion-label><strong>Fishing Activity Date:</strong></ion-label>
+            <ion-label
+              [ngClass]="{'reqMissing': hasFieldBeenVisited('activityDate') && entry.activityDate == null}">
+              <strong>Fishing Activity Date:</strong>
+            </ion-label>
           </ion-col>
           <ion-col>
             <ion-datetime #activityDatePicker disabled="{{ disableInputs() }}"
+                 (ionFocus)="recordFieldVisited('activityDate')"
                  displayFormat="DD MMM YYYY"
                  [value]="(entry.activityDate != null ? entry.activityDate.toISOString() : null)"
                  min="2021-01-01" [max]="today.toISOString()"
@@ -216,14 +220,16 @@
         </ion-row>
         <ion-row class="ion-justify-content-between ion-align-items-center">
           <ion-col size="auto">
-            <ion-label><strong>Location:</strong></ion-label>
+            <ion-label
+              [ngClass]="{'reqMissing': hasFieldBeenVisited('location') && (entry.latitude == null || entry.longitude == null)}">
+              <strong>Location:</strong></ion-label>
           </ion-col>
           <ion-col size="auto">
             {{ entry.getLocation() }}
           </ion-col>
           <ion-col size="auto">
             <ion-button disabled="{{ disableInputs() }}"
-                        (click)="presentMapModal()">
+                        (click)="presentMapModal(); recordFieldVisited('location')">
               Pick on Map
             </ion-button>
           </ion-col>
@@ -237,9 +243,16 @@
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
-          <ion-col><ion-label><strong>Gear:</strong></ion-label></ion-col>
+          <ion-col>
+            <ion-label
+              [ngClass]="{'reqMissing': hasFieldBeenVisited('gear') && entry.gear == null}">
+              <strong>Gear:</strong>
+            </ion-label>
+          </ion-col>
           <ion-col>
             <ion-select disabled="{{ disableInputs() }}" [value]="entry.gear"
+              [ngClass]="{'reqMissing': hasFieldBeenVisited('gear') && entry.gear == null}"
+                        (ionBlur)="recordFieldVisited('gear')"
                  (ionChange)="entry.gear = $event.target.value">
               <ion-select-option *ngFor="let gear of getGear()">
                 {{ gear.name }}
@@ -260,10 +273,17 @@
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
-          <ion-col><ion-label><strong>Species:</strong></ion-label></ion-col>
+          <ion-col>
+            <ion-label
+              [ngClass]="{'reqMissing': hasFieldBeenVisited('species') && entry.species == null}">
+              <strong>Species:</strong>
+            </ion-label>
+          </ion-col>
           <ion-col>
             <ion-select disabled="{{ disableInputs() }}"
                         [value]="entry.species"
+              [ngClass]="{'reqMissing': hasFieldBeenVisited('species') && entry.species == null}"
+                        (ionBlur)="recordFieldVisited('species')"
                  (ionChange)="entry.species = $event.target.value">
               <ion-select-option *ngFor="let species of getSpeciesList()">
                 {{ species.name }}
@@ -272,9 +292,16 @@
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
-          <ion-col><ion-label><strong>State:</strong></ion-label></ion-col>
+          <ion-col>
+            <ion-label
+              [ngClass]="{'reqMissing': hasFieldBeenVisited('state') && entry.state == null}">
+              <strong>State:</strong>
+            </ion-label>
+          </ion-col>
           <ion-col>
             <ion-select disabled="{{ disableInputs() }}" [value]="entry.state"
+              [ngClass]="{'reqMissing': hasFieldBeenVisited('state') && entry.state == null}"
+                        (ionBlur)="recordFieldVisited('state')"
                  (ionChange)="entry.state = $event.target.value">
               <ion-select-option *ngFor="let state of getStates()">
                 {{ state.name }}
@@ -284,11 +311,16 @@
         </ion-row>
         <ion-row class="ion-align-items-center">
           <ion-col>
-            <ion-label><strong>Presentation:</strong></ion-label>
+            <ion-label
+              [ngClass]="{'reqMissing': hasFieldBeenVisited('presentation') && entry.presentation == null}">
+              <strong>Presentation:</strong>
+            </ion-label>
           </ion-col>
           <ion-col>
             <ion-select disabled="{{ disableInputs() }}"
                         [value]="entry.presentation"
+              [ngClass]="{'reqMissing': hasFieldBeenVisited('presentation') && entry.presentation == null}"
+                        (ionBlur)="recordFieldVisited('presentation')"
                  (ionChange)="entry.presentation = $event.target.value">
               <ion-select-option
                  *ngFor="let presentation of getPresentations()">
@@ -298,9 +330,17 @@
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
-          <ion-col><ion-label><strong>Weight (kg):</strong></ion-label></ion-col>
+          <ion-col>
+            <ion-label
+              [ngClass]="{'reqMissing': hasFieldBeenVisited('weight') && entry.weight == null}">
+              <strong>Weight (kg):</strong>
+            </ion-label>
+          </ion-col>
           <ion-col size="auto">
-            <ion-input type="number" [(ngModel)]="entry.weight"></ion-input>
+            <ion-input type="number" [(ngModel)]="entry.weight"
+              [ngClass]="{'reqMissing': hasFieldBeenVisited('weight') && entry.weight == null}"
+                        (ionBlur)="recordFieldVisited('weight')">
+            </ion-input>
           </ion-col>
         </ion-row>
         <ion-row class="ion-justify-content-between ion-align-items-center">
@@ -327,10 +367,14 @@
         </ion-row>
         <ion-row class="ion-align-items-center">
           <ion-col>
-            <ion-label><strong>Landing or Discard Date:</strong></ion-label>
+            <ion-label
+              [ngClass]="{'reqMissing': hasFieldBeenVisited('landingDiscardDate') && entry.landingDiscardDate == null}">
+              <strong>Landing or Discard Date:</strong>
+            </ion-label>
           </ion-col>
           <ion-col>
             <ion-datetime #landingDiscardDatePicker
+                 (ionFocus)="recordFieldVisited('landingDiscardDate')"
                  disabled="{{ disableInputs() }}"
                  displayFormat="DD MMM YYYY"
                  [value]="(entry.landingDiscardDate != null ? entry.landingDiscardDate.toISOString() : null)"

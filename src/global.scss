@@ -38,4 +38,9 @@ ion-col {
   }
 }
 
+.reqMissing {
+  color: red;
+  border-color: red;
+}
+
 @import "~leaflet/dist/leaflet.css";

@@ -54,6 +54,8 @@ export class Page implements OnInit {
 
   private gotConsent = false;
 
+  public fieldsVisited: Array<string> = [];
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
@@ -78,6 +80,7 @@ export class Page implements OnInit {
 
   ionViewDidEnter() {
     this.postService.postData();
+    this.fieldsVisited = [];
     if (this.page.toLowerCase() === 'settings') {
       this.settingsService.setSettingsVisited();
     }
@@ -143,6 +146,16 @@ export class Page implements OnInit {
       }
     });
     return await modal.present();
+  }
+
+  public recordFieldVisited(fieldName: string) {
+    if (!this.fieldsVisited.includes(fieldName)) {
+      this.fieldsVisited.push(fieldName);
+    }
+  }
+
+  public hasFieldBeenVisited(fieldName: string) {
+    return this.fieldsVisited.includes(fieldName);
   }
 
 /////////////////////////////////// Consent ////////////////////////////////////
