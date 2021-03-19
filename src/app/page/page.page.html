@@ -76,7 +76,7 @@
       </ion-grid>
       <ion-card>
         <ion-card-content>
-          <ion-button disabled="{{ disableInputs() }}"
+          <ion-button disabled="disabled"
                       *ngIf='!authService.loggedIn'
                       expand="block" (click)="login()">
             Login

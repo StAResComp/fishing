@@ -75,7 +75,7 @@ export class Page implements OnInit {
 
   ngOnInit() {
     this.page = this.activatedRoute.snapshot.paramMap.get('id');
-    this.doConsent();
+    // this.doConsent();
   }
 
   ionViewDidEnter() {
@@ -125,7 +125,8 @@ export class Page implements OnInit {
   }
 
   public disableInputs(): boolean {
-    return !this.gotConsent;
+    // return !this.gotConsent;
+    return false;
   }
 
   public async presentMapModal(wildlife = false) {
