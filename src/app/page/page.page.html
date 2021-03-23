@@ -253,7 +253,7 @@
             <ion-select disabled="{{ disableInputs() }}" [value]="entry.gear"
               [ngClass]="{'reqMissing': hasFieldBeenVisited('gear') && entry.gear == null}"
                         (ionBlur)="recordFieldVisited('gear')"
-                 (ionChange)="entry.gear = $event.target.value">
+                        [(ngModel)]="entry.gear">
               <ion-select-option *ngFor="let gear of getGear()">
                 {{ gear.name }}
               </ion-select-option>
@@ -265,7 +265,7 @@
           <ion-col>
             <ion-select disabled="{{ disableInputs() }}"
                         [value]="entry.meshSize"
-                        (ionChange)="entry.meshSize = $event.target.value">
+                        [(ngModel)]="entry.meshSize">
               <ion-select-option *ngFor="let meshSizes of getMeshSizes()">
                 {{ meshSizes.name }}
               </ion-select-option>
@@ -284,7 +284,7 @@
                         [value]="entry.species"
               [ngClass]="{'reqMissing': hasFieldBeenVisited('species') && entry.species == null}"
                         (ionBlur)="recordFieldVisited('species')"
-                 (ionChange)="entry.species = $event.target.value">
+                        [(ngModel)]="entry.species">
               <ion-select-option *ngFor="let species of getSpeciesList()">
                 {{ species.name }}
               </ion-select-option>
@@ -302,7 +302,7 @@
             <ion-select disabled="{{ disableInputs() }}" [value]="entry.state"
               [ngClass]="{'reqMissing': hasFieldBeenVisited('state') && entry.state == null}"
                         (ionBlur)="recordFieldVisited('state')"
-                 (ionChange)="entry.state = $event.target.value">
+                        [(ngModel)]="entry.state">
               <ion-select-option *ngFor="let state of getStates()">
                 {{ state.name }}
               </ion-select-option>
@@ -321,7 +321,7 @@
                         [value]="entry.presentation"
               [ngClass]="{'reqMissing': hasFieldBeenVisited('presentation') && entry.presentation == null}"
                         (ionBlur)="recordFieldVisited('presentation')"
-                 (ionChange)="entry.presentation = $event.target.value">
+                        [(ngModel)]="entry.presentation">
               <ion-select-option
                  *ngFor="let presentation of getPresentations()">
                 {{ presentation.name }}
@@ -575,8 +575,8 @@
               <ion-col><ion-label>Animal:</ion-label></ion-col>
               <ion-col>
                 <ion-select disabled="{{ disableInputs() }}"
-                            [value]="observation.animal"
-                     (ionChange)="observation.animal = $event.target.value; observation.species = null;">
+                            [(ngModel)]="observation.animal"
+                     (ionChange)="observation.species = null">
                   <ion-select-option *ngFor="let animal of getWildlifeAnimals()">
                     {{ animal.name }}
                   </ion-select-option>
@@ -588,8 +588,7 @@
               <ion-col><ion-label>Species:</ion-label></ion-col>
               <ion-col>
                 <ion-select disabled="{{ disableInputs() }}"
-                            [value]='observation.species'
-                     (ionChange)="observation.species = $event.target.value">
+                            [(ngModel)]='observation.species'>
                   <ion-select-option *ngFor="let species of getWildlifeSpecies(observation.animal)">
                     {{ species }}
                   </ion-select-option>
@@ -645,8 +644,7 @@
               <ion-col><ion-label>Behaviour:</ion-label></ion-col>
               <ion-col>
                 <ion-select disabled="{{ disableInputs() }}" multiple='true'
-                            [value]='observation.behaviour'
-                     (ionChange)="observation.behaviour = $event.target.value">
+                            [(ngModel)]='observation.behaviour'>
                   <ion-select-option *ngFor="let behaviour of getWildlifeBehaviours()">
                     {{ behaviour }}
                   </ion-select-option>
