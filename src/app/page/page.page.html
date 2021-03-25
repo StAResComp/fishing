@@ -250,7 +250,7 @@
             </ion-label>
           </ion-col>
           <ion-col>
-            <ion-select disabled="{{ disableInputs() }}" [value]="entry.gear"
+            <ion-select disabled="{{ disableInputs() }}"
               [ngClass]="{'reqMissing': hasFieldBeenVisited('gear') && entry.gear == null}"
                         (ionBlur)="recordFieldVisited('gear')"
                         [(ngModel)]="entry.gear">
@@ -264,7 +264,6 @@
           <ion-col><ion-label>Mesh Size:</ion-label></ion-col>
           <ion-col>
             <ion-select disabled="{{ disableInputs() }}"
-                        [value]="entry.meshSize"
                         [(ngModel)]="entry.meshSize">
               <ion-select-option *ngFor="let meshSizes of getMeshSizes()">
                 {{ meshSizes.name }}
@@ -281,7 +280,6 @@
           </ion-col>
           <ion-col>
             <ion-select disabled="{{ disableInputs() }}"
-                        [value]="entry.species"
               [ngClass]="{'reqMissing': hasFieldBeenVisited('species') && entry.species == null}"
                         (ionBlur)="recordFieldVisited('species')"
                         [(ngModel)]="entry.species">
@@ -299,7 +297,7 @@
             </ion-label>
           </ion-col>
           <ion-col>
-            <ion-select disabled="{{ disableInputs() }}" [value]="entry.state"
+            <ion-select disabled="{{ disableInputs() }}"
               [ngClass]="{'reqMissing': hasFieldBeenVisited('state') && entry.state == null}"
                         (ionBlur)="recordFieldVisited('state')"
                         [(ngModel)]="entry.state">
@@ -360,7 +358,7 @@
         <ion-row class="ion-align-items-center">
           <ion-col><ion-label>No. Pots Hauled:</ion-label></ion-col>
           <ion-col size="auto">
-            <ion-input type="number" [value]="entry.numPotsHauled"
+            <ion-input type="number"
                        (change)="entry.numPotsHauled = $event.target.value">
             </ion-input>
           </ion-col>
