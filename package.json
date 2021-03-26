@@ -99,8 +99,6 @@
       "cordova-plugin-file": {},
       "cordova-plugin-dialogs": {},
       "cordova-plugin-googlemaps": {
-        "API_KEY_FOR_ANDROID": "AIzaSyBdr33S1rNzcn9uipzeLoNZO_ARSY1TJEo",
-        "API_KEY_FOR_IOS": "AIzaSyBdr33S1rNzcn9uipzeLoNZO_ARSY1TJEo",
         "LOCATION_WHEN_IN_USE_DESCRIPTION": "This app wants to get your location while this app runs only.",
         "LOCATION_ALWAYS_USAGE_DESCRIPTION": "This app wants to get your location always, even this app runs in background."
       },
