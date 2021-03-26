@@ -15,7 +15,6 @@ import { SettingsService } from '../settings.service';
 import { SheetService } from '../sheet.service';
 import { AuthService } from '../auth.service';
 import { PostService } from '../post.service';
-import { MapModalPage } from '../map-modal/map-modal.page';
 import { ConsentPage } from '../consent/consent.page';
 import {
   F1Form,
