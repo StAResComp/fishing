@@ -43,4 +43,6 @@ ion-col {
   border-color: red;
 }
 
-@import "~leaflet/dist/leaflet.css";
+.map_canvas {
+  height: 50vh;
+}

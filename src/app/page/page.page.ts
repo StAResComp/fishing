@@ -1,9 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ModalController } from '@ionic/angular';
-import { ToastController  } from '@ionic/angular';
+import { ModalController, ToastController, Platform } from '@ionic/angular';
 import { Location } from '@angular/common';
 import { Dialogs } from '@ionic-native/dialogs/ngx';
+import {
+  GoogleMaps,
+  GoogleMap,
+  GoogleMapsEvent,
+  Marker,
+  MyLocation
+} from '@ionic-native/google-maps';
 import { DbService } from '../db.service';
 import { SettingsService } from '../settings.service';
 import { SheetService } from '../sheet.service';
@@ -43,6 +49,7 @@ export class Page implements OnInit {
   public entries: Array<F1FormEntrySummary>;
   public entryFormIncomplete = false;
   public entryFormDataError = false;
+  public displayMap = false;
 
   public f1Form = new F1Form();
   public sundays = [];
@@ -56,11 +63,18 @@ export class Page implements OnInit {
 
   public fieldsVisited: Array<string> = [];
 
+  public latitude = 57.76958852557177;
+  public longitude = -7.019251515775875;
+
+  map: GoogleMap;
+
   constructor(
+    private platform: Platform,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private location: Location,
     private dialogs: Dialogs,
+    private cdr: ChangeDetectorRef,
     private db: DbService,
     private settingsService: SettingsService,
     private sheetService: SheetService,
@@ -129,24 +143,45 @@ export class Page implements OnInit {
     return false;
   }
 
-  public async presentMapModal(wildlife = false) {
-    const modal = await this.modalController.create({
-      component: MapModalPage,
-      cssClass: 'map-modal-class'
-    });
-    modal.onWillDismiss().then((data) => {
-      if (data.data.submitted) {
+  private doMap() {
+    if (this.map == null) {
+      const wildlife = this.page.toLowerCase() === 'wildlife';
+      const mapDiv = (wildlife ? 'observation_map_canvas' : 'entry_map_canvas');
+      this.map = GoogleMaps.create(mapDiv, {
+        camera: {
+          target: {
+            lat: this.latitude,
+            lng: this.longitude
+          },
+          zoom: 14,
+          tilt: 0
+        }
+      });
+      this.map.on('map_click').subscribe(data => {
+        const latLng = data[0];
+        this.map.clear();
+        this.map.addMarker({
+          position: latLng
+        });
         if (wildlife) {
-          this.observation.setLatitude(data.data.latitude);
-          this.observation.setLongitude(data.data.longitude);
+          this.observation.setLatitude(latLng.lat);
+          this.observation.setLongitude(latLng.lat);
         }
         else {
-          this.entry.setLatitude(data.data.latitude);
-          this.entry.setLongitude(data.data.longitude);
+          this.entry.setLatitude(latLng.lat);
+          this.entry.setLongitude(latLng.lat);
         }
-      }
-    });
-    return await modal.present();
+        this.cdr.detectChanges();
+      });
+      this.map.getMyLocation().then((location: MyLocation) => {
+        this.map.animateCamera({ target: location.latLng, duration: 1000 });
+        this.map.addMarker({
+          title: 'Your current location',
+          position: location.latLng
+        });
+      });
+    }
+    this.displayMap = true;
   }
 
   public recordFieldVisited(fieldName: string) {
