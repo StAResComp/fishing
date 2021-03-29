@@ -143,41 +143,62 @@ export class Page implements OnInit {
   }
 
   private doMap() {
-    if (this.map == null) {
-      const wildlife = this.page.toLowerCase() === 'wildlife';
-      const mapDiv = (wildlife ? 'observation_map_canvas' : 'entry_map_canvas');
-      this.map = GoogleMaps.create(mapDiv, {
-        camera: {
-          target: {
-            lat: this.latitude,
-            lng: this.longitude
-          },
-          zoom: 14,
-          tilt: 0
-        }
+    const wildlife = this.page.toLowerCase() === 'wildlife';
+    const mapDiv = (wildlife ? 'observation_map_canvas' : 'entry_map_canvas');
+    this.map = GoogleMaps.create(mapDiv, {
+      camera: {
+        target: {
+          lat: 57.76958852557177,
+          lng: -7.019251515775875
+        },
+        zoom: 14,
+        tilt: 0
+      }
+    });
+    this.map.on('map_click').subscribe(data => {
+      const latLng = data[0];
+      this.map.clear();
+      this.map.addMarker({
+        position: latLng
       });
-      this.map.on('map_click').subscribe(data => {
-        const latLng = data[0];
-        this.map.clear();
-        this.map.addMarker({
-          position: latLng
-        });
-        if (wildlife) {
-          this.observation.setLatitude(latLng.lat);
-          this.observation.setLongitude(latLng.lat);
-        }
-        else {
-          this.entry.setLatitude(latLng.lat);
-          this.entry.setLongitude(latLng.lat);
-        }
-        this.cdr.detectChanges();
-      });
+      this.map.animateCamera({ target: latLng, duration: 500 });
+      if (wildlife) {
+        this.observation.setLatitude(latLng.lat);
+        this.observation.setLongitude(latLng.lng);
+      }
+      else {
+        this.entry.setLatitude(latLng.lat);
+        this.entry.setLongitude(latLng.lng);
+      }
+      this.cdr.detectChanges();
+    });
+    if (this.entry.getLatitude() == null ||
+      this.entry.getLongitude() == null) {
       this.map.getMyLocation().then((location: MyLocation) => {
         this.map.animateCamera({ target: location.latLng, duration: 1000 });
         this.map.addMarker({
           title: 'Your current location',
           position: location.latLng
         });
+        if (wildlife) {
+          this.observation.setLatitude(location.latLng.lat);
+          this.observation.setLongitude(location.latLng.lng);
+        }
+        else {
+          this.entry.setLatitude(location.latLng.lat);
+          this.entry.setLongitude(location.latLng.lng);
+        }
+        this.cdr.detectChanges();
+      });
+    }
+    else {
+      const latLng = {
+        lat: this.entry.getLatitude(),
+        lng: this.entry.getLongitude()
+      };
+      this.map.animateCamera({ target: latLng, duration: 1000 });
+      this.map.addMarker({
+        position: latLng
       });
     }
     this.displayMap = true;
@@ -327,6 +348,8 @@ export class Page implements OnInit {
       }
       else {
         this.entry = new F1FormEntry();
+        this.latitude = this.entry.getLatitude();
+        this.longitude = this.entry.getLongitude();
       }
     });
   }
@@ -506,6 +529,8 @@ export class Page implements OnInit {
         _ => this.db.selectObservations().then(observations => {
           this.observations = observations;
           this.observation = new WildlifeObservation();
+          this.map.remove();
+          this.displayMap = false;
         })
       );
     }

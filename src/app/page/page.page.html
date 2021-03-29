@@ -240,7 +240,7 @@
         </ion-row>
         <ion-row>
           <ion-col>
-            <div id="entry_map_canvas" class="map_canvas"
+            <div #entry_map_canvas id="entry_map_canvas" class="map_canvas"
                               [ngClass]="(displayMap ? '' : 'ion-hide')"></div>
           </ion-col>
         </ion-row>
@@ -654,7 +654,7 @@
             </ion-row>
             <ion-row *ngIf="(observation.animal && (observation.species || observation.description) && observation.num)">
               <ion-col>
-                <div id="observation_map_canvas" class="map_canvas"
+                <div #observation_map_canvas id="observation_map_canvas" class="map_canvas"
                               [ngClass]="(displayMap ? '' : 'ion-hide')"></div>
               </ion-col>
             </ion-row>
