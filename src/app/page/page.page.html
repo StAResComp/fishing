@@ -228,10 +228,20 @@
             {{ entry.getLocation() }}
           </ion-col>
           <ion-col size="auto">
-            <ion-button disabled="{{ disableInputs() }}"
-                        (click)="presentMapModal(); recordFieldVisited('location')">
+            <ion-button disabled="{{ disableInputs() }}" *ngIf="!displayMap"
+                        (click)="doMap(); recordFieldVisited('location')">
               Pick on Map
             </ion-button>
+            <ion-button disabled="{{ disableInputs() }}" *ngIf="displayMap"
+                        (click)="displayMap = false; recordFieldVisited('location')">
+              Hide Map
+            </ion-button>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+            <div #entry_map_canvas id="entry_map_canvas" class="map_canvas"
+                              [ngClass]="(displayMap ? '' : 'ion-hide')"></div>
           </ion-col>
         </ion-row>
         <ion-row class="ion-justify-content-between ion-align-items-center">
@@ -250,7 +260,7 @@
             </ion-label>
           </ion-col>
           <ion-col>
-            <ion-select disabled="{{ disableInputs() }}" [value]="entry.gear"
+            <ion-select disabled="{{ disableInputs() }}"
               [ngClass]="{'reqMissing': hasFieldBeenVisited('gear') && entry.gear == null}"
                         (ionBlur)="recordFieldVisited('gear')"
                         [(ngModel)]="entry.gear">
@@ -264,7 +274,6 @@
           <ion-col><ion-label>Mesh Size:</ion-label></ion-col>
           <ion-col>
             <ion-select disabled="{{ disableInputs() }}"
-                        [value]="entry.meshSize"
                         [(ngModel)]="entry.meshSize">
               <ion-select-option *ngFor="let meshSizes of getMeshSizes()">
                 {{ meshSizes.name }}
@@ -281,7 +290,6 @@
           </ion-col>
           <ion-col>
             <ion-select disabled="{{ disableInputs() }}"
-                        [value]="entry.species"
               [ngClass]="{'reqMissing': hasFieldBeenVisited('species') && entry.species == null}"
                         (ionBlur)="recordFieldVisited('species')"
                         [(ngModel)]="entry.species">
@@ -299,7 +307,7 @@
             </ion-label>
           </ion-col>
           <ion-col>
-            <ion-select disabled="{{ disableInputs() }}" [value]="entry.state"
+            <ion-select disabled="{{ disableInputs() }}"
               [ngClass]="{'reqMissing': hasFieldBeenVisited('state') && entry.state == null}"
                         (ionBlur)="recordFieldVisited('state')"
                         [(ngModel)]="entry.state">
@@ -360,7 +368,7 @@
         <ion-row class="ion-align-items-center">
           <ion-col><ion-label>No. Pots Hauled:</ion-label></ion-col>
           <ion-col size="auto">
-            <ion-input type="number" [value]="entry.numPotsHauled"
+            <ion-input type="number"
                        (change)="entry.numPotsHauled = $event.target.value">
             </ion-input>
           </ion-col>
@@ -631,13 +639,23 @@
             <ion-row *ngIf="(observation.animal && (observation.species || observation.description) && observation.num)"
                      class="ion-justify-content-between ion-align-items-center">
               <ion-col size="auto">
-                <ion-button disabled="{{ disableInputs() }}"
-                            (click)="presentMapModal(true)">
+                <ion-button *ngIf="!displayMap"
+                            (click)="doMap();">
                   Pick on Map
+                </ion-button>
+                <ion-button *ngIf="displayMap"
+                            (click)="displayMap = false">
+                  Hide Map
                 </ion-button>
               </ion-col>
               <ion-col size="auto">
                 {{ observation.getLocation() }}
+              </ion-col>
+            </ion-row>
+            <ion-row *ngIf="(observation.animal && (observation.species || observation.description) && observation.num)">
+              <ion-col>
+                <div #observation_map_canvas id="observation_map_canvas" class="map_canvas"
+                              [ngClass]="(displayMap ? '' : 'ion-hide')"></div>
               </ion-col>
             </ion-row>
             <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.getLatitude() && observation.getLongitude()">

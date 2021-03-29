@@ -8,7 +8,6 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite/ngx';
 import { IonicStorageModule } from '@ionic/storage';
-import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 
@@ -30,7 +29,6 @@ import { AppRoutingModule } from './app-routing.module';
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     SQLite,
-    Geolocation,
     File,
     FileOpener
   ],
