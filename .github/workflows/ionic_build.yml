@@ -14,11 +14,11 @@ jobs:
     - name: Install Ionic CLI
       run: npm install -g @ionic/cli
 
-    - name: Ionic Init
-      run: ionic init
-
     - name: NPM Install
       run: npm install
+
+    - name: Ionic State Restore
+      run: ionic state restore
 
     - name: Add Android platform
       run: ionic cordova platform add android
