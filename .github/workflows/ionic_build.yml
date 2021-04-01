@@ -18,7 +18,7 @@ jobs:
       run: npm install
       
     - name: Start Ionic
-      run: ionic start
+      run: ionic serve
 
     - name: Prepare Cordova
       run: ionic cordova prepare
