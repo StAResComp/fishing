@@ -16,8 +16,8 @@ jobs:
 
     - name: NPM Install and Update
       run: |
+        npm init
         npm install
-        npm update
       
     - name: Start Ionic
       run: ionic serve
