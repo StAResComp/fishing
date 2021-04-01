@@ -14,8 +14,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
-    - name: Install Ionic CLI
-      run: npm install -g @ionic/cli
+    - name: Install Ionic and Cordova CLIs
+      run: |
+        npm install -g @ionic/cli
+        npm install -g cordova
 
     - name: NPM Install
       run: npm install
