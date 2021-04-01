@@ -7,12 +7,29 @@ on:
     branches: [ ci ]
 
 jobs:
-  setup:
+  build:
     runs-on: macos-10.15
     steps:
+
     - name: Install Ionic CLI and then NPM Install
       run: |
         npm install -g @ionic/cli
         npm install
-        ionic cordova platform add android
-        ionic cordova platform add ios
+
+    - name: Add Android platform
+      run: ionic cordova platform add android
+
+    - name: Prepare Android platform
+      run: ionic cordova prepare android
+
+    - name: Build Android app
+      run: ionic cordova build android
+
+    - name: Add iOS platform
+      run: ionic cordova platform add iOS
+
+    - name: Prepare iOS platform
+      run: ionic cordova prepare ios
+
+    - name: Build iOS app
+      run: ionic cordova build iOS
