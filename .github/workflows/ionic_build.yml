@@ -21,6 +21,7 @@ jobs:
       run: |
         npm install -g @ionic/cli
         npm install -g cordova
+        npm install -g cordova-res
 
     - name: NPM Install
       run: npm install
@@ -41,4 +42,4 @@ jobs:
       run: ionic cordova prepare ios
 
     - name: Build iOS app
-      run: ionic cordova build iOS
+      run: ionic cordova build ios
