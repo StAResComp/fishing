@@ -14,8 +14,10 @@ jobs:
     - name: Install Ionic CLI
       run: npm install -g @ionic/cli
 
-    - name: NPM Install
-      run: npm install
+    - name: NPM Install and Update
+      run: |
+        npm install
+        npm update
       
     - name: Start Ionic
       run: ionic serve
