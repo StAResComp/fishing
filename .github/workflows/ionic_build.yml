@@ -10,7 +10,7 @@ jobs:
   setup:
     runs-on: macos-10.15
     steps:
-    - name: Install Ionic CLI
-      run: npm install -g @ionic/cli
-    - name: NPM Install
-      run: npm install
+    - name: Install Ionic CLI and then NPM Install
+      run: |
+        npm install -g @ionic/cli
+        npm install
