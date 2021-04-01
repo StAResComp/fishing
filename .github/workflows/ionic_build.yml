@@ -10,15 +10,15 @@ jobs:
   build:
     runs-on: macos-10.15
     steps:
-
+    
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
     - name: Install Ionic CLI
       run: npm install -g @ionic/cli
 
-    - name: NPM Install and Update
-      run: ls -la
-      
-    - name: Start Ionic
-      run: ionic serve
+    - name: NPM Install
+      run: npm install
 
     - name: Prepare Cordova
       run: ionic cordova prepare
