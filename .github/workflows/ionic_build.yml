@@ -20,9 +20,6 @@ jobs:
     - name: NPM Install
       run: npm install
 
-    - name: Prepare Cordova
-      run: ionic cordova prepare
-
     - name: Add Android platform
       run: ionic cordova platform add android
 
