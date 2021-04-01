@@ -13,4 +13,4 @@ jobs:
 
     steps:
     - name: Install Ionic CLI
-    - run: npm install -g @ionic/cli
+      run: npm install -g @ionic/cli
