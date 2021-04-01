@@ -35,7 +35,7 @@ jobs:
     #  run: ionic cordova build android
 
     - name: Add iOS platform
-      run: ionic cordova platform add iOS
+      run: ionic cordova platform add ios
 
     - name: Prepare iOS platform
       run: ionic cordova prepare ios
