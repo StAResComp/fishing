@@ -432,7 +432,6 @@ export class Page implements OnInit {
       date => this.sundays = this.getSundays(date)
     );
     this.f1Form = new F1Form();
-    this.loadDraft();
     if (!this.f1Form.fisheryOffice) {
       this.f1Form.fisheryOffice = this.settingsService.getFisheriesOffice(
         this.settings.get('fisheries_office')
@@ -481,35 +480,21 @@ export class Page implements OnInit {
     );
   }
 
-  public async saveDraft() {
-    this.settingsService.setCurrentF1Form(this.f1Form.serializeWithouEntries());
-  }
-
-  private loadDraft() {
-    this.settingsService.getCurrentF1Form().then(
-      serializedForm => this.f1Form = F1Form.deserialize(serializedForm)
+  public formHeadersComplete() {
+    return (
+      this.f1Form.fisheryOffice != null &&
+      this.f1Form.weekStart != null
     );
   }
 
   public async generateXLSX() {
-    await this.saveDraft();
     const weekEnd = new Date(this.f1Form.weekStart);
     weekEnd.setDate(weekEnd.getDate() + 7);
     return this.db.selectFullEntriesBetweenDates(
       this.f1Form.weekStart, weekEnd
     ).then( entries => {
-      const draftForm = new F1Form();
-      draftForm.fisheryOffice = this.f1Form.fisheryOffice;
-      draftForm.pln = this.f1Form.pln;
-      draftForm.vesselName = this.f1Form.vesselName;
-      draftForm.ownerMaster = this.f1Form.ownerMaster;
-      draftForm.address = this.f1Form.address;
-      draftForm.portOfDeparture = this.f1Form.portOfDeparture;
-      draftForm.portOfLanding = this.f1Form.portOfLanding;
-      draftForm.totalPotsFishing = this.f1Form.totalPotsFishing;
-      draftForm.comments = this.f1Form.comments;
-      draftForm.entries = entries;
-      this.sheetService.form = draftForm as F1Form;
+      this.f1Form.entries = entries;
+      this.sheetService.form = this.f1Form;
       return this.sheetService.createWorkbook();
     });
   }

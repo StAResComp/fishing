@@ -368,7 +368,7 @@
         <ion-row class="ion-align-items-center">
           <ion-col><ion-label>No. Pots Hauled:</ion-label></ion-col>
           <ion-col size="auto">
-            <ion-input type="number" [ngModel]="entry.numPotsHauled">
+            <ion-input type="number" [(ngModel)]="entry.numPotsHauled">
             </ion-input>
           </ion-col>
         </ion-row>
@@ -443,12 +443,14 @@
     <div *ngIf="page.toLowerCase() == 'f1formgen'">
       <ion-grid class="ion-no-padding vertical-padding-only">
         <ion-row class="ion-align-items-center">
-            <ion-col><ion-label>Fisheries Office:</ion-label></ion-col>
-            <ion-col>
+          <ion-col>
+            <ion-label><strong>Fisheries Office:</strong></ion-label>
+          </ion-col>
+          <ion-col>
             <ion-select disabled="{{ disableInputs() }}"
                         placeholder="Select office..."
-              [value]="' '+f1Form.fisheriesOffice?.name+' '"
-              (ionChange)="f1Form.fisheriesOffice = settingsService.getFisheriesOffice($event.target.value.trim())">
+              [value]="' '+f1Form.fisheryOffice?.name+' '"
+              (ionChange)="f1Form.fisheryOffice = settingsService.getFisheriesOffice($event.target.value.trim())">
               <ion-select-option
                     *ngFor="let office of settingsService.getFisheriesOffices()">
                 {{ office.name }}
@@ -457,9 +459,9 @@
           </ion-col>
         </ion-row>
         <ion-row>
-          {{ f1Form.fisheriesOffice?.address }} <br />
-          {{ f1Form.fisheriesOffice?.phone }} <br />
-          {{ f1Form.fisheriesOffice?.email }} <br />
+          {{ f1Form.fisheryOffice?.address }} <br />
+          {{ f1Form.fisheryOffice?.phone }} <br />
+          {{ f1Form.fisheryOffice?.email }} <br />
         </ion-row>
         <ion-row class="ion-align-items-center">
           <ion-col><ion-label>PLN</ion-label></ion-col>
@@ -521,7 +523,7 @@
           </ion-col>
         </ion-row>
         <ion-row class="ion-align-items-center">
-          <ion-col><ion-label>Week Starting</ion-label></ion-col>
+          <ion-col><ion-label><strong>Week Starting</strong></ion-label></ion-col>
           <ion-col>
           <ion-select disabled="{{ disableInputs() }}"
                       placeholder="Select date..."
@@ -535,13 +537,8 @@
         </ion-row>
         <ion-row class="ion-align-items-center">
           <ion-col>
-            <ion-button disabled="{{ disableInputs() }}" expand='block'
-                        (click)='saveDraft()'>Save Draft</ion-button>
-          </ion-col>
-        </ion-row>
-        <ion-row class="ion-align-items-center">
-          <ion-col>
-            <ion-button disabled="{{ disableInputs() }}" expand='block'
+            <ion-button expand='block'
+                 disabled="{{ disableInputs() || !formHeadersComplete() }}"
                         (click)='generateXLSX()'>Generate Spreadsheet
             </ion-button>
           </ion-col>
