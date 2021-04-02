@@ -368,8 +368,7 @@
         <ion-row class="ion-align-items-center">
           <ion-col><ion-label>No. Pots Hauled:</ion-label></ion-col>
           <ion-col size="auto">
-            <ion-input type="number"
-                       (change)="entry.numPotsHauled = $event.target.value">
+            <ion-input type="number" [ngModel]="entry.numPotsHauled">
             </ion-input>
           </ion-col>
         </ion-row>
