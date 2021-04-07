@@ -29,7 +29,7 @@ export class AppComponent implements OnInit {
     {
       title: 'Your Details',
       url: '/page/Settings',
-      icon: 'settings'
+      icon: 'person-circle'
     }
   ];
 

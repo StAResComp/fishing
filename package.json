@@ -1,8 +1,8 @@
 {
-  "name": "fishing",
-  "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "name": "wieat",
+  "version": "0.4",
+  "author": "University of St Andrews",
+  "homepage": "https://www.st-andrews.ac.uk",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -78,7 +78,8 @@
     "protractor": "~7.0.0",
     "ts-node": "~8.3.0",
     "tslint": "~6.1.0",
-    "typescript": "~3.9.5"
+    "typescript": "~3.9.5",
+    "cordova-plugin-network-information": "~2.0.2"
   },
   "description": "An Ionic project",
   "cordova": {
@@ -109,7 +110,8 @@
         "CONTENT_AUTHORITY": "$PACKAGE_NAME",
         "ALWAYS_USAGE_DESCRIPTION": "This app always requires location tracking",
         "MOTION_USAGE_DESCRIPTION": "This app requires motion detection"
-      }
+      },
+      "cordova-plugin-network-information": {}
     },
     "platforms": [
       "browser",
