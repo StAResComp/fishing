@@ -10,15 +10,21 @@ export abstract class Record {
   private id: number;
 
   public static dateToString(
-    date: Date, format: 'ISO' | 'local' = 'ISO'
+    date: Date, format: 'ISO' | 'local' = 'ISO', time = false
   ): string {
     if (format === 'ISO') {
       return date.toISOString();
     }
     else {
-      return date.toLocaleDateString(
+      const dateString = date.toLocaleDateString(
         'en-gb', this.localeDateFormat
       );
+      if (time) {
+        return `${date.toLocaleTimeString()} - ${dateString}`;
+      }
+      else {
+        return dateString;
+      }
     }
   }
 

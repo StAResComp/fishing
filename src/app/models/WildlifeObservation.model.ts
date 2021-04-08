@@ -60,9 +60,9 @@ export class WildlifeObservation extends RecordWithLocation {
     this.date = new Date();
   }
 
-  public getDateString(format: 'ISO' | 'local' = 'ISO'): string {
+  public getDateString(format: 'ISO' | 'local' = 'ISO', time = false): string {
     if (this.date) {
-      return WildlifeObservation.dateToString(this.date, format);
+      return WildlifeObservation.dateToString(this.date, format, time);
     }
     return '';
   }

@@ -10,9 +10,9 @@ export class Creel extends RecordWithLocation {
     this.date = new Date();
   }
 
-  public getDateString(format: 'ISO' | 'local' = 'ISO'): string {
+  public getDateString(format: 'ISO' | 'local' = 'ISO', time = false): string {
     if (this.date) {
-      return Creel.dateToString(this.date, format);
+      return Creel.dateToString(this.date, format, time);
     }
     return '';
   }

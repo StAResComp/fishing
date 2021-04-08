@@ -693,7 +693,7 @@
           <ion-grid class="ion-no-padding">
             <ion-row class="ion-justify-content-between">
               <ion-col size="auto">
-                {{ observation.getDateString() }}<br />
+                {{ observation.getDateString('local', true) }}<br />
                 {{ observation.getLocation() }}<br />
                 {{ (observation.species ? observation.species : observation.description) }} × {{ observation.num }}<br />
                 {{ observation.behaviour.join(', ') }}<br />
@@ -762,7 +762,7 @@
           <ion-grid class="ion-no-padding">
             <ion-row class="ion-justify-content-between">
               <ion-col size="auto">
-                {{ creel.getDateString() }}<br />
+                {{ creel.getDateString('local', true) }}<br />
                 {{ creel.getLocation() }}<br />
                 {{ creel.notes }}
               </ion-col>
