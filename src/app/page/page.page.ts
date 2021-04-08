@@ -24,6 +24,7 @@ import {
   Catch
 } from '../models/F1Form.model';
 import { WildlifeObservation } from '../models/WildlifeObservation.model';
+import { Creel } from '../models/Creel.model';
 import { Consent } from '../models/Consent.model';
 
 @Component({
@@ -57,6 +58,9 @@ export class Page implements OnInit {
 
   public observation = new WildlifeObservation();
   public observations: Array<WildlifeObservation>;
+
+  public creel = new Creel();
+  public creels: Array<Creel>;
 
   private gotConsent = false;
 
@@ -117,6 +121,10 @@ export class Page implements OnInit {
       this.forceFirstVisitToSettings();
       this.wildlifeInit();
     }
+    else if (this.page.toLowerCase() === 'creels') {
+      this.forceFirstVisitToSettings();
+      this.creelsInit();
+    }
   }
 
 ////////////////////////////// Cross-page Helpers //////////////////////////////
@@ -143,8 +151,14 @@ export class Page implements OnInit {
   }
 
   private doMap() {
-    const wildlife = this.page.toLowerCase() === 'wildlife';
-    const mapDiv = (wildlife ? 'observation_map_canvas' : 'entry_map_canvas');
+    const page = this.page.toLowerCase();
+    let mapDiv = 'entry_map_canvas';
+    if (page === 'wildlife') {
+      mapDiv = 'observation_map_canvas';
+    }
+    else if (page === 'creels') {
+      mapDiv = 'creel_map_canvas';
+    }
     this.map = GoogleMaps.create(mapDiv, {
       camera: {
         target: {
@@ -162,9 +176,13 @@ export class Page implements OnInit {
         position: latLng
       });
       this.map.animateCamera({ target: latLng, duration: 500 });
-      if (wildlife) {
+      if (page === 'wildlife') {
         this.observation.setLatitude(latLng.lat);
         this.observation.setLongitude(latLng.lng);
+      }
+      else if (page === 'creels') {
+        this.creel.setLatitude(latLng.lat);
+        this.creel.setLongitude(latLng.lng);
       }
       else {
         this.entry.setLatitude(latLng.lat);
@@ -172,17 +190,21 @@ export class Page implements OnInit {
       }
       this.cdr.detectChanges();
     });
-    if (this.entry.getLatitude() == null ||
-      this.entry.getLongitude() == null) {
+    if (this.entry?.getLatitude() == null ||
+      this.entry?.getLongitude() == null) {
       this.map.getMyLocation().then((location: MyLocation) => {
         this.map.animateCamera({ target: location.latLng, duration: 1000 });
         this.map.addMarker({
           title: 'Your current location',
           position: location.latLng
         });
-        if (wildlife) {
+        if (page === 'wildlife') {
           this.observation.setLatitude(location.latLng.lat);
           this.observation.setLongitude(location.latLng.lng);
+        }
+        else if (page === 'creels') {
+          this.creel.setLatitude(location.latLng.lat);
+          this.creel.setLongitude(location.latLng.lng);
         }
         else {
           this.entry.setLatitude(location.latLng.lat);
@@ -532,4 +554,29 @@ export class Page implements OnInit {
   public getWildlifeBehaviours() {
     return WildlifeObservation.getWildlifeBehaviours();
   }
+
+//////////////////////////////////// Creels ////////////////////////////////////
+
+  private creelsInit() {
+    this.db.selectCreels().then(
+      creels => this.creels = creels
+    );
+    this.creel = new Creel();
+  }
+
+  public recordCreel() {
+    if (this.creel.isComplete()) {
+      this.db.insertCreel(this.creel).then(
+        _ => this.db.selectCreels().then(creels => {
+          this.creels = creels;
+          this.creel = new Creel();
+          this.map.remove();
+          this.displayMap = false;
+        })
+      );
+    }
+  }
+
 }
+
+

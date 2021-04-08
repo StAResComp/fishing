@@ -27,6 +27,11 @@ export class AppComponent implements OnInit {
       icon: 'glasses'
     },
     {
+      title: 'Unmarked Creels',
+      url: '/page/Creels',
+      icon: 'help-buoy'
+    },
+    {
       title: 'Your Details',
       url: '/page/Settings',
       icon: 'person-circle'

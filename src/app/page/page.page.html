@@ -705,5 +705,72 @@
       </ion-card>
     </div>
 
+    <div *ngIf="page.toLowerCase() == 'creels'">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Record Creel</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-grid class="ion-no-padding vertical-padding-only">
+            <ion-row class="ion-align-items-center">
+              <ion-col size="auto">
+                <ion-label>Location:</ion-label>
+              </ion-col>
+            </ion-row>
+            <ion-row class="ion-justify-content-between ion-align-items-center">
+              <ion-col size="auto">
+                <ion-button *ngIf="!displayMap"
+                            (click)="doMap();">
+                  Pick on Map
+                </ion-button>
+                <ion-button *ngIf="displayMap"
+                            (click)="displayMap = false">
+                  Hide Map
+                </ion-button>
+              </ion-col>
+              <ion-col size="auto">
+                {{ creel.getLocation() }}
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                <div #creel_map_canvas id="creel_map_canvas" class="map_canvas"
+                              [ngClass]="(displayMap ? '' : 'ion-hide')"></div>
+              </ion-col>
+            </ion-row>
+            <ion-row class="ion-align-items-center" *ngIf="creel.getLatitude() && creel.getLongitude()">
+              <ion-col>
+                <ion-textarea disabled="{{ disableInputs() }}"
+                              [(ngModel)]="creel.notes"></ion-textarea>
+              </ion-col>
+            </ion-row>
+            <ion-row class="ion-align-items-center" *ngIf="creel.getLatitude() && creel.getLongitude()">
+              <ion-col>If you have any photos of the marker, please email them to [email address]</ion-col>
+            </ion-row>
+            <ion-row class="ion-align-items-center" *ngIf="creel.getLatitude() && creel.getLongitude()">
+              <ion-col>
+                <ion-button disabled="{{ disableInputs() }}" expand='block'
+                            (click)='recordCreel()'>Record Creel
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+      <ion-card *ngFor="let creel of creels">
+        <ion-card-content>
+          <ion-grid class="ion-no-padding">
+            <ion-row class="ion-justify-content-between">
+              <ion-col size="auto">
+                {{ creel.getDateString() }}<br />
+                {{ creel.getLocation() }}<br />
+                {{ creel.notes }}
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
   </div>
 </ion-content>
