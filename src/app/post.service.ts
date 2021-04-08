@@ -33,6 +33,7 @@ export class PostService {
     this.postObservations();
     this.postCatches();
     this.postEntries();
+    this.postCreels();
     this.postConsent();
   }
 
@@ -85,6 +86,25 @@ export class PostService {
               ids.push(observation.getId());
             }
             this.db.markAsSubmitted('observations', ids);
+          }
+          return response;
+        });
+      }
+      return false;
+    });
+  }
+
+  public async postCreels() {
+    return this.db.selectUnsubmittedCreels().then(creels => {
+      if (creels && creels.length > 0) {
+        const creelsObject = { creels };
+        return this.sendPostRequest(creelsObject).then(response => {
+          if (response) {
+            const ids: number[] = [];
+            for (const creel of creels){
+              ids.push(creel.getId());
+            }
+            this.db.markAsSubmitted('creels', ids);
           }
           return response;
         });
