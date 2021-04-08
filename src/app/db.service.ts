@@ -10,6 +10,7 @@ import {
   Catch
 } from './models/F1Form.model';
 import { WildlifeObservation } from './models/WildlifeObservation.model';
+import { Creel } from './models/Creel.model';
 
 type EntryRow = {
   id: number
@@ -94,6 +95,14 @@ export class DbService {
         behaviour TEXT NOT NULL,
         observation_id INTEGER NOT NULL,
         FOREIGN KEY(observation_id) REFERENCES observations(id)
+      );`,
+      `CREATE TABLE IF NOT EXISTS creels (
+        id INTEGER PRIMARY KEY,
+        date TEXT NOT NULL,
+        latitude REAL NOT NULL,
+        longitude REAL NOT NULL,
+        notes TEXT,
+        submitted TEXT
       );`
     ];
     queries.forEach((query) => this.db.executeSql(query, []).catch(
@@ -416,6 +425,52 @@ export class DbService {
       }
     ).catch(
       e => console.log(`Error executing SQL (inserting observation): ${JSON.stringify(e)}`)
+    );
+  }
+
+  public async selectCreels(unsubmitted = false): Promise<Creel[]>{
+    let query = 'SELECT * FROM creels ORDER BY id DESC LIMIT 50;';
+    if (unsubmitted) {
+      query = `SELECT * FROM creels WHERE submitted IS NULL;`;
+    }
+    return this.db.executeSql(
+      query, []
+    ).then(res => {
+      const creels = [];
+      for (let i = 0; i < res.rows.length; i++) {
+        const row = res.rows.item(i);
+        const creel = new Creel(row.id);
+        creel.date = new Date(row.date);
+        creel.setLatitude(row.latitude);
+        creel.setLongitude(row.longitude);
+        creel.notes = row.notes?.trim();
+        creels.push(creel);
+      }
+      return creels;
+    }).catch(e => {
+      console.log(`Error executing SQL (selecting creels): ${JSON.stringify(e)}`);
+      return [] as Creel[];
+    });
+  }
+
+  public async selectUnsubmittedCreels(): Promise<Creel[]> {
+    return this.selectCreels(true);
+  }
+
+  public async insertCreel(creel: Creel) {
+    const creelQuery = `INSERT INTO creels
+        (animal, species, description, num, date, latitude, longitude, notes)
+      VALUES (? ,?, ?, ?, ?, ?, ?, ?);`;
+    const creelParams = [
+      creel.getDateString(),
+      creel.getLatitude(),
+      creel.getLongitude(),
+      creel.notes
+    ];
+    this.db.executeSql(
+      creelQuery, creelParams
+    ).catch(
+      e => console.log(`Error executing SQL (inserting creel): ${JSON.stringify(e)}`)
     );
   }
 
