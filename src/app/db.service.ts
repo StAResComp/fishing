@@ -459,8 +459,7 @@ export class DbService {
 
   public async insertCreel(creel: Creel) {
     const creelQuery = `INSERT INTO creels
-        (animal, species, description, num, date, latitude, longitude, notes)
-      VALUES (? ,?, ?, ?, ?, ?, ?, ?);`;
+        (date, latitude, longitude, notes) VALUES (?, ?, ?, ?);`;
     const creelParams = [
       creel.getDateString(),
       creel.getLatitude(),
