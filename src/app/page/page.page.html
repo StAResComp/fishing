@@ -676,7 +676,7 @@
               </ion-col>
             </ion-row>
             <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.getLatitude() && observation.getLongitude() && observation.behaviour.length > 0">
-              <ion-col>If you have any photos or videos of the animal, please email them to [email address]</ion-col>
+              <ion-col>If you have any photos or videos of the animal, please email them to <a href="mailto:WIEATOBS@st-andrews.ac.uk">WIEATOBS@st-andrews.ac.uk</a></ion-col>
             </ion-row>
             <ion-row class="ion-align-items-center" *ngIf="observation.animal && (observation.species || observation.description) && observation.num && observation.getLatitude() && observation.getLongitude() && observation.behaviour.length > 0">
               <ion-col>
@@ -739,13 +739,13 @@
               </ion-col>
             </ion-row>
             <ion-row class="ion-align-items-center" *ngIf="creel.getLatitude() && creel.getLongitude()">
+              <ion-col><ion-label>Notes:</ion-label></ion-col>
+            </ion-row>
+            <ion-row class="ion-align-items-center" *ngIf="creel.getLatitude() && creel.getLongitude()">
               <ion-col>
                 <ion-textarea disabled="{{ disableInputs() }}"
                               [(ngModel)]="creel.notes"></ion-textarea>
               </ion-col>
-            </ion-row>
-            <ion-row class="ion-align-items-center" *ngIf="creel.getLatitude() && creel.getLongitude()">
-              <ion-col>If you have any photos of the marker, please email them to [email address]</ion-col>
             </ion-row>
             <ion-row class="ion-align-items-center" *ngIf="creel.getLatitude() && creel.getLongitude()">
               <ion-col>
