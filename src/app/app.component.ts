@@ -12,7 +12,7 @@ export class AppComponent implements OnInit {
   public selectedIndex = 0;
   public appPages = [
     {
-      title: 'Home',
+      title: 'Catch',
       url: '/page/Home',
       icon: 'boat'
     },
@@ -35,6 +35,11 @@ export class AppComponent implements OnInit {
       title: 'Your Details',
       url: '/page/Settings',
       icon: 'person-circle'
+    },
+    {
+      title: 'About this App',
+      url: '/page/About',
+      icon: 'information-circle'
     }
   ];
 
