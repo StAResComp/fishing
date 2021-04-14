@@ -92,8 +92,8 @@
           <ion-item>
             <ion-label>Species:</ion-label>
             <ion-select disabled="{{ disableInputs() }}"
-                        [value]="caught.species"
-                        (ionChange)="caught.species = $event.target.value">
+                        [(ngModel)]="caught.species"
+                        (ionFocus)="moveFocus(catch_caught)">
               <ion-select-option *ngFor="let species of getSpeciesList()">
                 {{ species.name }}
               </ion-select-option>
@@ -102,15 +102,15 @@
           <ion-item>
             <ion-label>No. caught:</ion-label>
             <ion-input disabled="{{ disableInputs() }}" type="number"
-                       inputmode="numeric" [value]="caught.caught"
-                       (change)="caught.caught = +$event.target.value">
+                       inputmode="numeric" [(ngModel)]="caught.caught"
+                       (keyup.enter)="moveFocus(catch_retained)" #catch_caught>
             </ion-input>
           </ion-item>
           <ion-item>
             <ion-label>No. retained:</ion-label>
             <ion-input disabled="{{ disableInputs() }}" type="number"
-                       inputmode="numeric" [value]="caught.retained"
-                       (change)="caught.retained = +$event.target.value">
+                       inputmode="numeric" [(ngModel)]="caught.retained"
+                       #catch_retained>
             </ion-input>
           </ion-item>
           <ion-item>

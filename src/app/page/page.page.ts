@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { ModalController, ToastController, Platform } from '@ionic/angular';
+import { ModalController, ToastController, Platform, IonInput } from '@ionic/angular';
 import { Location } from '@angular/common';
 import { Dialogs } from '@ionic-native/dialogs/ngx';
 import {
@@ -236,6 +236,10 @@ export class Page implements OnInit {
     return this.fieldsVisited.includes(fieldName);
   }
 
+  public moveFocus(nextElement: IonInput) {
+    nextElement.setFocus();
+  }
+
 /////////////////////////////////// Consent ////////////////////////////////////
 
   private async doConsent() {
@@ -338,7 +342,7 @@ export class Page implements OnInit {
       this.catchFormDataError = validity.message;
     }
     else {
-      this.catchFormDataError= '';
+      this.catchFormDataError = '';
     }
 
     if (!this.catchFormIncomplete && !this.catchFormDataError) {
