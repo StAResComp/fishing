@@ -102,14 +102,14 @@
           <ion-item>
             <ion-label>No. caught:</ion-label>
             <ion-input disabled="{{ disableInputs() }}" type="number"
-                       [value]="caught.caught"
+                       inputmode="numeric" [value]="caught.caught"
                        (change)="caught.caught = +$event.target.value">
             </ion-input>
           </ion-item>
           <ion-item>
             <ion-label>No. retained:</ion-label>
             <ion-input disabled="{{ disableInputs() }}" type="number"
-                       [value]="caught.retained"
+                       inputmode="numeric" [value]="caught.retained"
                        (change)="caught.retained = +$event.target.value">
             </ion-input>
           </ion-item>

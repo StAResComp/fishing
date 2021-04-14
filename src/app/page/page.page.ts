@@ -337,6 +337,9 @@ export class Page implements OnInit {
     if (!validity.valid) {
       this.catchFormDataError = validity.message;
     }
+    else {
+      this.catchFormDataError= '';
+    }
 
     if (!this.catchFormIncomplete && !this.catchFormDataError) {
       this.db.insertOrUpdateCatch(this.caught).then(
