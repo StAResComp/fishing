@@ -329,6 +329,7 @@
                         [value]="entry.presentation"
               [ngClass]="{'reqMissing': hasFieldBeenVisited('presentation') && entry.presentation == null}"
                         (ionBlur)="recordFieldVisited('presentation')"
+                        (ionFocus)="moveFocus(entry_weight)"
                         [(ngModel)]="entry.presentation">
               <ion-select-option
                  *ngFor="let presentation of getPresentations()">
@@ -347,7 +348,7 @@
           <ion-col size="auto">
             <ion-input type="number" [(ngModel)]="entry.weight"
               [ngClass]="{'reqMissing': hasFieldBeenVisited('weight') && entry.weight == null}"
-                        (ionBlur)="recordFieldVisited('weight')">
+                        (ionBlur)="recordFieldVisited('weight')" #entry_weight>
             </ion-input>
           </ion-col>
         </ion-row>
@@ -386,6 +387,7 @@
                  displayFormat="DD MMM YYYY"
                  [value]="(entry.landingDiscardDate != null ? entry.landingDiscardDate.toISOString() : null)"
                  min="2021-01-01" [max]="today.toISOString()"
+                 (ionFocus)="moveFocus(entry_btrlk)"
                  (ionChange)="entry.landingDiscardDate = dateFromISO($event.target.value)">
             </ion-datetime>
           </ion-col>
@@ -419,7 +421,7 @@
           <ion-col>
             <ion-textarea disabled="{{ disableInputs() }}"
                           [value]="entry.buyerTransporterRegLandedToKeeps"
-                 (change)="entry.buyerTransporterRegLandedToKeeps = $event.target.value">
+                 (change)="entry.buyerTransporterRegLandedToKeeps = $event.target.value" #entry_btrlk>
             </ion-textarea>
           </ion-col>
         </ion-row>
@@ -773,6 +775,9 @@
     </div>
 
     <div *ngIf="page.toLowerCase() == 'about'">
+
+      <h3>About this App</h3>
+
       <p>This App has been developed by the University of St Andrews to help
       collect data from fishers involved in the Western Isles Creel Limitation
       Pilot led by Marine Scotland. The App is designed to allow fishers to
@@ -780,6 +785,33 @@
       secure database and to generate an output in a format that they may
       submit to their local Fishery Office as required. The App is currently
       only available to participants in the Pilot project.</p>
+
+      <h3>Using this App</h3>
+
+      <dl>
+        <dt><ion-icon name="boat-outline"></ion-icon> Catch</dt>
+        <dd>Quickly record how much is caught and retained for each haul.</dd>
+        <dt><ion-icon name="clipboard-outline"></ion-icon> Form Entries</dt>
+        <dd>Complete form entries detailing catch for the day, then generate
+        a spreadsheet containing the entries for a given week.</dd>
+        <dt><ion-icon name="glasses-outline"></ion-icon> Wildlife Observations</dt>
+        <dd>Record the details of wildlife spotted while fishing.</dd>
+        <dt><ion-icon name="help-buoy-outline"></ion-icon> Unmarked Creels</dt>
+        <dd>Record the location of unmarked creels encountered.</dd>
+        <dt><ion-icon name="person-circle-outline"></ion-icon> Your Details</dt>
+        <dd>Details entered here are used to automatically populate fields in
+        the Form Entries spreadsheet. This is also where the app can be linked
+        to an online account. Once linked, all data entered will be regularly
+        sent to the researchers.</dd>
+      </dl>
+
+      <h3>Credits</h3>
+
+      <p>This App has been developed by the Research Computing team at the
+      University of St Andrews. The source code is available
+      <a href="https://github.com/StAResComp/fishing">on GitHub</a>. The icons
+      used in this app are from the <a href="https://ionicons.com/">Ionicon set
+      </a>.</p>
     </div>
 
   </div>
