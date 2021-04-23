@@ -12,8 +12,19 @@
             </ion-item>
           </ion-menu-toggle>
         </ion-list>
-
       </ion-content>
+
+      <ion-footer class="ion-no-border">
+        <div *ngIf="darkModeOn()">
+          <img src='assets/04-standard-monochrome-all-white.png'
+                  alt="Logo of the University of St Andrews" />
+        </div>
+        <div *ngIf="!darkModeOn()">
+          <img src='assets/03-standard-monochrome-all-black.png'
+                  alt="Logo of the University of St Andrews" />
+        </div>
+      </ion-footer>
+
     </ion-menu>
     <ion-router-outlet id="main-content"></ion-router-outlet>
   </ion-split-pane>

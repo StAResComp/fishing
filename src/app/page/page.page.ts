@@ -240,6 +240,10 @@ export class Page implements OnInit {
     nextElement.setFocus();
   }
 
+  public darkModeOn() {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+
 /////////////////////////////////// Consent ////////////////////////////////////
 
   private async doConsent() {

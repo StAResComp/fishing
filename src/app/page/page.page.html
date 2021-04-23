@@ -776,6 +776,15 @@
 
     <div *ngIf="page.toLowerCase() == 'about'">
 
+      <div *ngIf="darkModeOn()">
+        <img src='assets/02-standard-white-text.png'
+                       alt="Logo of the University of St Andrews" />
+      </div>
+      <div *ngIf="!darkModeOn()">
+        <img src='assets/01-standard-black-text.png'
+                       alt="Logo of the University of St Andrews" />
+      </div>
+
       <h3>About this App</h3>
 
       <p>This App has been developed by the University of St Andrews to help
