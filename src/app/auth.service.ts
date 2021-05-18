@@ -267,4 +267,11 @@ export class AuthService {
     });
   }
 
+  public clearAuthentication() {
+    this.set(AuthService.accessTokenKey, null);
+    this.set(AuthService.accessTokenExpiryKey, null);
+    this.set(AuthService.refreshTokenKey, null);
+    this.loggedIn = false;
+  }
+
 }

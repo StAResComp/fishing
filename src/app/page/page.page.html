@@ -76,12 +76,14 @@
       </ion-grid>
       <ion-card>
         <ion-card-content>
-          <ion-button disabled="disabled"
-                      *ngIf='!authService.loggedIn'
+          <ion-button *ngIf='!authService.loggedIn && !loginAttempted'
                       expand="block" (click)="login()">
             Login
           </ion-button>
-          <p *ngIf='authService.loggedIn'>Logged In</p>
+          <ion-button *ngIf='authService.loggedIn || loginAttempted'
+                      expand="block" (click)="logout()">
+            Logout
+          </ion-button>
         </ion-card-content>
       </ion-card>
     </div>
@@ -821,6 +823,8 @@
       <a href="https://github.com/StAResComp/fishing">on GitHub</a>. The icons
       used in this app are from the <a href="https://ionicons.com/">Ionicon set
       </a>.</p>
+
+      <p>Copyright 2021 University of St Andrews</p>
     </div>
 
   </div>

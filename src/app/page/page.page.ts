@@ -39,6 +39,7 @@ export class Page implements OnInit {
   public accessToken = '';
   public accessTokenExpiry = 0;
   public refreshToken = '';
+  public loginAttempted = false;
 
   public caught = new Catch();
   public catches: Array<Catch>;
@@ -313,6 +314,11 @@ export class Page implements OnInit {
 
   public login() {
     this.authService.authenticate();
+    this.loginAttempted = true;
+  }
+
+  public logout() {
+    this.authService.clearAuthentication();
   }
 
   public refresh() {
