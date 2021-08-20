@@ -27,8 +27,8 @@ export class AppComponent implements OnInit {
       icon: 'glasses'
     },
     {
-      title: 'Unmarked Creels',
-      url: '/page/Creels',
+      title: 'Lost/Abandoned Gear',
+      url: '/page/Gear',
       icon: 'help-buoy'
     },
     {

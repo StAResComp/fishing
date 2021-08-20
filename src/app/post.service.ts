@@ -33,7 +33,7 @@ export class PostService {
     this.postObservations();
     this.postCatches();
     this.postEntries();
-    this.postCreels();
+    this.postGear();
     this.postConsent();
   }
 
@@ -94,17 +94,17 @@ export class PostService {
     });
   }
 
-  public async postCreels() {
-    return this.db.selectUnsubmittedCreels().then(creels => {
-      if (creels && creels.length > 0) {
-        const creelsObject = { creels };
-        return this.sendPostRequest(creelsObject).then(response => {
+  public async postGear() {
+    return this.db.selectUnsubmittedGear().then(gears => {
+      if (gears && gears.length > 0) {
+        const gearsObject = { gears };
+        return this.sendPostRequest(gearsObject).then(response => {
           if (response) {
             const ids: number[] = [];
-            for (const creel of creels){
-              ids.push(creel.getId());
+            for (const gear of gears){
+              ids.push(gear.getId());
             }
-            this.db.markAsSubmitted('creels', ids);
+            this.db.markAsSubmitted('gear', ids);
           }
           return response;
         });

@@ -709,10 +709,10 @@
       </ion-card>
     </div>
 
-    <div *ngIf="page.toLowerCase() == 'creels'">
+    <div *ngIf="page.toLowerCase() == 'gear'">
       <ion-card>
         <ion-card-header>
-          <ion-card-title>Record Creel</ion-card-title>
+          <ion-card-title>Record Gear</ion-card-title>
         </ion-card-header>
         <ion-card-content>
           <ion-grid class="ion-no-padding vertical-padding-only">
@@ -733,42 +733,42 @@
                 </ion-button>
               </ion-col>
               <ion-col size="auto">
-                {{ creel.getLocation() }}
+                {{ gear.getLocation() }}
               </ion-col>
             </ion-row>
             <ion-row>
               <ion-col>
-                <div #creel_map_canvas id="creel_map_canvas" class="map_canvas"
+                <div #gear_map_canvas id="gear_map_canvas" class="map_canvas"
                               [ngClass]="(displayMap ? '' : 'ion-hide')"></div>
               </ion-col>
             </ion-row>
-            <ion-row class="ion-align-items-center" *ngIf="creel.getLatitude() && creel.getLongitude()">
+            <ion-row class="ion-align-items-center" *ngIf="gear.getLatitude() && gear.getLongitude()">
               <ion-col><ion-label>Notes:</ion-label></ion-col>
             </ion-row>
-            <ion-row class="ion-align-items-center" *ngIf="creel.getLatitude() && creel.getLongitude()">
+            <ion-row class="ion-align-items-center" *ngIf="gear.getLatitude() && gear.getLongitude()">
               <ion-col>
                 <ion-textarea disabled="{{ disableInputs() }}"
-                              [(ngModel)]="creel.notes"></ion-textarea>
+                              [(ngModel)]="gear.notes"></ion-textarea>
               </ion-col>
             </ion-row>
-            <ion-row class="ion-align-items-center" *ngIf="creel.getLatitude() && creel.getLongitude()">
+            <ion-row class="ion-align-items-center" *ngIf="gear.getLatitude() && gear.getLongitude()">
               <ion-col>
                 <ion-button disabled="{{ disableInputs() }}" expand='block'
-                            (click)='recordCreel()'>Record Creel
+                            (click)='recordGear()'>Record Gear
                 </ion-button>
               </ion-col>
             </ion-row>
           </ion-grid>
         </ion-card-content>
       </ion-card>
-      <ion-card *ngFor="let creel of creels">
+      <ion-card *ngFor="let gear of gears">
         <ion-card-content>
           <ion-grid class="ion-no-padding">
             <ion-row class="ion-justify-content-between">
               <ion-col size="auto">
-                {{ creel.getDateString('local', true) }}<br />
-                {{ creel.getLocation() }}<br />
-                {{ creel.notes }}
+                {{ gear.getDateString('local', true) }}<br />
+                {{ gear.getLocation() }}<br />
+                {{ gear.notes }}
               </ion-col>
             </ion-row>
           </ion-grid>
@@ -807,7 +807,7 @@
         a spreadsheet containing the entries for a given week.</dd>
         <dt><ion-icon name="glasses-outline"></ion-icon> Wildlife Observations</dt>
         <dd>Record the details of wildlife spotted while fishing.</dd>
-        <dt><ion-icon name="help-buoy-outline"></ion-icon> Unmarked Creels</dt>
+        <dt><ion-icon name="help-buoy-outline"></ion-icon> Unmarked Gear</dt>
         <dd>Record the location of unmarked creels encountered.</dd>
         <dt><ion-icon name="person-circle-outline"></ion-icon> Your Details</dt>
         <dd>Details entered here are used to automatically populate fields in

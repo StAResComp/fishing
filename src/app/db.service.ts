@@ -10,7 +10,7 @@ import {
   Catch
 } from './models/F1Form.model';
 import { WildlifeObservation } from './models/WildlifeObservation.model';
-import { Creel } from './models/Creel.model';
+import { Gear } from './models/Gear.model';
 
 type EntryRow = {
   id: number
@@ -96,7 +96,7 @@ export class DbService {
         observation_id INTEGER NOT NULL,
         FOREIGN KEY(observation_id) REFERENCES observations(id)
       );`,
-      `CREATE TABLE IF NOT EXISTS creels (
+      `CREATE TABLE IF NOT EXISTS gear (
         id INTEGER PRIMARY KEY,
         date TEXT NOT NULL,
         latitude REAL NOT NULL,
@@ -428,48 +428,48 @@ export class DbService {
     );
   }
 
-  public async selectCreels(unsubmitted = false): Promise<Creel[]>{
-    let query = 'SELECT * FROM creels ORDER BY id DESC LIMIT 50;';
+  public async selectGear(unsubmitted = false): Promise<Gear[]>{
+    let query = 'SELECT * FROM gear ORDER BY id DESC LIMIT 50;';
     if (unsubmitted) {
-      query = `SELECT * FROM creels WHERE submitted IS NULL;`;
+      query = `SELECT * FROM gear WHERE submitted IS NULL;`;
     }
     return this.db.executeSql(
       query, []
     ).then(res => {
-      const creels = [];
+      const gears = [];
       for (let i = 0; i < res.rows.length; i++) {
         const row = res.rows.item(i);
-        const creel = new Creel(row.id);
-        creel.date = new Date(row.date);
-        creel.setLatitude(row.latitude);
-        creel.setLongitude(row.longitude);
-        creel.notes = row.notes?.trim();
-        creels.push(creel);
+        const gear = new Gear(row.id);
+        gear.date = new Date(row.date);
+        gear.setLatitude(row.latitude);
+        gear.setLongitude(row.longitude);
+        gear.notes = row.notes?.trim();
+        gears.push(gear);
       }
-      return creels;
+      return gears;
     }).catch(e => {
-      console.log(`Error executing SQL (selecting creels): ${JSON.stringify(e)}`);
-      return [] as Creel[];
+      console.log(`Error executing SQL (selecting gear): ${JSON.stringify(e)}`);
+      return [] as Gear[];
     });
   }
 
-  public async selectUnsubmittedCreels(): Promise<Creel[]> {
-    return this.selectCreels(true);
+  public async selectUnsubmittedGear(): Promise<Gear[]> {
+    return this.selectGear(true);
   }
 
-  public async insertCreel(creel: Creel) {
-    const creelQuery = `INSERT INTO creels
+  public async insertGear(gear: Gear) {
+    const gearQuery = `INSERT INTO gear
         (date, latitude, longitude, notes) VALUES (?, ?, ?, ?);`;
-    const creelParams = [
-      creel.getDateString(),
-      creel.getLatitude(),
-      creel.getLongitude(),
-      creel.notes
+    const gearParams = [
+      gear.getDateString(),
+      gear.getLatitude(),
+      gear.getLongitude(),
+      gear.notes
     ];
     this.db.executeSql(
-      creelQuery, creelParams
+      gearQuery, gearParams
     ).catch(
-      e => console.log(`Error executing SQL (inserting creel): ${JSON.stringify(e)}`)
+      e => console.log(`Error executing SQL (inserting gear): ${JSON.stringify(e)}`)
     );
   }
 

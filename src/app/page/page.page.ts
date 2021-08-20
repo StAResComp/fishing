@@ -24,7 +24,7 @@ import {
   Catch
 } from '../models/F1Form.model';
 import { WildlifeObservation } from '../models/WildlifeObservation.model';
-import { Creel } from '../models/Creel.model';
+import { Gear } from '../models/Gear.model';
 import { Consent } from '../models/Consent.model';
 
 @Component({
@@ -60,8 +60,8 @@ export class Page implements OnInit {
   public observation = new WildlifeObservation();
   public observations: Array<WildlifeObservation>;
 
-  public creel = new Creel();
-  public creels: Array<Creel>;
+  public gear = new Gear();
+  public gears: Array<Gear>;
 
   private gotConsent = false;
 
@@ -122,9 +122,9 @@ export class Page implements OnInit {
       this.forceFirstVisitToSettings();
       this.wildlifeInit();
     }
-    else if (this.page.toLowerCase() === 'creels') {
+    else if (this.page.toLowerCase() === 'gear') {
       this.forceFirstVisitToSettings();
-      this.creelsInit();
+      this.gearInit();
     }
   }
 
@@ -157,8 +157,8 @@ export class Page implements OnInit {
     if (page === 'wildlife') {
       mapDiv = 'observation_map_canvas';
     }
-    else if (page === 'creels') {
-      mapDiv = 'creel_map_canvas';
+    else if (page === 'gear') {
+      mapDiv = 'gear_map_canvas';
     }
     this.map = GoogleMaps.create(mapDiv, {
       camera: {
@@ -181,9 +181,9 @@ export class Page implements OnInit {
         this.observation.setLatitude(latLng.lat);
         this.observation.setLongitude(latLng.lng);
       }
-      else if (page === 'creels') {
-        this.creel.setLatitude(latLng.lat);
-        this.creel.setLongitude(latLng.lng);
+      else if (page === 'gear') {
+        this.gear.setLatitude(latLng.lat);
+        this.gear.setLongitude(latLng.lng);
       }
       else {
         this.entry.setLatitude(latLng.lat);
@@ -203,9 +203,9 @@ export class Page implements OnInit {
           this.observation.setLatitude(location.latLng.lat);
           this.observation.setLongitude(location.latLng.lng);
         }
-        else if (page === 'creels') {
-          this.creel.setLatitude(location.latLng.lat);
-          this.creel.setLongitude(location.latLng.lng);
+        else if (page === 'gear') {
+          this.gear.setLatitude(location.latLng.lat);
+          this.gear.setLongitude(location.latLng.lng);
         }
         else {
           this.entry.setLatitude(location.latLng.lat);
@@ -572,21 +572,21 @@ export class Page implements OnInit {
     return WildlifeObservation.getWildlifeBehaviours();
   }
 
-//////////////////////////////////// Creels ////////////////////////////////////
+//////////////////////////////////// Gear ////////////////////////////////////
 
-  private creelsInit() {
-    this.db.selectCreels().then(
-      creels => this.creels = creels
+  private gearInit() {
+    this.db.selectGear().then(
+      gears => this.gears = gears
     );
-    this.creel = new Creel();
+    this.gear = new Gear();
   }
 
-  public recordCreel() {
-    if (this.creel.isComplete()) {
-      this.db.insertCreel(this.creel).then(
-        _ => this.db.selectCreels().then(creels => {
-          this.creels = creels;
-          this.creel = new Creel();
+  public recordGear() {
+    if (this.gear.isComplete()) {
+      this.db.insertGear(this.gear).then(
+        _ => this.db.selectGear().then(gears => {
+          this.gears = gears;
+          this.gear = new Gear();
           this.map.remove();
           this.displayMap = false;
         })

@@ -1,9 +1,10 @@
 import { RecordWithLocation } from './RecordWithLocation.model';
 
-export class Creel extends RecordWithLocation {
+export class Gear extends RecordWithLocation {
 
   public date: Date;
   public notes: string;
+  public lostByUser = false;
 
   constructor(id?: number) {
     super(id);
@@ -12,7 +13,7 @@ export class Creel extends RecordWithLocation {
 
   public getDateString(format: 'ISO' | 'local' = 'ISO', time = false): string {
     if (this.date) {
-      return Creel.dateToString(this.date, format, time);
+      return Gear.dateToString(this.date, format, time);
     }
     return '';
   }
