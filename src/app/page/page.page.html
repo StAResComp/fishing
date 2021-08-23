@@ -717,6 +717,53 @@
         <ion-card-content>
           <ion-grid class="ion-no-padding vertical-padding-only">
             <ion-row class="ion-align-items-center">
+              <ion-col size="6">
+                <ion-label>What happened:</ion-label>
+              </ion-col>
+              <ion-col size="6">
+                <ion-select [value]="gear.incidentType"
+                       (ionChange)="gear.incidentType = $event.target.value.trim()">
+                  <ion-select-option value='lost'>
+                    I lost gear
+                  </ion-select-option>
+                  <ion-select-option value='found'>
+                    I found gear
+                  </ion-select-option>
+                  <ion-select-option value='unmarkedCreel'>
+                    I found an unmarked creel
+                  </ion-select-option>
+                </ion-select>
+              </ion-col>
+            </ion-row>
+            <ion-row class="ion-align-items-center"
+                     *ngIf="gear.incidentType !== 'unmarkedCreel'">
+              <ion-col size="6">
+                <ion-label>Type of gear:</ion-label>
+              </ion-col>
+              <ion-col size="6">
+                <ion-select [value]="gear.gearType"
+                       (ionChange)="gear.gearType = $event.target.value.trim()">
+                  <ion-select-option value='creel'>
+                    Creel(s)
+                  </ion-select-option>
+                  <ion-select-option value='other'>
+                    Other
+                  </ion-select-option>
+                </ion-select>
+              </ion-col>
+            </ion-row>
+            <ion-row class="ion-align-items-center"
+                     *ngIf="gear.incidentType != 'unmarkedCreel' && gear.gearType == 'creel'">
+              <ion-col size="6">
+                <ion-label>Number of creels: </ion-label>
+              </ion-col>
+              <ion-col  size="6">
+                <ion-input type="number"
+                           inputmode="numeric" [(ngModel)]="gear.num">
+                </ion-input>
+              </ion-col>
+            </ion-row>
+            <ion-row class="ion-align-items-center">
               <ion-col size="auto">
                 <ion-label>Location:</ion-label>
               </ion-col>
@@ -768,6 +815,7 @@
               <ion-col size="auto">
                 {{ gear.getDateString('local', true) }}<br />
                 {{ gear.getLocation() }}<br />
+                {{ gear.description }}<br />
                 {{ gear.notes }}
               </ion-col>
             </ion-row>

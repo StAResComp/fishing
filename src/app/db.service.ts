@@ -102,6 +102,9 @@ export class DbService {
         latitude REAL NOT NULL,
         longitude REAL NOT NULL,
         notes TEXT,
+        incident_type TEXT NOT NULL,
+        gear_type TEXT NOT NULL,
+        num INTEGER,
         submitted TEXT
       );`
     ];
@@ -444,6 +447,9 @@ export class DbService {
         gear.setLatitude(row.latitude);
         gear.setLongitude(row.longitude);
         gear.notes = row.notes?.trim();
+        gear.incidentType = row.incident_type.trim();
+        gear.gearType = row.gear_type.trim();
+        gear.num = row.num;
         gears.push(gear);
       }
       return gears;
@@ -459,12 +465,16 @@ export class DbService {
 
   public async insertGear(gear: Gear) {
     const gearQuery = `INSERT INTO gear
-        (date, latitude, longitude, notes) VALUES (?, ?, ?, ?);`;
+        (date, latitude, longitude, notes, incident_type, gear_type, num)
+        VALUES (?, ?, ?, ?, ?, ?, ?);`;
     const gearParams = [
       gear.getDateString(),
       gear.getLatitude(),
       gear.getLongitude(),
-      gear.notes
+      gear.notes?.trim(),
+      gear.incidentType?.trim(),
+      gear.gearType?.trim(),
+      gear.num
     ];
     this.db.executeSql(
       gearQuery, gearParams
