@@ -95,14 +95,14 @@ export class PostService {
   }
 
   public async postGear() {
-    return this.db.selectUnsubmittedGear().then(gears => {
-      if (gears && gears.length > 0) {
-        const gearsObject = { gears };
-        return this.sendPostRequest(gearsObject).then(response => {
+    return this.db.selectUnsubmittedGear().then(gear => {
+      if (gear && gear.length > 0) {
+        const gearObject = { gear };
+        return this.sendPostRequest(gearObject).then(response => {
           if (response) {
             const ids: number[] = [];
-            for (const gear of gears){
-              ids.push(gear.getId());
+            for (const g of gear){
+              ids.push(g.getId());
             }
             this.db.markAsSubmitted('gear', ids);
           }
