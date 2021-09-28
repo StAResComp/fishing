@@ -21,6 +21,7 @@
     <preference name="WKWebViewOnly" value="true" />
     <preference name="GOOGLE_MAPS_ANDROID_API_KEY" value="" />
     <preference name="GOOGLE_MAPS_IOS_API_KEY" value="" />
+    <preference name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="This app uses your location to determine what location to display in the map" />
     <preference name="android-targetSdkVersion" value="29" />
     <platform name="android">
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application" xmlns:android="http://schemas.android.com/apk/res/android">
