@@ -47,10 +47,11 @@
     "rxjs": "~6.5.5",
     "sql.js": "^1.5.0",
     "tslib": "^2.2.0",
-    "xlsx": "^0.16.9",
+    "xlsx": "^0.17.2",
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
+    "@angular-devkit/architect": "^0.1202.7",
     "@angular-devkit/build-angular": "^0.1000.0",
     "@angular/cli": "~10.0.5",
     "@angular/compiler": "~10.0.0",
