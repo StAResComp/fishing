@@ -242,7 +242,7 @@ export class Catch extends Record {
       !!this.date &&
       !!this.species &&
       !!this.caught &&
-      !!this.retained
+      this.retained !== null
     );
   }
 
