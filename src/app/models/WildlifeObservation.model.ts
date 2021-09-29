@@ -30,7 +30,8 @@ export class WildlifeObservation extends RecordWithLocation {
         'Fin Whale',
         'Sei Whale'
       ]},
-      { name: 'Shark', subspecies: ['Basking Shark', 'Porbeagle Shark']}
+      { name: 'Shark', subspecies: ['Basking Shark', 'Porbeagle Shark']},
+      { name: 'Tuna', subspecies: ['Bluefin Tuna']}
     ];
   }
 
