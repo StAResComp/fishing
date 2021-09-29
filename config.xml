@@ -19,8 +19,8 @@
     <preference name="SplashScreen" value="screen" />
     <preference name="SplashScreenDelay" value="3000" />
     <preference name="WKWebViewOnly" value="true" />
-    <preference name="GOOGLE_MAPS_ANDROID_API_KEY" value="" />
-    <preference name="GOOGLE_MAPS_IOS_API_KEY" value="" />
+    <preference name="GOOGLE_MAPS_ANDROID_API_KEY" value="ANDROID_API_KEY_GOES_HERE" />
+    <preference name="GOOGLE_MAPS_IOS_API_KEY" value="IOS_API_KEY_GOES_HERE" />
     <preference name="LOCATION_WHEN_IN_USE_DESCRIPTION" value="This app uses your location to determine what location to display in the map" />
     <preference name="android-targetSdkVersion" value="29" />
     <platform name="android">
@@ -116,7 +116,7 @@
     <plugin name="cordova-plugin-file" spec="^6.0.2" />
     <plugin name="cordova-plugin-dialogs" spec="~2.0.2" />
     <plugin name="cordova-plugin-googlemaps" spec="~2.8.0-20200709-2008">
-        <variable name="API_KEY_FOR_ANDROID" value="" />
-        <variable name="API_KEY_FOR_IOS" value="" />
+        <variable name="API_KEY_FOR_ANDROID" value="ANDROID_API_KEY_GOES_HERE" />
+        <variable name="API_KEY_FOR_IOS" value="IOS_API_KEY_GOES_HERE" />
     </plugin>
 </widget>
