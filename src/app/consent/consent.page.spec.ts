@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
 import { ConsentPage } from './consent.page';
@@ -7,7 +7,7 @@ describe('ConsentPage', () => {
   let component: ConsentPage;
   let fixture: ComponentFixture<ConsentPage>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ConsentPage ],
       imports: [IonicModule.forRoot()]
