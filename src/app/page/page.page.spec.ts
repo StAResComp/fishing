@@ -10,7 +10,7 @@ describe('Page', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ Page ],
-      imports: [IonicModule.forRoot(), RouterModule.forRoot([], { relativeLinkResolution: 'legacy' })]
+      imports: [IonicModule.forRoot(), RouterModule.forRoot([], {})]
     }).compileComponents();
 
     fixture = TestBed.createComponent(Page);
