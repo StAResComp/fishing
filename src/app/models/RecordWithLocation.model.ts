@@ -1,6 +1,6 @@
 export abstract class Record {
 
-  private static localeDateFormat = {
+  private static localeDateFormat: Intl.DateTimeFormatOptions = {
     weekday: 'short',
     year: 'numeric',
     month: 'short',

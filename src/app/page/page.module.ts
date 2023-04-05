@@ -5,8 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { PageRoutingModule } from './page-routing.module';
-import { InAppBrowser } from '@ionic-native/in-app-browser/ngx';
-import { Dialogs } from '@ionic-native/dialogs/ngx';
+import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
+import { Dialogs } from '@awesome-cordova-plugins/dialogs/ngx';
 import { HttpClientModule } from '@angular/common/http';
 
 import { Page } from './page.page';
